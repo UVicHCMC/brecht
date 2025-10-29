@@ -1,0 +1,54 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <head xmlns="http://www.w3.org/1999/xhtml">
+        <title>Website Title</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="css/style.css" />
+        
+        <link rel="icon" href="favicon.ico" sizes="48x48" />
+        <link rel="icon" href="favicon.svg" sizes="any" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+        <link rel="mask-icon" href="mask-icon.svg" color="#ffffff" />
+        <link rel="manifest" href="site.webmanifest" />
+
+    </head>
+    <body>
+        <main id="contentContainer" class="splash">
+            <div id="bgContainer">
+                <div id="bgInner"/>
+            </div>        
+        
+            <div id="splashGrid">
+                <div id="title">
+                    <!-- NOTE: This processing-instruction will be replaced by the splash
+                     title. -->
+                    <?splashTitle?>
+                </div>
+            
+                 
+                 <div id="whereWhen">
+                     <!-- NOTE: This processing-instruction will be replaced by the splash
+                          WhereWhen info. -->
+                     <?splashWhereWhen?>
+                 </div>
+                 
+                 <div class="nav-wrapper">
+     
+                     <nav class="main-menu" id="splashNav" aria-expanded="true">
+                                 <ul>
+                                     <li><a href="presentations.html">Presentations</a></li>
+                                     <li><a href="program.html">Program</a></li>
+                                     <li><a href="participants.html">Participants</a></li>
+                                     <li><a href="gettinghere.html">Getting Here</a></li>
+                                     <li><a href="accommodation.html">Accommodation</a></li>
+                                     <li><a href="about.html">About/FAQ</a></li>
+                                 </ul>
+                     </nav>
+                 </div>
+            </div>
+            
+            <!--UVic logo-->
+            <img id="uvicLogo" src="../images/uvicLogoWhite.png" alt="University of Victoria" />
+        </main>    
+    </body>
+</html>
