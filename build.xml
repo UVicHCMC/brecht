@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="fullBuild" name="ehco" xmlns:if="ant:if"
+    xmlns:unless="ant:unless">
+    <description>
+        #####################################################################
+        #    Project build file by Illya Nokhrin (inokhrin@uvic.ca), 2025, based on previous
+        build files by Martin Holmes and Deniz Aydin.   #
+        
+        This build file does these basic tasks:
+        
+        * Runs a script to determine the dimensions of all images and creates a text file storing those dimensions
+        
+        * Transforms SCSS to CSS using sass
+        
+        * Takes input XHTML, and transforms it into web-ready HTML using XSLT and XML templates
+        
+        * Copies web resources (CSS, fonts, images) to the /site/ directory
+        
+        * Creates a sitemap
+        
+        * Uses the VNU validator to validate the HTML output
+        
+        The default build process expects a monolingual build. However, it does support building a bilingual site using the "bilingual" targets (bilingualFullBuild, bilingualQuick etc.).
+        
+        The bilingual build processes expects that all inputs will follow a bilingual directory structure (eg. that the src/ directory will have src/en and src/fr subdirectories that house all the actual data files.)
+        
+        It requires java libraries that are in the /lib/ folder.
+        
+        It also requires ant-contrib.
+        
+        Just type:
+        
+        ant
+        
+        at the command line to run the build. The results will appear in
+        the /site/ folder.
+        
+        If you're happy with the results, run:
+        
+        ant rsyncToDevServer
+        
+        to push the results up to the development site (requires HCMC
+        credentials), or
+        
+        ant rsyncToLiveServer
+        
+        to push the results up to the live site (requires pwak3
+        credentials on web.uvic.ca).
+        
+        #                                                                   #
+        #####################################################################
+    </description>
+
+    <target name="clean">
+        <description>
+            TARGET clean:
+            Removes old site build and cleans up cruft.
+        </description>
+        <echo message="${echo.separator}"/>
+        <echo message="Cleaning up..."/>
+        <mkdir dir="site"/>
+        <delete includeemptydirs="true">
+            <fileset dir="site">
+                <include name="*"/>
+                <include name="**/*"/>
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="getImageDimensions">
+        <description>
+            TARGET getImageDimensions
+            This target runs a shell script which uses ImageMagick to discover the
+            dimensions of all the images in content/images, and creates a text
+            file containing all this information. That text file can be parsed by
+            XSLT to construct img tags in the output.
+        </description>
+        <echo message="${echo.separator}"/>
+        <echo message="Figuring out image dimensions..."/>
+        <delete file="${basedir}/utilities/imageDimensions.txt"/>
+        <exec executable="${basedir}/utilities/imageDimensions.sh" error="/dev/null"/>
+    </target>
+    
+    <target name="copyWebResources">
+        <description>
+            TARGET copyWebResources
+            This copies all the ancillary files such as css, js,
+            documentation, and images into the output site folder.
+        </description>
+        <echo message="${echo.separator}"/>
+        <echo message="Copying required resources to the 'site' folder."/>
+        <copy todir="${basedir}/site/css" preservelastmodified="true">
+            <fileset dir="${basedir}/css" includes="*.css"/>
+        </copy>
+        <copy todir="${basedir}/site/fonts" preservelastmodified="true">
+            <fileset dir="${basedir}/fonts"/>
+        </copy>
+        <copy todir="${basedir}/site/js" preservelastmodified="true">
+            <fileset dir="${basedir}/js"/>
+        </copy>
+        <copy todir="${basedir}/site/images" preservelastmodified="true">
+            <fileset dir="${basedir}/content/images">
+                <exclude name="ads/originals"/>
+                <exclude name="ads/originals/*"/>
+                <!--<exclude name="portraits/originals"/>
+                <exclude name="portraits/originals/*"/>-->
+            </fileset>
+        </copy>
+<!--        <copy todir="site/documentation" preservelastmodified="true">
+            <fileset dir="documentation">
+                <include name="ehco.html"/>
+                <include name="js/*"/>
+                <include name="css/*"/>
+            </fileset>
+        </copy>-->
+        <copy todir="site" preservelastmodified="true">
+            <fileset dir="favicons">
+                <include name="*.*"/>
+            </fileset>
+        </copy>
+        
+        <target name="buildSite">
+            <description>
+                TARGET buildSite
+                This iterates through all the content documents and builds the entire site.
+            </description>
+            <echo message="${echo.separator}"/>
+            <echo message="Building the website in the 'site' folder."/>
+            <java fork="true" classname="net.sf.saxon.Transform" classpath="${saxon}" failonerror="true">
+                <jvmarg value="-Xmx1024m"/>
+                <arg value="-s:xsl/master_build_site.xsl"/>
+                <arg value="-xsl:xsl/master_build_site.xsl"/>
+                <arg value="--suppressXsltNamespaceCheck:on"/>
+            </java>
+        </target>
+        
+        <target name="buildSitemap">
+            <description>
+                TARGET buildSitemap
+                This builds a sitemap in Standard Sitemap Protocol format (https://www.sitemaps.org/)
+                to aid search engines.
+            </description>
+            <echo message="${echo.separator}"/>
+            <echo message="Building the sitemap required by Google search indexing."/>
+            <java fork="true" classname="net.sf.saxon.Transform" classpath="${saxon}" failonerror="true">
+                <jvmarg value="-Xmx1024m"/>
+                <arg value="-s:xsl/master_build_sitemap.xsl"/>
+                <arg value="-xsl:xsl/master_build_sitemap.xsl"/>
+                <arg value="-o:site/sitemap.xml"/>
+                <arg value="--suppressXsltNamespaceCheck:on"/>
+            </java>
+        </target>
+        
+        <target name="validateSite">
+            <description>
+                TARGET validateSite
+                This target validates the complete collection of XHTML5 documents
+                comprising the output site, using the VNU validator (the same validator used by
+                the W3C's online validation service).
+                Before it can proceed, it has to copy the jar file, which is stored with an
+                obfuscated name so that it doesn't break Oxygen's ability to build TEI ODD
+                files due to a duplicate class.
+            </description>
+            <echo message="${echo.separator}"/>
+            <echo message="Validating the HTML pages produced in the build using the VNU validator."/>
+            <copy file="${basedir}/lib/vnu.jarx" tofile="${basedir}/lib/vnu.jar"/>
+            <java jar="${basedir}/lib/vnu.jar" failonerror="false" fork="true">
+                <arg value="--format text"/>
+                <arg value="--skip-non-html"/>
+                <arg value="--errors-only"/>
+                <arg value="${basedir}/site"/>
+            </java>
+            <delete file="${basedir}/lib/vnu.jar"/>
+        </target>

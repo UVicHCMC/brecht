@@ -1,0 +1,8 @@
+# Ignore annoying Mac files
+.DS_Store
+
+# Ignore source files 
+src/
+
+# Ignore lib
+lib/
