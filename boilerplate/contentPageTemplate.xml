@@ -1,23 +1,22 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
     <head xmlns="http://www.w3.org/1999/xhtml">
-        <title>Website Title</title>
+        <title><?siteTitle?></title>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="css/style.css" />
-
-        <link rel="icon" href="favicon.ico" sizes="48x48" />
-        <link rel="icon" href="favicon.svg" sizes="any" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-        <link rel="mask-icon" href="mask-icon.svg" color="#ffffff" />
-        <link rel="manifest" href="site.webmanifest" />
+        <link rel="stylesheet" href="{?cssFile}" />
+        <link rel="icon" href="{?faviconIco}" sizes="48x48" />
+        <link rel="icon" href="{?faviconSvg}" sizes="any" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="{?appleTouchIcon}" />
+        <link rel="mask-icon" href="{?maskIcon}" color="#ffffff" />
+        <link rel="manifest" href="{?siteManifest}" />
 
     </head>
     <body id="top">
         <header data-state="closed" id="site-header" class="open">
             <div id="mobile-nav-banner" data-state="closed">
-                <a href="index.html">
+                <a href="{?homeUrl}">
                     <img width="52" height="40" class="site-logo-mobile"
-                        src="images/site-logo-top.webp"
+                        src="{?mobileLogo}"
                         alt="Go to Home" />
                 </a>
            </div>
@@ -25,23 +24,17 @@
 
                 <nav class="main-menu" id="site-navigation" aria-expanded="true">
                     <ul class="clicky-menu no-js" role="menu">
-                        <li><a role="menuitem" href="index.html">Home</a></li>
-                        <li><a href="presentations.html">Presentations</a></li>
-                        <li><a href="program.html">Program</a></li>
-                        <li><a href="participants.html">Participants</a></li>
-                        <li><a href="gettinghere.html">Getting Here</a></li>
-                        <li><a href="accommodation.html">Accommodation</a></li>
-                        <li><a href="about.html">About/FAQ</a></li>
+                        <?navigationMenu?>
                     </ul>
                     <div class="mobile-nav-footer">
-                        <img class="mobile-footer-logo" src="images/mobile-nav-footer-logo.webp"
+                        <img class="mobile-footer-logo" src="{?mobileFooterLogo}"
                             width="50" height="50" alt="" />
                     </div>
                 </nav>
 
-                <a href="index.html">
-                    <img width="100" height="26" class="site-logo" src="images/site-logo-top.webp"
-                        alt="" />
+                <a href="{?homeUrl}">
+                    <img width="100" height="26" class="site-logo" src="{?siteLogo}"
+                        alt="{?organization}" />
                 </a>
 
 
@@ -55,26 +48,22 @@
         <?docContent?>
         
         <footer>
-
+            
             <div class="site-specific-footer">
-                <img class="site-footer-logo" src="images/footer-logo.webp" width="52" height="40"
-                    alt="back to home" />
+                <img class="site-footer-logo" src="{?footerLogo}" width="52" height="40"
+                     alt="{?footerLogoAlt}" />
             </div>
-
+            
             <div class="footer-info">
-                <div class="copyright"> All content is licensed under a <a
-                        href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0
-                        DEED license</a>. </div>
+                <div class="copyright"><?copyrightText?></div>
             </div>
-            <div class="citation">Cite this page: <span id="citeThisPage"></span></div>
+            <div class="citation"><?citationText?></div>
             <div class="logos">
-                <a class="uvic-logo-internal" href="https://hcmc.uvic.ca"><img width="195"
-                        height="35" src="images/logo-uvic-internal.png"
-                        alt="University of Victoria: Humanities Computing and Media Centre" /></a>
-
+                <a class="uvic-logo-internal" href="{?uvicUrl}"><img width="195"
+                                                                         height="35" src="{?uvicLogo}"
+                                                                         alt="{?uvicLogoAlt}" /></a>
             </div>
-            <div class="acknowledgements">Programming by <a href="https://hcmc.uvic.ca/">HCMC,
-                    University of Victoria</a></div>
+            <div class="acknowledgements"><?acknowledgementsText?></div>
             <div id="buildInfo"><!-- Build info will go here. --></div>
         </footer>
     </body>

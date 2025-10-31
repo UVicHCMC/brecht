@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+     This file contains metadata and properties for websites.
+     
+     FOR MONOLINGUAL SITES:
+     - Use only the 'en' attribute (or rename to your target language)
+     - Remove unused language attributes
+     
+     FOR BILINGUAL SITES:  
+     - Include both 'en' and 'fr' attributes
+     - Ensure all translatable content has both languages
+     
+     EXAMPLE:
+     Monolingual: <siteTitle en="My Site Title"/>
+     Bilingual:   <siteTitle en="My Site Title" fr="Titre de mon site"/>
+-->
+
+<site>
+    <metadata>
+        <siteTitle en="Website Title" fr="Titre du site web"/>
+        <organization en="Organization Name" fr="Nom de l'organisation"/>
+        <splashTitle en="Event Name 2024" fr="Nom de l'événement 2024"/>
+        <splashSubtitle en="Event Subtitle" fr="Sous-titre de l'événement"/>
+        <splashWhereWhen>
+            <place en="Event Venue/Host" fr="Lieu/Hôte de l'événement"/>
+            <date en="Date in user-friendly format" fr="Date en format convivial"/>
+            <location en="Broader Location (eg. City, Country)" fr="Emplacement plus large (ex. Ville, Pays)"/>
+        </splashWhereWhen>
+    </metadata>
+    
+    <files>
+        <css>css/style.css</css>
+        <favicon-ico>images/favicon.ico</favicon-ico>
+        <favicon-svg>images/favicon.svg</favicon-svg>
+        <apple-touch-icon>images/apple-touch-icon.png</apple-touch-icon>
+        <mask-icon>images/mask-icon.svg</mask-icon>
+        <site-manifest>site.webmanifest</site-manifest>
+        <site-logo>images/site-logo-top.webp</site-logo>
+        <mobile-logo>images/site-logo-top.webp</mobile-logo>    
+        <footer-logo>images/footer-logo.webp</footer-logo>
+        <mobile-footer-logo>images/mobile-nav-footer-logo.webp</mobile-footer-logo>
+        <uvic-logo>images/logo-uvic.png</uvic-logo>
+    </files>
+    
+    <urls>
+        <home en="index.html"/>
+    </urls>
+    
+    <navigation>
+        <menu key="MENU_HOME" href="index.html" en="Home" fr="Accueil"/>
+        <menu key="MENU_PRESENTATIONS" href="presentations.html" en="Presentations" fr="Présentations"/>
+        <menu key="MENU_PROGRAM" href="program.html" en="Program" fr="Programme"/>
+        <menu key="MENU_PARTICIPANTS" href="participants.html" en="Participants" fr="Participants"/>
+        <menu key="MENU_GETTING_HERE" href="gettinghere.html" en="Getting Here" fr="Comment venir"/>
+        <menu key="MENU_ACCOMMODATION" href="accommodation.html" en="Accommodation" fr="Hébergement"/>
+        <menu key="MENU_ABOUT" href="about.html" en="About/FAQ" fr="À propos/FAQ"/>
+    </navigation>
+    
+    <footer>
+        <copyright-text en="All content is licensed under a &lt;a href=&quot;https://creativecommons.org/licenses/by-nc-sa/4.0/&quot;&gt;CC BY-NC-SA 4.0 DEED license&lt;/a&gt;." 
+                        fr="Tout le contenu est sous licence &lt;a href=&quot;https://creativecommons.org/licenses/by-nc-sa/4.0/&quot;&gt;CC BY-NC-SA 4.0 DEED&lt;/a&gt;."/>
+        <citation-text en="Cite this page: " fr="Citer cette page : "/>
+        <acknowledgements-text en="Programming by &lt;a href=&quot;https://hcmc.uvic.ca/&quot;&gt;HCMC, University of Victoria&lt;/a&gt;" 
+                               fr="Programmation par &lt;a href=&quot;https://hcmc.uvic.ca/&quot;&gt;HCMC, Université de Victoria&lt;/a&gt;"/>
+        <footer-logo-alt en="back to home" fr="retour à l'accueil"/>
+        <uvic-logo-alt en="University of Victoria: Humanities Computing and Media Centre" 
+                       fr="Université de Victoria : Centre informatique et médiatique des sciences humaines"/>
+    </footer>
+</site>
