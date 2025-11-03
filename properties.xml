@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-     This file contains metadata and properties for websites.
+     This file contains metadata and properties for conference websites.
      
      FOR MONOLINGUAL SITES:
      - Use only the 'en' attribute (or rename to your target language)
@@ -33,8 +33,6 @@
         <css>css/style.css</css>
         <favicon-ico>images/favicon.ico</favicon-ico>
         <favicon-svg>images/favicon.svg</favicon-svg>
-        <apple-touch-icon>images/apple-touch-icon.png</apple-touch-icon>
-        <mask-icon>images/mask-icon.svg</mask-icon>
         <site-manifest>site.webmanifest</site-manifest>
         <site-logo>images/site-logo-top.webp</site-logo>
         <mobile-logo>images/site-logo-top.webp</mobile-logo>    
