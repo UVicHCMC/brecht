@@ -22,7 +22,8 @@
         
         The default build process expects a monolingual build. However, it does support building a bilingual site using the "bilingual" targets (bilingualFullBuild, bilingualQuick etc.).
         
-        The bilingual build processes expects that all inputs will follow a bilingual directory structure (eg. that the src/ directory will have src/en and src/fr subdirectories that house all the actual data files.)
+        The bilingual build processes expects that all inputs will follow a bilingual directory structure (eg. that the src/ directory will have src/en and src/fr subdirectories that house all the actual data files.). 
+        It also expects template files that have multiple data attributes (eg. data-en="Home" data-fr="Accuiel"). 
         
         It requires java libraries that are in the /lib/ folder.
         
@@ -106,18 +107,12 @@
                 <exclude name="portraits/originals/*"/>-->
             </fileset>
         </copy>
-<!--        <copy todir="site/documentation" preservelastmodified="true">
-            <fileset dir="documentation">
-                <include name="ehco.html"/>
-                <include name="js/*"/>
-                <include name="css/*"/>
-            </fileset>
-        </copy>-->
         <copy todir="site" preservelastmodified="true">
             <fileset dir="favicons">
                 <include name="*.*"/>
             </fileset>
         </copy>
+    </target>
         
         <target name="buildSite">
             <description>
@@ -172,3 +167,5 @@
             </java>
             <delete file="${basedir}/lib/vnu.jar"/>
         </target>
+    
+</project>
