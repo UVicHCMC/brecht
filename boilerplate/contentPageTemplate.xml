@@ -6,8 +6,6 @@
         <link rel="stylesheet" href="{?cssFile}" />
         <link rel="icon" href="{?faviconIco}" sizes="48x48" />
         <link rel="icon" href="{?faviconSvg}" sizes="any" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="{?appleTouchIcon}" />
-        <link rel="mask-icon" href="{?maskIcon}" color="#ffffff" />
         <link rel="manifest" href="{?siteManifest}" />
 
     </head>
