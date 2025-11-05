@@ -50,6 +50,19 @@
         
         #                                                                   #
         #####################################################################
+        
+        
+        #Just putting these in here as terminal commands for now. Will have to create build targets for them later.
+        #java -cp lib/saxon-he-12.jar net.sf.saxon.Transform -s:properties.xml -xsl:xsl/createTemplates.xsl -o:site/landingPage.html lang=en template=landing        
+        #java -cp lib/saxon-he-12.jar net.sf.saxon.Transform -s:properties.xml -xsl:xsl/createTemplates.xsl -o:templates/contentPageTemplate.xml lang=en template=content
+        
+        #Workflow as follows: 
+        #Default is monolingual:
+        # Transform boilerplate/contentPageTemplate.xml to templates/contentPageTemplate.xml using xsl/createTemplates.xsl. Assume lang=en. 
+        # Transform boilerplate/landingPageTemplate.xml to site/landingPage.html using xsl/createTemplates.xsl. Assume lang=en.
+        # Transform content/*.xml to site/*.html using xsl/master_build_site.xsl and templates/contentPageTemplate.xml
+        #If bilingual:
+        
     </description>
 
     <target name="clean">

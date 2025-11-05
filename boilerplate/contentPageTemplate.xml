@@ -11,6 +11,9 @@
     </head>
     <body id="top">
         <header data-state="closed" id="site-header" class="open">
+            <span class="internalTitle"><?splashTitle?></span>
+            <span class="internalSubTitle"><?splashSubtitle?></span>
+            <span class="subheaderInternal"><?splashWhereWhen?></span>
             <div id="mobile-nav-banner" data-state="closed">
                 <a href="{?homeUrl}">
                     <img width="52" height="40" class="site-logo-mobile"

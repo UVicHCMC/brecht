@@ -18,6 +18,8 @@
 
 <site>
     <metadata>
+        <meta-description en="Description of the website for SEO purposes." 
+                          fr="Description du site web à des fins de référencement."/>
         <siteTitle en="Website Title" fr="Titre du site web"/>
         <organization en="Organization Name" fr="Nom de l'organisation"/>
         <splashTitle en="Event Name 2024" fr="Nom de l'événement 2024"/>
@@ -31,6 +33,8 @@
     
     <files>
         <css>css/style.css</css>
+        <js>js/script.js</js>
+        <font>fonts/font.woff2</font>
         <favicon-ico>images/favicon.ico</favicon-ico>
         <favicon-svg>images/favicon.svg</favicon-svg>
         <site-manifest>site.webmanifest</site-manifest>
@@ -43,6 +47,7 @@
     
     <urls>
         <home en="index.html"/>
+        <uvic-url>https://hcmc.uvic.ca</uvic-url>
     </urls>
     
     <navigation>
@@ -62,7 +67,7 @@
         <acknowledgements-text en="Programming by &lt;a href=&quot;https://hcmc.uvic.ca/&quot;&gt;HCMC, University of Victoria&lt;/a&gt;" 
                                fr="Programmation par &lt;a href=&quot;https://hcmc.uvic.ca/&quot;&gt;HCMC, Université de Victoria&lt;/a&gt;"/>
         <footer-logo-alt en="back to home" fr="retour à l'accueil"/>
-        <uvic-logo-alt en="University of Victoria: Humanities Computing and Media Centre" 
-                       fr="Université de Victoria : Centre informatique et médiatique des sciences humaines"/>
+        <uvic-logo-alt en="Back to Home" 
+                       fr="Retourner à l'accueil"/>
     </footer>
 </site>
