@@ -16,6 +16,8 @@
      Bilingual:   <siteTitle en="My Site Title" fr="Titre de mon site"/>
 -->
 
+<!--test test-->
+
 <site>
     <metadata>
         <meta-description en="Description of the website for SEO purposes." 
