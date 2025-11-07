@@ -6,3 +6,9 @@ src/
 
 # Ignore lib
 lib/
+
+#Ignore content
+content/
+
+#Ignore site
+site/

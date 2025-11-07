@@ -80,62 +80,50 @@
     </xsl:copy>
   </xsl:template>
   
-  <!-- Replace img tags with dimensioned versions in content -->
-  <xsl:template match="xhtml:img[starts-with(@src, 'images/')]" mode="content" priority="2">
-    <xsl:variable name="imgTag" select="map:get($mapImgPathsToElements, xs:string(@src))" as="element(xhtml:img)*"/>
-    <xsl:choose>
-      <xsl:when test="count($imgTag) > 0">
-        <xsl:variable name="currImg" select="."/>
-        <xsl:for-each select="$imgTag">
-          <xsl:copy>
-            <xsl:copy-of select="@width"/>
-            <xsl:copy-of select="@height"/>
-            <xsl:choose>
-              <xsl:when test="$currImg/@class">
-                <xsl:attribute name="class" select="concat($currImg/@class, ' ', ./@class)"/>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:copy-of select="@class"/>
-              </xsl:otherwise>
-            </xsl:choose>
-            <xsl:copy-of select="$currImg/@*[not(local-name() = 'width' or local-name() = 'height' or local-name() = 'class')]"/>
-          </xsl:copy>
-        </xsl:for-each>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:message>Warning: No dimensions found for <xsl:value-of select="@src"/></xsl:message>
-        <xsl:copy>
-          <xsl:apply-templates select="@* | node()" mode="content"/>
-        </xsl:copy>
-      </xsl:otherwise>
-    </xsl:choose>
+  <!-- Replace img tags with dimensioned versions (for template images) -->
+  <xsl:template match="xhtml:img[starts-with(@src, 'images/') or starts-with(@src, '/images/')]" priority="2">
+    <xsl:call-template name="add-image-dimensions">
+      <xsl:with-param name="img" select="."/>
+    </xsl:call-template>
   </xsl:template>
   
-  <!-- Also handle images in template (not just content) -->
-  <xsl:template match="xhtml:img[starts-with(@src, 'images/')]" priority="2">
-    <xsl:variable name="imgTag" select="map:get($mapImgPathsToElements, xs:string(@src))" as="element(xhtml:img)*"/>
+  <!-- Replace img tags with dimensioned versions (for content images) -->
+  <xsl:template match="xhtml:img[starts-with(@src, 'images/') or starts-with(@src, '/images/')]" mode="content" priority="2">
+    <xsl:call-template name="add-image-dimensions">
+      <xsl:with-param name="img" select="."/>
+    </xsl:call-template>
+  </xsl:template>
+  
+  <!-- Named template to add image dimensions -->
+  <xsl:template name="add-image-dimensions">
+    <xsl:param name="img" as="element(xhtml:img)"/>
+    
+    <!-- Normalize the src path (remove leading slash if present) -->
+    <xsl:variable name="normalizedSrc" select="replace($img/@src, '^/', '')"/>
+    <xsl:variable name="imgTag" select="map:get($mapImgPathsToElements, $normalizedSrc)" as="element(xhtml:img)*"/>
+    
     <xsl:choose>
       <xsl:when test="count($imgTag) > 0">
-        <xsl:variable name="currImg" select="."/>
         <xsl:for-each select="$imgTag">
           <xsl:copy>
             <xsl:copy-of select="@width"/>
             <xsl:copy-of select="@height"/>
             <xsl:choose>
-              <xsl:when test="$currImg/@class">
-                <xsl:attribute name="class" select="concat($currImg/@class, ' ', ./@class)"/>
+              <xsl:when test="$img/@class">
+                <xsl:attribute name="class" select="concat($img/@class, ' ', ./@class)"/>
               </xsl:when>
               <xsl:otherwise>
                 <xsl:copy-of select="@class"/>
               </xsl:otherwise>
             </xsl:choose>
-            <xsl:copy-of select="$currImg/@*[not(local-name() = 'width' or local-name() = 'height' or local-name() = 'class')]"/>
+            <xsl:copy-of select="$img/@*[not(local-name() = 'width' or local-name() = 'height' or local-name() = 'class')]"/>
           </xsl:copy>
         </xsl:for-each>
       </xsl:when>
       <xsl:otherwise>
+        <xsl:message>Warning: No dimensions found for <xsl:value-of select="$img/@src"/></xsl:message>
         <xsl:copy>
-          <xsl:apply-templates select="@* | node()"/>
+          <xsl:apply-templates select="$img/@* | $img/node()" mode="#current"/>
         </xsl:copy>
       </xsl:otherwise>
     </xsl:choose>

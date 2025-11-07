@@ -13,6 +13,12 @@
               omit-xml-declaration="yes"
               doctype-system="about:legacy-compat"/>
   
+  <!-- Parameters -->
+  <xsl:param name="isBilingual" select="'false'"/>
+  <xsl:param name="firstLang" select="'en'"/>
+  
+  <!-- Convert string parameter to boolean -->
+  <xsl:variable name="isBilingualBool" select="$isBilingual = 'true'"/>
   
   <!-- Image dimensions handling -->
   <xsl:variable name="txtDimensions" select="unparsed-text('../utilities/imageDimensions.txt')"/>
@@ -30,13 +36,6 @@
       </xsl:for-each>
     </xsl:map>
   </xsl:variable>
-  
-  <!-- Parameters -->
-  <xsl:param name="isBilingual" select="'false'"/>
-  <xsl:param name="firstLang" select="'en'"/>
-  
-  <!-- Convert string parameter to boolean -->
-  <xsl:variable name="isBilingualBool" select="$isBilingual = 'true'"/>
   
   <!-- Identity template -->
   <xsl:template match="xhtml:* | @*" priority="1">
@@ -65,8 +64,10 @@
   </xsl:template>
   
   <!-- Replace img tags with dimensioned versions -->
-  <xsl:template match="xhtml:img[starts-with(@src, 'images/')]" priority="2">
-    <xsl:variable name="imgTag" select="map:get($mapImgPathsToElements, xs:string(@src))" as="element(xhtml:img)*"/>
+  <xsl:template match="xhtml:img[starts-with(@src, 'images/') or starts-with(@src, '/images/')]" priority="2">
+    <!-- Normalize the src path (remove leading slash if present) -->
+    <xsl:variable name="normalizedSrc" select="replace(@src, '^/', '')"/>
+    <xsl:variable name="imgTag" select="map:get($mapImgPathsToElements, $normalizedSrc)" as="element(xhtml:img)*"/>
     <xsl:choose>
       <xsl:when test="count($imgTag) > 0">
         <xsl:variable name="currImg" select="."/>
@@ -87,6 +88,7 @@
         </xsl:for-each>
       </xsl:when>
       <xsl:otherwise>
+        <xsl:message>Warning: No dimensions found for <xsl:value-of select="@src"/></xsl:message>
         <xsl:copy>
           <xsl:apply-templates select="@* | node()"/>
         </xsl:copy>
