@@ -8,7 +8,7 @@
         <link rel="icon" href="{?faviconSvg}" sizes="any" type="image/svg+xml" />
         <link rel="manifest" href="{?siteManifest}" />
         <link rel="preload" href="{?font}" as="font"/>
-        <script src="{?js}"></script>
+        <script src="{?jsFile}"></script>
         <meta name="description"  content="{?metaDescription}"/>
     </head>
     <body>
@@ -41,9 +41,7 @@
             <!--UVic logo-->
             <a class="uvic-logo-internal" href="{?uvicUrl}">
                 <img src="{?uvicLogo}" 
-                     width="{?uvicLogoWidth}" 
-                     height="{?uvicLogoHeight}"
-                     alt="{?uvicLogoAlt}" 
+                     alt="{?LogoAlt}" 
                      class="uvic-logo-internal" />
             </a>
         </main>    

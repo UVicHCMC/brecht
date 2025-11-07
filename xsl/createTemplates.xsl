@@ -1,38 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:xs="http://www.w3.org/2001/XMLSchema"
-                exclude-result-prefixes="xs">
-  
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+                xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
+                exclude-result-prefixes="#all" 
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:xhtml="http://www.w3.org/1999/xhtml"
+                xmlns:hcmc="http://hcmc.uvic.ca/ns"
+                xmlns:tei="http://www.tei-c.org/ns/1.0"
+                xmlns:map="http://www.w3.org/2005/xpath-functions/map"
+                version="3.0">
+
   <xsl:output method="xml" indent="yes" encoding="UTF-8" omit-xml-declaration="no"/>
   
-  <!-- Parameters for language and template type -->
-  <xsl:param name="lang" select="'en'"/>
-  <xsl:param name="template" select="'content'"/>
-  <xsl:param name="templateFile" select="if ($template = 'content') then '../boilerplate/contentPageTemplate.xml' else '../boilerplate/landingPageTemplate.xml'"/>
-  
   <!-- Load properties file -->
-  <xsl:variable name="properties" select="document('../properties.xml')/site"/>
+  <xsl:variable name="propertiesDoc" select="document(resolve-uri('../properties.xml', base-uri(/)))"/>
+  <xsl:variable name="properties" select="$propertiesDoc/site"/>
   
-  <!-- Load image dimensions file -->
-  <xsl:variable name="imageDimensions" select="unparsed-text('../utilities/imageDimensions.txt')"/>  
+  <!-- Parameters for language -->
+  <xsl:param name="lang" select="'en'"/>
+  <xsl:param name="languages" select="'en'"/>
   
-  <!-- Load template file -->
-  <xsl:variable name="templateDoc" select="document($templateFile)"/>
+  <!-- Check if bilingual -->
+  <xsl:variable name="isBilingual" select="contains($languages, ',')"/>
   
+  <!-- Get other language for switcher (dynamically) -->
+  <xsl:variable name="langList" select="tokenize($languages, ',')"/>
+  <xsl:variable name="otherLang" select="
+    if ($isBilingual) then
+      string($langList[not(. = $lang)][1])
+    else ''
+                  "/>
+  
+  <!-- Language labels (add more as needed) -->
+  <xsl:variable name="langLabels" as="map(xs:string, xs:string)">
+    <xsl:map>
+      <xsl:map-entry key="'en'" select="'English'"/>
+      <xsl:map-entry key="'fr'" select="'Français'"/>
+      <xsl:map-entry key="'de'" select="'Deutsch'"/>
+      <xsl:map-entry key="'es'" select="'Español'"/>
+      <xsl:map-entry key="'it'" select="'Italiano'"/>
+    </xsl:map>
+  </xsl:variable>
+  
+  <!-- Get label for other language, fallback to capitalized code -->
+  <xsl:function name="hcmc:getLanguageLabel" as="xs:string">
+    <xsl:param name="langCode" as="xs:string"/>
+    <xsl:sequence select="
+      if (map:contains($langLabels, $langCode)) then
+        map:get($langLabels, $langCode)
+      else
+        upper-case(substring($langCode, 1, 1)) || substring($langCode, 2)
+                    "/>
+  </xsl:function>
+
   <!-- Main template -->
   <xsl:template match="/">
-    <xsl:apply-templates select="$templateDoc" mode="process-template"/>
+    <xsl:apply-templates select="." mode="process-template"/>
   </xsl:template>
   
   <!-- Process template elements -->
-  <xsl:template match="node() | @*" mode="process-template">
+  <xsl:template match="xhtml:* | @* | node()" mode="process-template">
     <xsl:copy>
       <xsl:apply-templates select="@* | node()" mode="process-template"/>
     </xsl:copy>
   </xsl:template>
   
   <!-- Process attributes with placeholders -->
-  <xsl:template match="@*[contains(., '{?') and contains(., '}')]" mode="process-template" priority="1">
+  <xsl:template match="@*[contains(., '{?') and contains(., '}')]" mode="process-template" priority="2">
     <xsl:attribute name="{name()}">
       <xsl:call-template name="replace-placeholders">
         <xsl:with-param name="text" select="."/>
@@ -71,31 +105,44 @@
       
       <xsl:when test="name() = 'copyrightText'">
         <xsl:call-template name="get-html-value">
-          <xsl:with-param name="element" select="$properties/footer/copyright-text"/>
+          <xsl:with-param name="element" select="$properties/footer/copyrightText"/>
         </xsl:call-template>
       </xsl:when>
       
       <xsl:when test="name() = 'citationText'">
         <xsl:call-template name="get-text-value">
-          <xsl:with-param name="element" select="$properties/footer/citation-text"/>
+          <xsl:with-param name="element" select="$properties/footer/citationText"/>
         </xsl:call-template>
       </xsl:when>
       
       <xsl:when test="name() = 'acknowledgementsText'">
         <xsl:call-template name="get-html-value">
-          <xsl:with-param name="element" select="$properties/footer/acknowledgements-text"/>
+          <xsl:with-param name="element" select="$properties/footer/acknowledgementsText"/>
         </xsl:call-template>
       </xsl:when>
       
       <xsl:when test="name() = 'uvic-logo'">
-        <xsl:variable name="logoPath" select="$properties/files/uvic-logo"/>
+        <xsl:variable name="logoPath" select="$properties/files/uvicLogo"/>
         <xsl:variable name="altText">
           <xsl:call-template name="get-text-value">
-            <xsl:with-param name="element" select="$properties/footer/uvic-logo-alt"/>
+            <xsl:with-param name="element" select="$properties/footer/uvicLogoAlt"/>
           </xsl:call-template>
         </xsl:variable>
         
         <img src="{$logoPath}" alt="{$altText}" class="uvic-logo-internal"/>
+      </xsl:when>
+      
+      <xsl:when test="name() = 'bilingualSwitcher'">
+        <xsl:choose>
+          <xsl:when test="$isBilingual and $otherLang != ''">
+            <a id="bilingualSwitcher" href="../{$otherLang}/{{{{currentPage}}}}">
+              <xsl:value-of select="hcmc:getLanguageLabel($otherLang)"/>
+            </a>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- No switcher in monolingual mode -->
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       
       <xsl:when test="name() = 'docContent'">
@@ -114,110 +161,66 @@
     <xsl:param name="text"/>
     
     <xsl:choose>
-      <xsl:when test="contains($text, '{?cssFile}')">
-        <xsl:value-of select="replace($text, '\{\?cssFile\}', $properties/files/css)"/>
-      </xsl:when>
-
-      <xsl:when test="contains($text, '{?jsFile}')">
-        <xsl:value-of select="replace($text, '\{\?jsFile\}', $properties/files/js)"/>
-      </xsl:when>
-      
-      <xsl:when test="contains($text, '{?font}')">
-        <xsl:value-of select="replace($text, '\{\?font\}', $properties/files/font)"/>
-      </xsl:when>
-      
-      <xsl:when test="contains($text, '{?metaDescription}')">
-        <xsl:variable name="description">
-          <xsl:call-template name="get-text-value">
-            <xsl:with-param name="element" select="$properties/metadata/meta-description"/>
-          </xsl:call-template>
-        </xsl:variable>
-        <xsl:value-of select="replace($text, '\{\?metaDescription\}', string($description))"/>
-      </xsl:when>
-      
-      <xsl:when test="contains($text, '{?faviconIco}')">
-        <xsl:value-of select="replace($text, '\{\?faviconIco\}', $properties/files/favicon-ico)"/>
-      </xsl:when>
-      
-      <xsl:when test="contains($text, '{?faviconSvg}')">
-        <xsl:value-of select="replace($text, '\{\?faviconSvg\}', $properties/files/favicon-svg)"/>
-      </xsl:when>
-      
-      <xsl:when test="contains($text, '{?siteManifest}')">
-        <xsl:value-of select="replace($text, '\{\?siteManifest\}', $properties/files/site-manifest)"/>
-      </xsl:when>
-      
-      <xsl:when test="contains($text, '{?homeUrl}')">
-        <xsl:call-template name="get-text-value">
-          <xsl:with-param name="element" select="$properties/urls/home"/>
-        </xsl:call-template>
-      </xsl:when>
-      
-      <xsl:when test="contains($text, '{?mobileLogo}')">
-        <xsl:value-of select="replace($text, '\{\?mobileLogo\}', $properties/files/mobile-logo)"/>
-      </xsl:when>
-      
-      <xsl:when test="contains($text, '{?siteLogo}')">
-        <xsl:value-of select="replace($text, '\{\?siteLogo\}', $properties/files/site-logo)"/>
-      </xsl:when>
-      
-      <xsl:when test="contains($text, '{?organization}')">
-        <xsl:call-template name="get-text-value">
-          <xsl:with-param name="element" select="$properties/metadata/organization"/>
-        </xsl:call-template>
-      </xsl:when>
-      
-      <xsl:when test="contains($text, '{?mobileFooterLogo}')">
-        <xsl:value-of select="replace($text, '\{\?mobileFooterLogo\}', $properties/files/mobile-footer-logo)"/>
-      </xsl:when>
-      
-      <xsl:when test="contains($text, '{?footerLogo}')">
-        <xsl:value-of select="replace($text, '\{\?footerLogo\}', $properties/files/footer-logo)"/>
-      </xsl:when>
-      
-      <xsl:when test="contains($text, '{?footerLogoAlt}')">
-        <xsl:call-template name="get-text-value">
-          <xsl:with-param name="element" select="$properties/footer/footer-logo-alt"/>
-        </xsl:call-template>
-      </xsl:when>
-      
-      <xsl:when test="contains($text, '{?uvicUrl}')">
-        <xsl:value-of select="replace($text, '\{\?uvicUrl\}', 'https://hcmc.uvic.ca')"/>
-      </xsl:when>
-      
-      <xsl:when test="contains($text, '{?uvicLogo}')">
-        <xsl:value-of select="replace($text, '\{\?uvicLogo\}', $properties/files/uvic-logo)"/>
-      </xsl:when>
-      
-      <xsl:when test="contains($text, '{?uvicLogoAlt}')">
-        <xsl:call-template name="get-text-value">
-          <xsl:with-param name="element" select="$properties/footer/uvic-logo-alt"/>
-        </xsl:call-template>
-      </xsl:when>
-      
-      <!-- Generic handler for image dimensions -->
-      <xsl:when test="matches($text, '\{\?.*Width\}')">
-        <xsl:variable name="placeholder" select="substring-before(substring-after($text, '{?'), 'Width}')"/>
-        <xsl:variable name="imagePath" select="$properties/files/*[local-name() = replace($placeholder, 'Width', '')]"/>
-        <xsl:variable name="width">
-          <xsl:call-template name="get-image-dimensions">
-            <xsl:with-param name="imagePath" select="$imagePath"/>
-            <xsl:with-param name="dimension" select="'width'"/>
-          </xsl:call-template>
-        </xsl:variable>
-        <xsl:value-of select="replace($text, '\{\?' || $placeholder || 'Width\}', if ($width != '') then $width else '100')"/>
-      </xsl:when>
-      
-      <xsl:when test="matches($text, '\{\?.*Height\}')">
-        <xsl:variable name="placeholder" select="substring-before(substring-after($text, '{?'), 'Height}')"/>
-        <xsl:variable name="imagePath" select="$properties/files/*[local-name() = replace($placeholder, 'Height', '')]"/>
-        <xsl:variable name="height">
-          <xsl:call-template name="get-image-dimensions">
-            <xsl:with-param name="imagePath" select="$imagePath"/>
-            <xsl:with-param name="dimension" select="'height'"/>
-          </xsl:call-template>
-        </xsl:variable>
-        <xsl:value-of select="replace($text, '\{\?' || $placeholder || 'Height\}', if ($height != '') then $height else '26')"/>
+      <xsl:when test="matches($text, '\{\?[a-zA-Z]+\}')">
+        <xsl:variable name="placeholder" select="substring-before(substring-after($text, '{?'), '}')"/>
+        
+        <!-- Try to find in files (these are always simple text values) -->
+        <xsl:variable name="fileValue" select="$properties/files/*[local-name() = $placeholder]"/>
+        
+        <!-- Try to find in urls (may have language attributes) -->
+        <xsl:variable name="urlElement" select="$properties/urls/*[local-name() = $placeholder]"/>
+        
+        <!-- Try to find anywhere else in properties -->
+        <xsl:variable name="anyElement" select="$properties//*[local-name() = $placeholder]"/>
+        
+        <xsl:choose>
+          <!-- Files: direct text value -->
+          <xsl:when test="$fileValue">
+            <xsl:value-of select="replace($text, concat('\{\?', $placeholder, '\}'), string($fileValue))"/>
+          </xsl:when>
+          
+          <!-- URLs: may need language handling -->
+          <xsl:when test="$urlElement">
+            <xsl:choose>
+              <xsl:when test="$urlElement/@*[local-name() = $lang]">
+                <xsl:variable name="urlValue">
+                  <xsl:call-template name="get-text-value">
+                    <xsl:with-param name="element" select="$urlElement"/>
+                  </xsl:call-template>
+                </xsl:variable>
+                <xsl:value-of select="replace($text, concat('\{\?', $placeholder, '\}'), string($urlValue))"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <!-- URL has no language attributes, use as-is -->
+                <xsl:value-of select="replace($text, concat('\{\?', $placeholder, '\}'), string($urlElement))"/>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:when>
+          
+          <!-- Other elements: check if they need language handling -->
+          <xsl:when test="$anyElement">
+            <xsl:choose>
+              <xsl:when test="$anyElement/@*[local-name() = $lang]">
+                <xsl:variable name="value">
+                  <xsl:call-template name="get-text-value">
+                    <xsl:with-param name="element" select="$anyElement"/>
+                  </xsl:call-template>
+                </xsl:variable>
+                <xsl:value-of select="replace($text, concat('\{\?', $placeholder, '\}'), string($value))"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <!-- Element exists but has no language attributes - use text content -->
+                <xsl:value-of select="replace($text, concat('\{\?', $placeholder, '\}'), string($anyElement))"/>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:when>
+          
+          <xsl:otherwise>
+            <!-- Not found anywhere - output warning and leave blank -->
+            <xsl:message>Warning: No value found for placeholder {?<xsl:value-of select="$placeholder"/>}</xsl:message>
+            <xsl:value-of select="replace($text, concat('\{\?', $placeholder, '\}'), '')"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       
       <xsl:otherwise>
@@ -286,28 +289,6 @@
         </a>
       </li>
     </xsl:for-each>
-  </xsl:template>
-  
-  <!-- Template to get image dimensions -->
-  <xsl:template name="get-image-dimensions">
-    <xsl:param name="imagePath"/>
-    <xsl:param name="dimension"/> <!-- 'width' or 'height' -->
-    
-    <xsl:variable name="lines" select="tokenize($imageDimensions, '\n')"/>
-    <xsl:variable name="imageLine" select="$lines[starts-with(., $imagePath)][1]"/>
-    
-    <xsl:if test="$imageLine != ''">
-      <xsl:variable name="parts" select="tokenize($imageLine, '\s+')"/>
-      <xsl:variable name="dimensionsPart" select="$parts[2]"/>
-      <xsl:choose>
-        <xsl:when test="$dimension = 'width'">
-          <xsl:value-of select="substring-before($dimensionsPart, 'x')"/>
-        </xsl:when>
-        <xsl:when test="$dimension = 'height'">
-          <xsl:value-of select="substring-after($dimensionsPart, 'x')"/>
-        </xsl:when>
-      </xsl:choose>
-    </xsl:if>
-  </xsl:template>
+  </xsl:template>  
   
 </xsl:stylesheet>

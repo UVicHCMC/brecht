@@ -1,40 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." default="fullBuild" name="ehco" xmlns:if="ant:if"
+<project basedir="." default="fullBuild" name="brecht" xmlns:if="ant:if"
     xmlns:unless="ant:unless">
     <description>
         #####################################################################
         #    Project build file by Illya Nokhrin (inokhrin@uvic.ca), 2025, based on previous
         build files by Martin Holmes and Deniz Aydin.   #
         
+        #Usage: 
+        Monolingual (English default):        
+        ant fullBuild
+        
+        Monolingual (Other Language, eg. German):
+        ant fullBuild -Dlang1=de
+        
+        Bilingual (English/French default):
+        ant fullBilingualBuild -Dlang1=en -Dlang2=fr
+        
+        Bilingual (Other Language Pair, eg. English/German):
+        ant fullBilingualBuild -Dlang1=en -Dlang2=de
+        
+
+        
+        There are two build processes: monolingual and bilingual.
+        
+        At this stage, the landing/splash page is always assumed to be monolingual. We may change this later.
+        
+        All content for the site pages is expected to be in XML format in the /content/ directory.        
+        
+        The default build process expects a monolingual build. The default language is English. If you want to change this, use -Dlang1=xx.       
+
+        The bilingual build processes expects that all inputs will follow a bilingual directory structure (eg. that the content/ directory will have content/en and content/fr subdirectories that house all the actual content files.).
+        It also expects template files that have multiple data attributes (eg. data-en="Home" data-fr="Accuiel"). 
+        At this stage, the file names have to be the same in both languages (eg. content/en/gettinghere.xml and content/fr/gettinghere.xml, not content/fr/venir.xml).
+
         This build file does these basic tasks:
         
         * Runs a script to determine the dimensions of all images and creates a text file storing those dimensions
         
         * Transforms SCSS to CSS using sass
         
-        * Takes input XHTML, and transforms it into web-ready HTML using XSLT and XML templates
-        
         * Copies web resources (CSS, fonts, images) to the /site/ directory
         
-        * Creates a sitemap
+        * Uses a properties XML file to store site data and file locations
         
-        * Uses the VNU validator to validate the HTML output
-        
-        The default build process expects a monolingual build. However, it does support building a bilingual site using the "bilingual" targets (bilingualFullBuild, bilingualQuick etc.).
-        
-        The bilingual build processes expects that all inputs will follow a bilingual directory structure (eg. that the src/ directory will have src/en and src/fr subdirectories that house all the actual data files.). 
-        It also expects template files that have multiple data attributes (eg. data-en="Home" data-fr="Accuiel"). 
-        
+        * Takes the properties of said properties XML file and uses them to fill in templates    
+
         It requires java libraries that are in the /lib/ folder.
         
         It also requires ant-contrib.
-        
-        Just type:
-        
-        ant
-        
-        at the command line to run the build. The results will appear in
-        the /site/ folder.
         
         If you're happy with the results, run:
         
@@ -48,23 +61,244 @@
         to push the results up to the live site (requires pwak3
         credentials on web.uvic.ca).
         
+
         #                                                                   #
         #####################################################################
         
-        
-        #Just putting these in here as terminal commands for now. Will have to create build targets for them later.
-        #java -cp lib/saxon-he-12.jar net.sf.saxon.Transform -s:properties.xml -xsl:xsl/createTemplates.xsl -o:site/landingPage.html lang=en template=landing        
-        #java -cp lib/saxon-he-12.jar net.sf.saxon.Transform -s:properties.xml -xsl:xsl/createTemplates.xsl -o:templates/contentPageTemplate.xml lang=en template=content
-        
-        #Workflow as follows: 
-        #Default is monolingual:
-        # Transform boilerplate/contentPageTemplate.xml to templates/contentPageTemplate.xml using xsl/createTemplates.xsl. Assume lang=en. 
-        # Transform boilerplate/landingPageTemplate.xml to site/landingPage.html using xsl/createTemplates.xsl. Assume lang=en.
-        # Transform content/*.xml to site/*.html using xsl/master_build_site.xsl and templates/contentPageTemplate.xml
-        #If bilingual:
-        
-    </description>
 
+    </description>
+    
+    <!-- Load ant-contrib tasks -->
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <pathelement location="lib/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
+    
+    <!-- Properties with default values -->
+    <property name="templates.dir" value="templates"/>
+    <property name="saxon" value="lib/saxon-he-12.jar"/>
+    <property name="lang1" value="en"/>  <!-- First language for bilingual -->
+    <property name="lang2" value="fr"/>  <!-- Second language for bilingual -->
+    
+    <!-- ========================================= -->
+    <!-- MONOLINGUAL BUILD TARGETS                 -->
+    <!-- ========================================= -->
+    
+    <!-- Generate monolingual landing page template -->
+    <target name="generateMonoLandingTemplate">
+        <description>Generates monolingual landing page template</description>
+        <echo message="Generating monolingual landing page template (lang=${lang1})..."/>
+        
+        <mkdir dir="${templates.dir}"/>
+        
+        <java fork="true" classname="net.sf.saxon.Transform" 
+              classpath="${saxon}" failonerror="true">
+            <arg value="-s:boilerplate/landingPageTemplate.xml"/>
+            <arg value="-xsl:xsl/createTemplates.xsl"/>
+            <arg value="-o:templates/landingPage.xml"/>
+            <arg value="lang=${lang1}"/>
+            <arg value="languages=${lang1}"/>
+        </java>
+    </target>
+    
+    <!-- Generate monolingual content page template -->
+    <target name="generateMonoContentTemplate">
+        <description>Generates monolingual content page template</description>
+        <echo message="Generating monolingual content page template (lang=${lang1})..."/>
+        
+        <mkdir dir="${templates.dir}"/>
+        
+        <java fork="true" classname="net.sf.saxon.Transform" 
+              classpath="${saxon}" failonerror="true">
+            <arg value="-s:boilerplate/contentPageTemplate.xml"/>
+            <arg value="-xsl:xsl/createTemplates.xsl"/>
+            <arg value="-o:templates/contentPage.xml"/>
+            <arg value="lang=${lang1}"/>
+            <arg value="languages=${lang1}"/>
+        </java>
+    </target>
+    
+    <!-- Process monolingual landing page into site/index.html -->
+    <target name="makeMonoLandingPage" depends="generateMonoLandingTemplate">
+        <description>Creates monolingual site/index.html</description>
+        <echo message="Creating monolingual site/index.html..."/>
+        
+        <mkdir dir="site"/>
+        
+        <java fork="true" classname="net.sf.saxon.Transform" 
+              classpath="${saxon}" failonerror="true">
+            <arg value="-s:templates/landingPage.xml"/>
+            <arg value="-xsl:xsl/processLandingPage.xsl"/>
+            <arg value="-o:site/index.html"/>
+            <arg value="isBilingual=false"/>
+            <arg value="firstLang=${lang1}"/>
+        </java>
+    </target>
+    
+    <!-- Process monolingual content files -->
+    <target name="processMonoContent" depends="generateMonoContentTemplate,getImageDimensions">
+        <description>Processes monolingual content files from content/*.xml</description>
+        <echo message="Processing monolingual content files..."/>
+        
+        <mkdir dir="site"/>
+        
+        <!-- Process each content file -->
+        <foreach target="processOneMonoContent" param="content.file">
+            <path>
+                <fileset dir="content" includes="*.xml"/>
+            </path>
+        </foreach>
+    </target>
+    
+    <!-- Helper: Process one monolingual content file -->
+    <target name="processOneMonoContent">
+        <basename property="content.basename" file="${content.file}" suffix=".xml"/>
+        
+        <echo message="Processing ${content.basename}.xml → site/${content.basename}.html"/>
+        
+        <java fork="true" classname="net.sf.saxon.Transform" 
+              classpath="${saxon}" failonerror="true">
+            <arg value="-s:${content.file}"/>
+            <arg value="-xsl:xsl/processContent.xsl"/>
+            <arg value="-o:site/${content.basename}.html"/>
+        </java>
+        
+        <var name="content.basename" unset="true"/>
+    </target>
+    
+    <!-- Full monolingual build -->
+    <target name="fullBuild" depends="makeMonoLandingPage,processMonoContent,copyWebResources">
+        <description>Full monolingual build (DEFAULT)</description>
+        <echo message="Monolingual build complete (lang=${lang1})!"/>
+    </target>
+    
+    <!-- ========================================= -->
+    <!-- BILINGUAL BUILD TARGETS                   -->
+    <!-- ========================================= -->
+    
+    <!-- Generate bilingual landing page template -->
+    <target name="generateBilingualLandingTemplate">
+        <description>Generates bilingual landing page template (uses lang1)</description>
+        <echo message="Generating bilingual landing page template (${lang1}/${lang2})..."/>
+        
+        <mkdir dir="${templates.dir}"/>
+        
+        <java fork="true" classname="net.sf.saxon.Transform" 
+              classpath="${saxon}" failonerror="true">
+            <arg value="-s:boilerplate/landingPageTemplate.xml"/>
+            <arg value="-xsl:xsl/createTemplates.xsl"/>
+            <arg value="-o:templates/landingPage.xml"/>
+            <arg value="lang=${lang1}"/>
+            <arg value="languages=${lang1},${lang2}"/>
+        </java>
+    </target>
+    
+    <!-- Generate bilingual content page templates -->
+    <target name="generateBilingualContentTemplates">
+        <description>Generates bilingual content page templates</description>
+        <echo message="Generating bilingual content page templates (${lang1}/${lang2})..."/>
+        
+        <mkdir dir="${templates.dir}/${lang1}"/>
+        <mkdir dir="${templates.dir}/${lang2}"/>
+        
+        <!-- Language 1 template -->
+        <java fork="true" classname="net.sf.saxon.Transform" 
+              classpath="${saxon}" failonerror="true">
+            <arg value="-s:boilerplate/contentPageTemplate.xml"/>
+            <arg value="-xsl:xsl/createTemplates.xsl"/>
+            <arg value="-o:templates/${lang1}/contentPage.xml"/>
+            <arg value="lang=${lang1}"/>
+            <arg value="languages=${lang1},${lang2}"/>
+        </java>
+        
+        <!-- Language 2 template -->
+        <java fork="true" classname="net.sf.saxon.Transform" 
+              classpath="${saxon}" failonerror="true">
+            <arg value="-s:boilerplate/contentPageTemplate.xml"/>
+            <arg value="-xsl:xsl/createTemplates.xsl"/>
+            <arg value="-o:templates/${lang2}/contentPage.xml"/>
+            <arg value="lang=${lang2}"/>
+            <arg value="languages=${lang1},${lang2}"/>
+        </java>
+    </target>
+    
+    <!-- Process bilingual landing page into site/index.html -->
+    <target name="makeBilingualLandingPage" depends="generateBilingualLandingTemplate">
+        <description>Creates bilingual site/index.html</description>
+        <echo message="Creating bilingual site/index.html..."/>
+        
+        <mkdir dir="site"/>
+        
+        <java fork="true" classname="net.sf.saxon.Transform" 
+              classpath="${saxon}" failonerror="true">
+            <arg value="-s:templates/landingPage.xml"/>
+            <arg value="-xsl:xsl/processLandingPage.xsl"/>
+            <arg value="-o:site/index.html"/>
+            <arg value="isBilingual=true"/>
+            <arg value="firstLang=${lang1}"/>
+        </java>
+    </target>
+    
+    <!-- Process bilingual content files -->
+    <target name="processBilingualContent" depends="generateBilingualContentTemplates,getImageDimensions">
+        <description>Processes bilingual content files</description>
+        <echo message="Processing bilingual content files (${lang1}/${lang2})..."/>
+        
+        <mkdir dir="site/${lang1}"/>
+        <mkdir dir="site/${lang2}"/>
+        
+        <!-- Process language 1 content -->
+        <foreach target="processOneBilingualContent" param="content.file">
+            <path>
+                <fileset dir="content/${lang1}" includes="*.xml" erroronmissingdir="false"/>
+            </path>
+            <param name="lang" value="${lang1}"/>
+        </foreach>
+        
+        <!-- Process language 2 content -->
+        <foreach target="processOneBilingualContent" param="content.file">
+            <path>
+                <fileset dir="content/${lang2}" includes="*.xml" erroronmissingdir="false"/>
+            </path>
+            <param name="lang" value="${lang2}"/>
+        </foreach>
+    </target>
+    
+    <!-- Helper: Process one bilingual content file -->
+    <target name="processOneBilingualContent">
+        <basename property="content.basename" file="${content.file}" suffix=".xml"/>
+        
+        <echo message="Processing ${lang}/${content.basename}.xml → site/${lang}/${content.basename}.html"/>
+        
+        <java fork="true" classname="net.sf.saxon.Transform" 
+              classpath="${saxon}" failonerror="true">
+            <arg value="-s:${content.file}"/>
+            <arg value="-xsl:xsl/processContent.xsl"/>
+            <arg value="-o:site/${lang}/${content.basename}.html"/>
+        </java>
+        
+        <var name="content.basename" unset="true"/>
+    </target>
+    
+    <!-- Full bilingual build -->
+    <target name="fullBilingualBuild" depends="makeBilingualLandingPage,processBilingualContent,copyWebResources">
+        <description>Full bilingual build</description>
+        <echo message="Bilingual build complete (${lang1}/${lang2})!"/>
+    </target>
+    
+    <target name="makeLandingPage">
+        <description>
+            Target makeLandingPage:
+            Generates site/index.html from landing page template.
+            Calls getImageDimensions, then generateLandingTemplate and finally makeLandingPage
+        </description>
+        <antcall target="getImageDimensions"/>
+        <antcall target="generateLandingTemplate"/>
+        <antcall target="createIndexHtml"/>
+    </target>
+    
+    
     <target name="clean">
         <description>
             TARGET clean:
@@ -95,7 +329,22 @@
         <exec executable="${basedir}/utilities/imageDimensions.sh" error="/dev/null"/>
     </target>
     
-    <target name="copyWebResources">
+    <target name="buildCss">
+        <description>
+            TARGET buildCss
+            This builds the SCSS file to create CSS and map file for the output site.
+        </description>
+        <echo message="${echo.separator}"/>
+        <echo message="Building SCSS source to create CSS file in HTML folder."/>
+        <mkdir dir="${basedir}/site/css"/>
+        <exec executable="sass">
+            <arg value="${basedir}/css/style.scss"/>
+            <arg value="${basedir}/site/css/style.css"/>
+        </exec>
+    </target>
+
+    
+    <target name="copyWebResources" depends="buildCss">
         <description>
             TARGET copyWebResources
             This copies all the ancillary files such as css, js,
@@ -103,45 +352,28 @@
         </description>
         <echo message="${echo.separator}"/>
         <echo message="Copying required resources to the 'site' folder."/>
-        <copy todir="${basedir}/site/css" preservelastmodified="true">
+        <!-- Not copying CSS directly, building it from SCSS instead-->
+        <!--<copy todir="${basedir}/site/css" preservelastmodified="true">
             <fileset dir="${basedir}/css" includes="*.css"/>
-        </copy>
-        <copy todir="${basedir}/site/fonts" preservelastmodified="true">
+        </copy>-->
+        <!--Have commented these out for now. Uncomment as needed/as files are added.-->
+        <!--<copy todir="${basedir}/site/fonts" preservelastmodified="true">
             <fileset dir="${basedir}/fonts"/>
-        </copy>
-        <copy todir="${basedir}/site/js" preservelastmodified="true">
+        </copy>-->
+        <!--<copy todir="${basedir}/site/js" preservelastmodified="true">
             <fileset dir="${basedir}/js"/>
-        </copy>
+        </copy>-->
         <copy todir="${basedir}/site/images" preservelastmodified="true">
             <fileset dir="${basedir}/content/images">
-                <exclude name="ads/originals"/>
-                <exclude name="ads/originals/*"/>
-                <!--<exclude name="portraits/originals"/>
-                <exclude name="portraits/originals/*"/>-->
             </fileset>
         </copy>
-        <copy todir="site" preservelastmodified="true">
+        <!--<copy todir="site" preservelastmodified="true">
             <fileset dir="favicons">
                 <include name="*.*"/>
             </fileset>
-        </copy>
+        </copy>-->
     </target>
-        
-        <target name="buildSite">
-            <description>
-                TARGET buildSite
-                This iterates through all the content documents and builds the entire site.
-            </description>
-            <echo message="${echo.separator}"/>
-            <echo message="Building the website in the 'site' folder."/>
-            <java fork="true" classname="net.sf.saxon.Transform" classpath="${saxon}" failonerror="true">
-                <jvmarg value="-Xmx1024m"/>
-                <arg value="-s:xsl/master_build_site.xsl"/>
-                <arg value="-xsl:xsl/master_build_site.xsl"/>
-                <arg value="--suppressXsltNamespaceCheck:on"/>
-            </java>
-        </target>
-        
+
         <target name="buildSitemap">
             <description>
                 TARGET buildSitemap
