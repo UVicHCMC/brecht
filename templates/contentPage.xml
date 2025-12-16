@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+   <head>
+      <title>Website Title</title>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <link rel="stylesheet" href="/css/style.css"/>
+      <link rel="icon" href="/images/favicon.ico" sizes="48x48"/>
+      <link rel="icon"
+            href="/images/favicon.svg"
+            sizes="any"
+            type="image/svg+xml"/>
+      <link rel="manifest" href="/site.webmanifest"/>
+   </head>
+   <body id="top">
+      <header data-state="closed" id="site-header" class="open">
+         <span class="internalTitle">Event Name 2024</span>
+         <span class="internalSubTitle">Event Subtitle</span>
+         <span class="subheaderInternal">
+            <div class="place">Event Venue/Host</div>
+            <div class="date">June 15-17, 2024</div>
+            <div class="location">Victoria, BC</div>
+         </span>
+         <div id="mobile-nav-banner" data-state="closed">
+            <a href="index.html">
+               <img class="site-logo-mobile"
+                    src="/images/site-logo-top.webp"
+                    alt="back to home"/>
+            </a>
+         </div>
+         <div class="nav-wrapper">
+            <nav class="main-menu" id="site-navigation" aria-expanded="true">
+               <ul class="clicky-menu no-js" role="menu">
+                  <li>
+                     <a href="index.html">Home</a>
+                  </li>
+                  <li>
+                     <a href="program.html">Program</a>
+                  </li>
+                  <li>
+                     <a href="participants.html">Participants</a>
+                  </li>
+                  <li>
+                     <a href="gettinghere.html">Getting Here</a>
+                  </li>
+                  <li>
+                     <a href="accommodation.html">Accommodation</a>
+                  </li>
+                  <li>
+                     <a href="contact.html">Contact</a>
+                  </li>
+               </ul>
+               <div class="mobile-nav-footer">
+                  <img class="mobile-footer-logo"
+                       src="/images/mobile-nav-footer-logo.webp"
+                       width="50"
+                       height="50"
+                       alt=""/>
+               </div>
+            </nav>
+            <a href="index.html">
+               <img class="site-logo"
+                    src="/images/site-logo-top.webp"
+                    alt="back to home"/>
+            </a>
+         </div>
+      </header>
+      <a id="content"/>
+      <!-- NOTE: This processing-instruction will be replaced by the document 
+             content. -->
+      <?docContent?>
+      <footer>
+         <div class="site-specific-footer">
+            <img class="site-footer-logo"
+                 src="/images/footer-logo.webp"
+                 alt="back to home"/>
+         </div>
+         <div class="footer-info">
+            <div class="copyright"><p>© 2024 Organization Name</p></div>
+         </div>
+         <div class="citation">How to cite this site</div>
+         <div class="logos">
+            <a class="uvic-logo-internal" href="https://hcmc.uvic.ca">
+               <img src="/images/logo-uvic.png" alt="back to home"/>
+            </a>
+         </div>
+         <div class="acknowledgements"><p>Acknowledgements text here</p></div>
+         <div id="buildInfo"><!-- Build info will go here. --></div>
+      </footer>
+   </body>
+</html>

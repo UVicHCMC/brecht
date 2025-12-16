@@ -1,0 +1,4 @@
+images/logo-uvic.png 452x74
+images/mobile-nav-footer-logo.webp 251x251
+images/footer-logo.webp 200x152
+images/site-logo-top.webp 200x51

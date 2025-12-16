@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+   <head>
+      <title>Website Title</title>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <link rel="stylesheet" href="/css/style.css"/>
+      <link rel="icon" href="/images/favicon.ico" sizes="48x48"/>
+      <link rel="icon"
+            href="/images/favicon.svg"
+            sizes="any"
+            type="image/svg+xml"/>
+      <link rel="manifest" href="/site.webmanifest"/>
+      <link rel="preload" href="/fonts/font.woff2" as="font"/>
+      <script src="/js/script.js"/>
+      <meta name="description"
+            content="Description of the website for SEO purposes."/>
+   </head>
+   <body>
+      <main id="contentContainer" class="splash">
+         <div id="bgContainer">
+            <div id="bgInner"/>
+         </div>
+         <div id="splashGrid">
+            <div id="title">
+                    Event Name 2024
+                    Event Subtitle
+                </div>
+            <div id="whereWhen">
+               <div class="place">Event Venue/Host</div>
+               <div class="date">June 15-17, 2024</div>
+               <div class="location">Victoria, BC</div>
+            </div>
+            <div class="nav-wrapper">
+               <nav class="main-menu" id="splashNav" aria-expanded="true">
+                  <ul>
+                     <li>
+                        <a href="index.html">Home</a>
+                     </li>
+                     <li>
+                        <a href="program.html">Program</a>
+                     </li>
+                     <li>
+                        <a href="participants.html">Participants</a>
+                     </li>
+                     <li>
+                        <a href="gettinghere.html">Getting Here</a>
+                     </li>
+                     <li>
+                        <a href="accommodation.html">Accommodation</a>
+                     </li>
+                     <li>
+                        <a href="contact.html">Contact</a>
+                     </li>
+                  </ul>
+               </nav>
+            </div>
+         </div>
+         <!--UVic logo-->
+         <a class="uvic-logo-internal" href="https://hcmc.uvic.ca">
+            <img src="/images/logo-uvic.png"
+                 alt="back to home"
+                 class="uvic-logo-internal"/>
+         </a>
+      </main>
+   </body>
+</html>
