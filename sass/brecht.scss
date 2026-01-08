@@ -1,0 +1,44 @@
+//Imported
+@use 'utilities' as *;
+@use 'typography' as *;
+@use 'reset' as *;
+@use 'fonts' as *;
+@use 'hcmc-table' as *;
+@use 'hcmc-carousel' as *;
+@use 'popover-nav-fullscreen' as *;
+
+//skip link for acessibility
+.skip-link {
+clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+box-sizing: border-box;
+position: absolute;
+margin: 0;
+padding: 0;
+}
+
+.skip-link:focus {
+clip-path: none;
+z-index: 999;
+height: 5rem;
+line-height: 5rem;
+background: white;
+font-size: 1.2rem;
+text-decoration: none;
+color: #1295e6;
+text-align: center;
+width: 100%;
+position: fixed;
+}
+
+//screen reader only
+.sr-only {
+position: absolute;
+white-space: nowrap;
+width: 1px;
+height: 1px;
+overflow: hidden;
+border: 0;
+padding: 0;
+clip-path: inset(50%);
+margin: -1px;
+}

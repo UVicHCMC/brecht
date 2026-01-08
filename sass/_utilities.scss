@@ -1,0 +1,18 @@
+@forward '_mixin.scss';
+@forward '_break-point.scss';
+@forward '_custom-properties.scss';
+
+
+//Fades headings
+.fade-up-init {
+  opacity: 0;
+  transform: translateY(2rem);
+  transition:
+	opacity 450ms ease-out,
+	transform 450ms ease-out;
+}
+
+.fade-up-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
