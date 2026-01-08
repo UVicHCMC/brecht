@@ -120,7 +120,7 @@
     </target>
     
     <!-- Process monolingual landing page into site/index.html -->
-    <target name="makeMonoLandingPage" depends="generateMonoLandingTemplate">
+    <target name="makeMonoLandingPage">
         <description>Creates monolingual site/index.html</description>
         <echo message="Creating monolingual site/index.html..."/>
         
@@ -137,7 +137,7 @@
     </target>
     
     <!-- Process monolingual content files -->
-    <target name="processMonoContent" depends="generateMonoContentTemplate,getImageDimensions">
+    <target name="processMonoContent">
         <description>Processes monolingual content files from content/*.xml</description>
         <echo message="Processing monolingual content files..."/>
         
@@ -168,9 +168,15 @@
     </target>
     
     <!-- Full monolingual build -->
-    <target name="fullBuild" depends="makeMonoLandingPage,processMonoContent,copyWebResources">
+    <target name="fullBuild">
         <description>Full monolingual build (DEFAULT)</description>
         <echo message="Monolingual build complete (lang=${lang1})!"/>
+        <antcall target="getImageDimensions"/>
+        <antcall target="generateMonoLandingTemplate"/>
+        <antcall target="generateMonoContentTemplate"/>
+        <antcall target="makeMonoLandingPage"/>
+        <antcall target="processMonoContent"/>
+        <antcall target="copyWebResources"/>
     </target>
     
     <!-- ========================================= -->
@@ -338,28 +344,30 @@
         <echo message="Building SCSS source to create CSS file in HTML folder."/>
         <mkdir dir="${basedir}/site/css"/>
         <exec executable="sass">
-            <arg value="${basedir}/css/style.scss"/>
-            <arg value="${basedir}/site/css/style.css"/>
+            <arg value="${basedir}/sass/brecht.scss"/>
+            <arg value="${basedir}/css/brecht.css"/>
         </exec>
     </target>
 
     
-    <target name="copyWebResources" depends="buildCss">
+    <target name="copyWebResources">
         <description>
             TARGET copyWebResources
             This copies all the ancillary files such as css, js,
             documentation, and images into the output site folder.
         </description>
         <echo message="${echo.separator}"/>
+        <echo message="Building CSS..."/>
+        <antcall target="buildCss"/>
+
         <echo message="Copying required resources to the 'site' folder."/>
         <!-- Not copying CSS directly, building it from SCSS instead-->
         <!--<copy todir="${basedir}/site/css" preservelastmodified="true">
             <fileset dir="${basedir}/css" includes="*.css"/>
         </copy>-->
-        <!--Have commented these out for now. Uncomment as needed/as files are added.-->
-        <!--<copy todir="${basedir}/site/fonts" preservelastmodified="true">
+        <copy todir="${basedir}/site/fonts" preservelastmodified="true">
             <fileset dir="${basedir}/fonts"/>
-        </copy>-->
+        </copy>
         <!--<copy todir="${basedir}/site/js" preservelastmodified="true">
             <fileset dir="${basedir}/js"/>
         </copy>-->
