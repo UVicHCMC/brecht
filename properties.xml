@@ -39,18 +39,18 @@
     </metadata>
 
     <files>
-        <cssFile>/css/style.css</cssFile>
-        <jsFile>/js/script.js</jsFile>
-        <font>/fonts/font.woff2</font>
-        <faviconIco>/images/favicon.ico</faviconIco>
-        <faviconSvg>/images/favicon.svg</faviconSvg>
-        <splashIcon>/images/splash-icon.png</splashIcon>
-        <siteManifest>/site.webmanifest</siteManifest>
-        <uvicLogo>/images/logo-uvic.png</uvicLogo>
-        <siteLogo>/images/site-logo-top.webp</siteLogo>
-        <mobileLogo>/images/site-logo-top.webp</mobileLogo>
-        <footerLogo>/images/footer-logo.webp</footerLogo>
-        <mobileFooterLogo>/images/mobile-nav-footer-logo.webp</mobileFooterLogo>
+        <cssFile>css/brecht.css</cssFile>
+        <jsFile>js/script.js</jsFile>
+        <font>fonts/InterVariable.woff2</font>
+        <faviconIco>images/favicon.ico</faviconIco>
+        <faviconSvg>images/favicon.svg</faviconSvg>
+        <splashIcon>images/splash-icon.png</splashIcon>
+        <siteManifest>site.webmanifest</siteManifest>
+        <uvicLogo>images/logo-uvic.png</uvicLogo>
+        <siteLogo>images/site-logo-top.webp</siteLogo>
+        <mobileLogo>images/site-logo-top.webp</mobileLogo>
+        <footerLogo>images/footer-logo.webp</footerLogo>
+        <mobileFooterLogo>images/mobile-nav-footer-logo.webp</mobileFooterLogo>
     </files>
 
     <urls>
@@ -61,10 +61,10 @@
 
     <footer>
         <uvicLogoAlt en="University of Victoria: Humanities Computing and Media Centre" de="Université de Victoria : Centre informatique et médiatique des sciences humaines" />
-        <LogoAlt en="back to home" de="retour à l'accueil" />
-        <copyrightText en="&lt;p&gt;© 2024 Organization Name&lt;/p&gt;" de="&lt;p&gt;© 2024 Nom de l'organisation&lt;/p&gt;" />
-        <citationText en="How to cite this site" de="Comment citer ce site" />
-        <acknowledgementsText en="&lt;p&gt;Acknowledgements text here&lt;/p&gt;" de="&lt;p&gt;Texte de remerciements ici&lt;/p&gt;" />
+        <LogoAlt en="back to home" de="Zurück zur Startseite" />
+        <copyrightText en="&lt;p&gt;© 2024 Organization Name&lt;/p&gt;" de="&lt;p&gt;© 2024 Name der Organisation&lt;/p&gt;" />
+        <citationText en="How to cite this site" de="Wie zitiert man diese Seite" />
+        <acknowledgementsText en="&lt;p&gt;Acknowledgements text here&lt;/p&gt;" de="&lt;p&gt;Danksagung Text hier&lt;/p&gt;" />
     </footer>
 
     <navigation>
