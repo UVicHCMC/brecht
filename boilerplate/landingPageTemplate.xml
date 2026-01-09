@@ -43,11 +43,10 @@
                 <div class="popover-group-container">
 
                     <div class="popover-header" aria-hidden="true">
-                        <img class="popover-splash-icon" alt="Healing forests logo, a pitcher plant" src="images/splash-icon.png" width="100" height="100" />
+                        <img class="popover-splash-icon" alt="{?splashIconAlt}" src="{?splashIcon}" width="100" height="100" />
                         <div class="popover-header-text">
-                            <span class="main-title">Healing Forests</span>
-                            <span class="sub-title">Indigenous Knowledges &amp; Traditional Medicines<br />
-                                with the Khasi People of Meghalaya, Northeast India</span>
+                            <?splashTitle?>
+                            <?splashSubtitle?>
                         </div>
                     </div>
 

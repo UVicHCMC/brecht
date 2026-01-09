@@ -23,15 +23,18 @@
         <lang>de</lang>
     </languages>
     <metadata>
-        <metaDescription en="Description of the website for SEO purposes." de="Description du site web à des fins de référencement." />
-        <siteTitle en="Website Title" de="Titre du site web" />
-        <organization en="Organization Name" de="Nom de l'organisation" />
-        <splashTitle en="Event Name 2024" de="Nom de l'événement 2024" />
-        <splashSubtitle en="Event Subtitle" de="Sous-titre de l'événement" />
+        <metaDescription en="Description of the website for SEO purposes." de="Beschreibung der Website für SEO-Zwecke" />
+        <siteTitle en="Website Title" de="Website-Titel" />
+        <organization en="Organization Name" de="Name der Organisation" />
+        <splashTitle en="Healing Forests" de="Heilende Wälder" />
+        <splashSubtitle en="Indigenous Knowledges &amp;amp; Traditional Medicines&lt;br /&gt;with the Khasi People of Meghalaya, Northeast India" 
+                        de="Indigenes Wissen &amp;amp; traditionelle Medizin &lt;br /&gt;bei den Khasi in Meghalaya, Nordostindien" />
+        <splashIconAlt en="Healing forests logo, a pitcher plant" de="Logo des Heilwaldes, eine Kannenpflanze" />
+        
         <splashWhereWhen>
-            <place en="Event Venue/Host" de="Lieu/Hôte de l'événement" />
-            <date en="June 15-17, 2024" de="15-17 juin 2024" />
-            <location en="Victoria, BC" de="Victoria, C.-B." />
+            <place en="Event Venue/Host" de="Veranstaltungsort/Gastgeber" />
+            <date en="June 15-17, 2024" de="15. bis 17. Juni 2024" />
+            <location en="Victoria, BC" de="Victoria, BC" />
         </splashWhereWhen>
     </metadata>
 
@@ -41,6 +44,7 @@
         <font>/fonts/font.woff2</font>
         <faviconIco>/images/favicon.ico</faviconIco>
         <faviconSvg>/images/favicon.svg</faviconSvg>
+        <splashIcon>/images/splash-icon.png</splashIcon>
         <siteManifest>/site.webmanifest</siteManifest>
         <uvicLogo>/images/logo-uvic.png</uvicLogo>
         <siteLogo>/images/site-logo-top.webp</siteLogo>
@@ -65,10 +69,10 @@
 
     <navigation>
     
-        <li><a class="item" href="index.html" en="Home" de="Accueil" /></li>
-        <li><a class="item" href="background.html" en="Program" de="Accueil" /></li>
-        <li><a class="item" href="humanhealth.html" en="Accomodation" de="Accueil" /></li>
-        <li><a class="item" href="envhealth.html" en="Schedule" de="Accueil" /></li>
+        <li><a class="item" href="index.html" en="Home" de="Startseite" /></li>
+        <li><a class="item" href="background.html" en="Background" de="Hintergrund" /></li>
+        <li><a class="item" href="humanhealth.html" en="Human Health" de="Menschliche Gesundheit" /></li>
+        <li><a class="item" href="envhealth.html" en="Environmental Health" de="Umweltgesundheit" /></li>
        
 
         <!-- <menu href="index.html" en="Home" de="Accueil"/>
