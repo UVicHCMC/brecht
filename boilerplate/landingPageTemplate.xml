@@ -10,7 +10,7 @@
     <link rel="icon" href="{?faviconIco}" sizes="48x48" />
     <link rel="icon" href="{?faviconSvg}" sizes="any" type="image/svg+xml" />
     <link rel="manifest" href="{?siteManifest}" />
-    <link rel="preload" href="{?font}" as="font" />
+    <?fontPreloads?>
     <script src="{?jsFile}"></script>
     <meta name="description" content="{?metaDescription}" />
 </head>
