@@ -361,10 +361,10 @@
         <antcall target="buildCss"/>
 
         <echo message="Copying required resources to the 'site' folder."/>
-        <!-- Not copying CSS directly, building it from SCSS instead-->
-        <!--<copy todir="${basedir}/site/css" preservelastmodified="true">
+        
+        <copy todir="${basedir}/site/css" preservelastmodified="true">
             <fileset dir="${basedir}/css" includes="*.css"/>
-        </copy>-->
+        </copy>
         <copy todir="${basedir}/site/fonts" preservelastmodified="true">
             <fileset dir="${basedir}/fonts"/>
         </copy>
