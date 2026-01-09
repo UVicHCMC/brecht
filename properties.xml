@@ -8,34 +8,33 @@
      - Remove unused language attributes
      
      FOR BILINGUAL SITES:  
-     - Include both 'en' and 'fr' attributes
+     - Include both 'en' and 'de' attributes
      - Ensure all translatable content has both languages
      
      EXAMPLE:
      Monolingual: <siteTitle en="My Site Title"/>
-     Bilingual:   <siteTitle en="My Site Title" fr="Titre de mon site"/>
+     Bilingual:   <siteTitle en="My Site Title" de="Titre de mon site"/>
 -->
 
 <site>
     <!--Listing languages here for now. Not sure if we will keep them. -->
     <languages>
         <lang>en</lang>
-        <lang>fr</lang>
+        <lang>de</lang>
     </languages>
     <metadata>
-        <metaDescription en="Description of the website for SEO purposes." 
-                         fr="Description du site web à des fins de référencement."/>
-        <siteTitle en="Website Title" fr="Titre du site web"/>
-        <organization en="Organization Name" fr="Nom de l'organisation"/>
-        <splashTitle en="Event Name 2024" fr="Nom de l'événement 2024"/>
-        <splashSubtitle en="Event Subtitle" fr="Sous-titre de l'événement"/>
+        <metaDescription en="Description of the website for SEO purposes." de="Description du site web à des fins de référencement." />
+        <siteTitle en="Website Title" de="Titre du site web" />
+        <organization en="Organization Name" de="Nom de l'organisation" />
+        <splashTitle en="Event Name 2024" de="Nom de l'événement 2024" />
+        <splashSubtitle en="Event Subtitle" de="Sous-titre de l'événement" />
         <splashWhereWhen>
-            <place en="Event Venue/Host" fr="Lieu/Hôte de l'événement"/>
-            <date en="June 15-17, 2024" fr="15-17 juin 2024"/>
-            <location en="Victoria, BC" fr="Victoria, C.-B."/>
+            <place en="Event Venue/Host" de="Lieu/Hôte de l'événement" />
+            <date en="June 15-17, 2024" de="15-17 juin 2024" />
+            <location en="Victoria, BC" de="Victoria, C.-B." />
         </splashWhereWhen>
     </metadata>
-    
+
     <files>
         <cssFile>/css/style.css</cssFile>
         <jsFile>/js/script.js</jsFile>
@@ -49,30 +48,34 @@
         <footerLogo>/images/footer-logo.webp</footerLogo>
         <mobileFooterLogo>/images/mobile-nav-footer-logo.webp</mobileFooterLogo>
     </files>
-    
+
     <urls>
-        <home en="index.html" fr="index.html"/>
-        <homeUrl en="index.html" fr="index.html"/>
+        <home en="index.html" de="index.html" />
+        <homeUrl en="index.html" de="index.html" />
         <uvicUrl>https://hcmc.uvic.ca</uvicUrl>
     </urls>
-    
+
     <footer>
-        <uvicLogoAlt en="University of Victoria: Humanities Computing and Media Centre" 
-                     fr="Université de Victoria : Centre informatique et médiatique des sciences humaines"/>
-        <LogoAlt en="back to home" fr="retour à l'accueil"/>
-        <copyrightText en="&lt;p&gt;© 2024 Organization Name&lt;/p&gt;" 
-                       fr="&lt;p&gt;© 2024 Nom de l'organisation&lt;/p&gt;"/>
-        <citationText en="How to cite this site" fr="Comment citer ce site"/>
-        <acknowledgementsText en="&lt;p&gt;Acknowledgements text here&lt;/p&gt;" 
-                              fr="&lt;p&gt;Texte de remerciements ici&lt;/p&gt;"/>
+        <uvicLogoAlt en="University of Victoria: Humanities Computing and Media Centre" de="Université de Victoria : Centre informatique et médiatique des sciences humaines" />
+        <LogoAlt en="back to home" de="retour à l'accueil" />
+        <copyrightText en="&lt;p&gt;© 2024 Organization Name&lt;/p&gt;" de="&lt;p&gt;© 2024 Nom de l'organisation&lt;/p&gt;" />
+        <citationText en="How to cite this site" de="Comment citer ce site" />
+        <acknowledgementsText en="&lt;p&gt;Acknowledgements text here&lt;/p&gt;" de="&lt;p&gt;Texte de remerciements ici&lt;/p&gt;" />
     </footer>
-    
+
     <navigation>
-        <menu href="index.html" en="Home" fr="Accueil"/>
-        <menu href="program.html" en="Program" fr="Programme"/>
-        <menu href="participants.html" en="Participants" fr="Participants"/>
-        <menu href="gettinghere.html" en="Getting Here" fr="Comment venir"/>
-        <menu href="accommodation.html" en="Accommodation" fr="Hébergement"/>
-        <menu href="contact.html" en="Contact" fr="Contact"/>
+    
+        <li><a class="item" href="index.html" en="Home" de="Accueil" /></li>
+        <li><a class="item" href="background.html" en="Program" de="Accueil" /></li>
+        <li><a class="item" href="humanhealth.html" en="Accomodation" de="Accueil" /></li>
+        <li><a class="item" href="envhealth.html" en="Schedule" de="Accueil" /></li>
+       
+
+        <!-- <menu href="index.html" en="Home" de="Accueil"/>
+        <menu href="program.html" en="Program" de="Programme"/>
+        <menu href="participants.html" en="Participants" de="Participants"/>
+        <menu href="gettinghere.html" en="Getting Here" de="Comment venir"/>
+        <menu href="accommodation.html" en="Accommodation" de="Hébergement"/>
+        <menu href="contact.html" en="Contact" de="Contact"/> -->
     </navigation>
 </site>

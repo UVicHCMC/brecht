@@ -17,6 +17,30 @@
             content="Description of the website for SEO purposes."/>
    </head>
    <body>
+      <div class="nav-wrapper">
+         <nav class="main-menu" id="splashNav" aria-expanded="true">
+            <ul class="popover-nav-items">
+               <li>
+                  <a href="index.html">Home</a>
+               </li>
+               <li>
+                  <a href="program.html">Program</a>
+               </li>
+               <li>
+                  <a href="participants.html">Participants</a>
+               </li>
+               <li>
+                  <a href="gettinghere.html">Getting Here</a>
+               </li>
+               <li>
+                  <a href="accommodation.html">Accommodation</a>
+               </li>
+               <li>
+                  <a href="contact.html">Contact</a>
+               </li>
+            </ul>
+         </nav>
+      </div>
       <main id="contentContainer" class="splash">
          <div id="bgContainer">
             <div id="bgInner"/>
@@ -30,30 +54,6 @@
                <div class="place">Event Venue/Host</div>
                <div class="date">June 15-17, 2024</div>
                <div class="location">Victoria, BC</div>
-            </div>
-            <div class="nav-wrapper">
-               <nav class="main-menu" id="splashNav" aria-expanded="true">
-                  <ul>
-                     <li>
-                        <a href="index.html">Home</a>
-                     </li>
-                     <li>
-                        <a href="program.html">Program</a>
-                     </li>
-                     <li>
-                        <a href="participants.html">Participants</a>
-                     </li>
-                     <li>
-                        <a href="gettinghere.html">Getting Here</a>
-                     </li>
-                     <li>
-                        <a href="accommodation.html">Accommodation</a>
-                     </li>
-                     <li>
-                        <a href="contact.html">Contact</a>
-                     </li>
-                  </ul>
-               </nav>
             </div>
          </div>
          <!--UVic logo-->
