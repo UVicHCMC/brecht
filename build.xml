@@ -375,10 +375,19 @@
             <fileset dir="${basedir}/js"/>
         </copy>
         <echo message="Copying images to the 'site/images' folder."/>
-        <copy todir="${basedir}/site/images" preservelastmodified="true">
+        <path id="image.files">
             <fileset dir="${basedir}/images" includes="**/*"/>
-            <!--<fileset dir="${basedir}/content/images" includes="**/*" erroronmissingdir="false"/>-->
+            <fileset dir="${basedir}/content/images" includes="**/*" erroronmissingdir="false"/>
+        </path>
+        <copy todir="${basedir}/site/images" preservelastmodified="true">
+            <path refid="image.files"/>
         </copy>
+        <pathconvert property="copied.images" refid="image.files" pathsep=", ">
+            <mapper>
+                <regexpmapper from="^${basedir}/(.*)$" to="\1"/>
+            </mapper>
+        </pathconvert>
+        <echo message="Copied images: ${copied.images}"/>
         <!--<copy todir="site" preservelastmodified="true">
             <fileset dir="favicons">
                 <include name="*.*"/>
