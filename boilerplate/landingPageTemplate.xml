@@ -18,68 +18,95 @@
 <body>
 
     <header id="site-header">
-        <a href="#content" class="skip-link">Skip to content</a>
-
-        <div class="nav-wrapper">
-
-            <a href="index.html" class="nav-logo">
-                <img src="images/splash-icon.png" alt="" width="35px" height="35px" />
-            </a>
-
-            <button id="site-menu-toggle" class="popover-nav-open" type="button" popovertarget="site-navigation" popovertargetaction="toggle" aria-controls="site-navigation" aria-haspopup="true" aria-expanded="false">
-                <span class="nav-toggle-label">Site Menu</span>
-                <span aria-hidden="true" class="line-container">
-                    <span class="bar-top"></span>
-                    <span class="bar-bottom"></span>
-                </span>
-
+      <a href="#content" class="skip-link">Skip to content</a>
+    
+      <div class="nav-wrapper">
+        <!-- <a href="index.html" class="nav-logo">
+        <img src="images/splash-icon.png" alt="" width="35" height="35">
+      </a> -->
+    
+        <img class="mobile-header" src="images/logo-mobile-header.webp" width="300" height="100" />
+    
+        <div class="button-wrapper">
+          <button
+            id="site-menu-toggle"
+            class="popover-nav-open"
+            type="button"
+            popovertarget="site-navigation"
+            popovertargetaction="toggle"
+            aria-controls="site-navigation"
+            aria-haspopup="true"
+            aria-expanded="false">
+            
+            <span class="nav-toggle-label">Site Menu</span>
+            <svg class="menu-burger" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18" />
+            </svg>
+          </button>
+    
+          <nav id="site-navigation" class="main-menu" aria-label="Primary" popover="auto">
+            <button
+              type="button"
+              class="popover-nav-close"
+              aria-label="Close menu"
+              popovertarget="site-navigation"
+              popovertargetaction="hide">
+              
+              <svg class="close-x" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewbox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6 6 18M6 6l12 12" />
+              </svg>
             </button>
-
-            <nav id="site-navigation" class="main-menu" popover="auto" aria-label="Main">
-                <button type="button" class="popover-nav-close" aria-label="Close menu" popovertarget="site-navigation" popovertargetaction="hide">
-                    <img src="images/x-close.svg" width="64" height="64" alt="" />
-                </button>
-
-                <div class="popover-group-container">
-
-                    <div class="popover-header" aria-hidden="true">
-                        <img class="popover-splash-icon" alt="{?splashIconAlt}" src="{?splashIcon}" width="100" height="100" />
-                        <div class="popover-header-text">
-                            <?splashTitle?>
-                            <?splashSubtitle?>
-                        </div>
-                    </div>
-
-                    <ul class="popover-nav-items">
-                        <?navigation?>
-                    </ul>
-                </div>
-            </nav>
+    
+            <div class="popover-group-container">
+    
+              <div class="popover-header" aria-hidden="true">
+                <img
+                  class="popover-splash-icon"
+                  alt=""
+                  src="images/logo-mobile-popover.webp"
+                  width="901"
+                  height="257">
+    
+                <!-- <div class="popover-header-text">
+                  <span class="main-title">Text here</span>
+                  <span class="sub-title">Text here</span>
+                </div> -->
+              </div>
+    
+              <ul class="popover-nav-items">
+                <?navigation?>
+              </ul>
+    
+            </div>
+          </nav>
+          <button class="lang-chooser" aria-label="Switch site language to German" lang="de">DE</button>
         </div>
+      </div>
+    
     </header>
 
-    <main id="contentContainer" class="splash">
-        <div id="bgContainer">
-            <div id="bgInner" />
+    <main id="content-container" class="splash">
+        <div id="bg-container">
+            <div id="bg-inner"></div>
         </div>
 
-        <div id="splashGrid">
+        <div id="splash-grid">
             <div id="title">
                 <?splashTitle?>
                 <?splashSubtitle?>
             </div>
 
-
-            <div id="whereWhen">
+            <div id="where-when">
                 <?splashWhereWhen?>
             </div>
-
-
         </div>
 
-        <!--UVic logo-->
+        <!-- UVic logo -->
         <a class="uvic-logo-internal" href="{?uvicUrl}">
-            <img src="{?uvicLogo}" alt="{?LogoAlt}" class="uvic-logo-internal" />
+            <img
+              src="{?uvicLogo}"
+              alt="{?LogoAlt}"
+              class="uvic-logo-internal" />
         </a>
     </main>
 </body>
