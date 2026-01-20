@@ -40,14 +40,17 @@
 
     <files>
         <cssFile>css/brecht.css</cssFile>
-        <jsFile>js/script.js</jsFile>
+        <jsFile>js/pux.js</jsFile>
         <font>fonts/InterVariable.woff2</font>
         <font>fonts/InterVariable-Italic.woff2</font>
+        <font>fonts/InterVariable.woff2</font>
+        <font>fonts/Roboto-Italic-VariableFont.woff2</font>
+        <font>fonts/Roboto-VariableFont.woff2</font>
         <faviconIco>images/favicon.ico</faviconIco>
         <faviconSvg>images/favicon.svg</faviconSvg>
         <splashIcon>images/splash-icon.png</splashIcon>
         <siteManifest>site.webmanifest</siteManifest>
-        <uvicLogo>images/logo-uvic.png</uvicLogo>
+        <uvicLogo>images/logo-uvic.webp</uvicLogo>
         <siteLogo>images/site-logo-top.webp</siteLogo>
         <mobileLogo>images/site-logo-top.webp</mobileLogo>
         <footerLogo>images/footer-logo.webp</footerLogo>
@@ -69,18 +72,11 @@
     </footer>
 
     <navigation>
-    
-        <li><a class="item" href="index.html" en="Home" de="Startseite" /></li>
-        <li><a class="item" href="background.html" en="Background" de="Hintergrund" /></li>
-        <li><a class="item" href="humanhealth.html" en="Human Health" de="Menschliche Gesundheit" /></li>
-        <li><a class="item" href="envhealth.html" en="Environmental Health" de="Umweltgesundheit" /></li>
-       
-
-        <!-- <menu href="index.html" en="Home" de="Accueil"/>
-        <menu href="program.html" en="Program" de="Programme"/>
-        <menu href="participants.html" en="Participants" de="Participants"/>
-        <menu href="gettinghere.html" en="Getting Here" de="Comment venir"/>
-        <menu href="accommodation.html" en="Accommodation" de="Hébergement"/>
-        <menu href="contact.html" en="Contact" de="Contact"/> -->
+       <li><a class="item" href="index.html" en="Home" de="Startseite" /></li>
+       <li><a class="item" href="registration.html" en="Registration" de="Anmeldung" /></li>
+       <li><a class="item" href="program.html" en="Program" de="Programm" /></li>
+       <li><a class="item" href="accommodations.html" en="Accommodations" de="Unterkünfte" /></li>
+       <li><a class="item" href="gettinghere.html" en="Getting here" de="Anreise" /></li>
+       <li><a class="item" href="about.html" en="About" de="Über uns" /></li>
     </navigation>
 </site>
