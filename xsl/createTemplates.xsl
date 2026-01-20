@@ -99,7 +99,7 @@
         <xsl:call-template name="build-where-when"/>
       </xsl:when>
       
-      <xsl:when test="name() = 'navigationMenu' or name() = 'splashNavigationMenu'">
+      <xsl:when test="name() = 'navigation' or name() = 'navigationMenu' or name() = 'splashNavigationMenu'">
         <xsl:call-template name="build-navigation"/>
       </xsl:when>
       
@@ -119,6 +119,13 @@
         <xsl:call-template name="get-html-value">
           <xsl:with-param name="element" select="$properties/footer/acknowledgementsText"/>
         </xsl:call-template>
+      </xsl:when>
+      
+      <xsl:when test="name() = 'footerContent'">
+        <!-- Insert footer markup from properties.xml, converting elements into XHTML -->
+        <xsl:for-each select="$properties/footerContent/*">
+          <xsl:apply-templates select="." mode="copy-nav-element"/>
+        </xsl:for-each>
       </xsl:when>
       
       <xsl:when test="name() = 'uvic-logo'">
