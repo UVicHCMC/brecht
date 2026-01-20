@@ -1,67 +1,112 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
    <head>
-      <title>Website Title</title>
+      <title>
+        Website Title
+    </title>
       <meta charset="utf-8"/>
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <link rel="stylesheet" href="/css/style.css"/>
-      <link rel="icon" href="/images/favicon.ico" sizes="48x48"/>
+      <link rel="stylesheet" href="css/brecht.css"/>
+      <link rel="icon" href="images/favicon.ico" sizes="48x48"/>
       <link rel="icon"
-            href="/images/favicon.svg"
+            href="images/favicon.svg"
             sizes="any"
             type="image/svg+xml"/>
-      <link rel="manifest" href="/site.webmanifest"/>
-      <link rel="preload" href="/fonts/font.woff2" as="font"/>
-      <script src="/js/script.js"/>
+      <link rel="manifest" href="site.webmanifest"/>
+      <?fontPreloads?>
+      <script src="js/pux.js"/>
       <meta name="description"
             content="Description of the website for SEO purposes."/>
    </head>
    <body>
-      <div class="nav-wrapper">
-         <nav class="main-menu" id="splashNav" aria-expanded="true">
-            <ul class="popover-nav-items">
-               <li>
-                  <a href="index.html">Home</a>
-               </li>
-               <li>
-                  <a href="program.html">Program</a>
-               </li>
-               <li>
-                  <a href="participants.html">Participants</a>
-               </li>
-               <li>
-                  <a href="gettinghere.html">Getting Here</a>
-               </li>
-               <li>
-                  <a href="accommodation.html">Accommodation</a>
-               </li>
-               <li>
-                  <a href="contact.html">Contact</a>
-               </li>
-            </ul>
-         </nav>
-      </div>
-      <main id="contentContainer" class="splash">
-         <div id="bgContainer">
-            <div id="bgInner"/>
-         </div>
-         <div id="splashGrid">
-            <div id="title">
-                    Event Name 2024
-                    Event Subtitle
-                </div>
-            <div id="whereWhen">
-               <div class="place">Event Venue/Host</div>
-               <div class="date">June 15-17, 2024</div>
-               <div class="location">Victoria, BC</div>
+      <div class="page-wrapper">
+         <header id="site-header">
+            <a href="#content" class="skip-link">Skip to content</a>
+            <div class="nav-wrapper">
+                <!-- <a href="index.html" class="nav-logo">
+        <img src="images/splash-icon.png" alt="" width="35" height="35">
+      </a> -->
+               <img class="mobile-header"
+                    src="images/logo-mobile-header.webp"
+                    width="300"
+                    height="100"/>
+               <div class="button-wrapper">
+                  <button id="site-menu-toggle"
+                          class="popover-nav-open"
+                          type="button"
+                          popovertarget="site-navigation"
+                          popovertargetaction="toggle"
+                          aria-controls="site-navigation"
+                          aria-haspopup="true"
+                          aria-expanded="false">
+                     <span class="nav-toggle-label">Site Menu</span>
+                     <svg xmlns="http://www.w3.org/2000/svg"
+                          class="menu-burger"
+                          width="24"
+                          height="24"
+                          fill="none">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M3 12h18M3 6h18M3 18h18"/>
+                     </svg>
+                  </button>
+                  <nav id="site-navigation"
+                       class="main-menu"
+                       aria-label="Primary"
+                       popover="auto">
+                     <button type="button"
+                             class="popover-nav-close"
+                             aria-label="Close menu"
+                             popovertarget="site-navigation"
+                             popovertargetaction="hide">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="close-x"
+                             width="24"
+                             height="24"
+                             fill="none"
+                             viewbox="0 0 24 24">
+                           <path stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 stroke-width="2"
+                                 d="M18 6 6 18M6 6l12 12"/>
+                        </svg>
+                     </button>
+                     <div class="popover-group-container">
+                        <div class="popover-header" aria-hidden="true">
+                           <img class="popover-splash-icon"
+                                alt=""
+                                src="images/logo-mobile-popover.webp"
+                                width="901"
+                                height="257"/>
+                           <!-- <div class="popover-header-text">
+                  <span class="main-title">Text here</span>
+                  <span class="sub-title">Text here</span>
+                </div> -->
+                        </div>
+                        <ul class="popover-nav-items">
+                                <?navigation?>
+                            </ul>
+                     </div>
+                  </nav>
+                  <button class="lang-chooser"
+                          aria-label="Switch site language to German"
+                          lang="de">DE</button>
+               </div>
             </div>
-         </div>
-         <!--UVic logo-->
-         <a class="uvic-logo-internal" href="https://hcmc.uvic.ca">
-            <img src="/images/logo-uvic.png"
-                 alt="back to home"
-                 class="uvic-logo-internal"/>
-         </a>
-      </main>
+         </header>
+         <main>
+            <div class="blob">
+               <img class="splash-logo"
+                    src="images/logo-splash-brecht.webp"
+                    width="1500"
+                    height="1340"
+                    alt="Brecht in the anthropocene, 18th symposium of the International Brecht Society. University of Victoria, Victoria, BC, Canada: July 22-26, 2026."/>
+            </div>
+         </main>
+         <footer>
+            <?footerContent?>
+        </footer>
+      </div>
    </body>
 </html>
