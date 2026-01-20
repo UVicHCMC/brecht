@@ -1,89 +1,341 @@
-(function () {
-  const nav = document.getElementById("site-navigation");
-  const toggle = document.getElementById("site-menu-toggle");
+/**
+ * Popover nav (Popover API–first) + focus trap
+ *
+ * What this version does (and what it intentionally does NOT do):
+ *
+ * ✅ Uses Popover API “the right way”
+ *    - Opening/closing is handled by your HTML attributes:
+ *        popovertarget / popovertargetaction on buttons + popover="auto" on the nav
+ *    - We do NOT implement our own toggle logic.
+ *
+ * ✅ Minimal JS responsibilities
+ *    1) Keep the toggle button’s aria-expanded in sync with the *actual* popover state
+ *       (covers: toggle button, close button, ESC, and light-dismiss click-away).
+ *    2) Enforce your rule: at/above the desktop breakpoint, the popover must be closed.
+ *    3) Trap focus inside the popover only while it is open; restore focus on close.
+ *
+ * Requirement:
+ * - CSS defines: :root { --desktop-break: 48rem; }  <-- NOT supported here
+ *   This script accepts only pixel values like "768px" or "768".
+ *   If --desktop-break is missing or not parseable as pixels, it falls back to 768.
+ */
 
-  if (!nav || !toggle || !("showPopover" in HTMLElement.prototype)) {
-	return;
-  }
-
-  let lastFocused = null;
-
-  function getFocusable(container) {
-	return container.querySelectorAll(
-	  'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-	);
-  }
-
-  function trapFocus(event) {
-	if (event.key !== "Tab") return;
-
-	const focusables = getFocusable(nav);
-	if (!focusables.length) return;
-
-	const first = focusables[0];
-	const last = focusables[focusables.length - 1];
-
-	if (event.shiftKey) {
-	  if (document.activeElement === first) {
-		event.preventDefault();
-		last.focus();
-	  }
+(function initWhenReady() {
+	// Ensure the DOM exists before we query by ID.
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", init);
 	} else {
-	  if (document.activeElement === last) {
-		event.preventDefault();
-		first.focus();
-	  }
-	}
-  }
-
-  nav.addEventListener("toggle", (event) => {
-	if (event.newState === "open") {
-	  lastFocused = document.activeElement;
-
-	  const focusables = getFocusable(nav);
-	  if (focusables.length) {
-		focusables[0].focus();
-	  }
-
-	  nav.addEventListener("keydown", trapFocus);
-	  toggle.setAttribute("aria-expanded", "true");
+		init();
 	}
 
-	if (event.newState === "closed") {
-	  nav.removeEventListener("keydown", trapFocus);
+	function init() {
+		// --- Required elements ---------------------------------------------------------------
 
-	  if (lastFocused) {
-		lastFocused.focus();
-	  }
+		const toggleBtn = document.getElementById("site-menu-toggle");
+		const popoverEl = document.getElementById("site-navigation");
+		if (!toggleBtn || !popoverEl) return;
 
-	  toggle.setAttribute("aria-expanded", "false");
+		// --- Popover API support check -------------------------------------------------------
+
+		// This is a Popover-first script. If the API isn't there, we bail out cleanly.
+		// (You asked to remove fallbacks.)
+		const hasPopoverAPI =
+			typeof popoverEl.showPopover === "function" &&
+			typeof popoverEl.hidePopover === "function" &&
+			typeof popoverEl.togglePopover === "function";
+
+		if (!hasPopoverAPI) return;
+
+		// --- Helpers: real state + ARIA ------------------------------------------------------
+
+		/**
+		 * Returns true if the popover is currently open.
+		 * :popover-open is the canonical way to read actual open state.
+		 */
+		function isOpen() {
+			return popoverEl.matches(":popover-open");
+		}
+
+		/**
+		 * Set aria-expanded on the toggle button.
+		 * This is the only ARIA attribute we manage here.
+		 */
+		function setExpanded(open) {
+			toggleBtn.setAttribute("aria-expanded", open ? "true" : "false");
+		}
+
+		/**
+		 * Close the popover if it’s open.
+		 * Used when enforcing the desktop rule.
+		 */
+		function closePopover() {
+			if (popoverEl.matches(":popover-open")) popoverEl.hidePopover();
+		}
+
+		// --- Breakpoint (read once) ----------------------------------------------------------
+
+		/**
+		 * Reads --desktop-break from :root. Accepts "768px" or "768".
+		 * Falls back to 768 if missing/invalid.
+		 *
+		 * If you want to support rem/em, the correct solution is to standardize
+		 * --desktop-break as pixels, or compute rem->px (but that adds JS complexity).
+		 */
+		function readDesktopBreakPx() {
+			const raw = getComputedStyle(document.documentElement)
+				.getPropertyValue("--desktop-break")
+				.trim();
+
+			if (!raw) return 768;
+
+			// Only parse a plain pixel number.
+			const m = raw.match(/^([0-9]*\.?[0-9]+)\s*(px)?$/i);
+			return m ? Number(m[1]) : 768;
+		}
+
+		const breakPx = readDesktopBreakPx();
+		const mqDesktop = window.matchMedia(`(min-width: ${breakPx}px)`);
+
+		/**
+		 * Enforce: on desktop widths, the popover must be closed and aria-expanded false.
+		 * On mobile widths, do nothing special; the Popover API governs open/close.
+		 */
+		function enforceDesktopClosed() {
+			if (mqDesktop.matches) {
+				// Closing triggers the popover "toggle" event, which will update ARIA + focus trap.
+				closePopover();
+				// We also set ARIA immediately in case the close is a no-op (already closed).
+				setExpanded(false);
+			}
+		}
+
+		// --- Focus trap ----------------------------------------------------------------------
+
+		/**
+		 * A selector for focusable elements.
+		 * We’ll query these within the popover whenever it is open.
+		 */
+		const FOCUSABLE_SELECTOR = [
+			"a[href]",
+			"area[href]",
+			"button:not([disabled])",
+			"input:not([disabled]):not([type='hidden'])",
+			"select:not([disabled])",
+			"textarea:not([disabled])",
+			"iframe",
+			"object",
+			"embed",
+			"[contenteditable='true']",
+			"[tabindex]:not([tabindex='-1'])"
+		].join(",");
+
+		/**
+		 * Get focusable descendants of the popover, filtered to elements that are visible.
+		 * This avoids trapping focus onto display:none or visibility:hidden elements.
+		 */
+		function getFocusable() {
+			const candidates = Array.from(popoverEl.querySelectorAll(FOCUSABLE_SELECTOR));
+
+			return candidates.filter((el) => {
+				// hidden attribute explicitly removes element from interaction.
+				if (el.hasAttribute("hidden")) return false;
+
+				// Common edge case: elements inside closed <details> should not be focusable.
+				const details = el.closest("details");
+				if (details && !details.open) return false;
+
+				// Basic computed style visibility checks.
+				const style = getComputedStyle(el);
+				if (style.display === "none" || style.visibility === "hidden") return false;
+
+				// Ensure it actually has a rendered box.
+				return el.getClientRects().length > 0;
+			});
+		}
+
+		// Track what had focus when the popover opened so we can restore it on close.
+		let restoreFocusTo = null;
+
+		// Track whether the trap is active to avoid double binding.
+		let trapActive = false;
+
+		/**
+		 * Move focus into the popover when it opens.
+		 * We focus the first focusable control (often your close button or first link).
+		 */
+		function focusFirstInside() {
+			const focusables = getFocusable();
+
+			if (focusables.length > 0) {
+				focusables[0].focus({ preventScroll: true });
+				return;
+			}
+
+			// If there are no focusables (rare), make the popover itself focusable.
+			// tabindex="-1" allows programmatic focus without inserting into Tab order.
+			if (!popoverEl.hasAttribute("tabindex")) popoverEl.setAttribute("tabindex", "-1");
+			popoverEl.focus({ preventScroll: true });
+		}
+
+		/**
+		 * Trap Tab key navigation within the popover.
+		 * - Tab on the last element wraps to the first
+		 * - Shift+Tab on the first wraps to the last
+		 */
+		function onKeydownTrap(e) {
+			// Defensive: only trap if still open.
+			if (!isOpen()) return;
+
+			// Trap only Tab / Shift+Tab.
+			if (e.key !== "Tab") return;
+
+			const focusables = getFocusable();
+
+			// If nothing focusable exists, prevent Tab from escaping.
+			if (focusables.length === 0) {
+				e.preventDefault();
+				return;
+			}
+
+			const first = focusables[0];
+			const last = focusables[focusables.length - 1];
+			const active = document.activeElement;
+
+			// Shift+Tab from first should wrap to last.
+			if (e.shiftKey && active === first) {
+				e.preventDefault();
+				last.focus();
+				return;
+			}
+
+			// Tab from last should wrap to first.
+			if (!e.shiftKey && active === last) {
+				e.preventDefault();
+				first.focus();
+			}
+		}
+
+		/**
+		 * Activate the trap:
+		 * - remember focus origin (so we can restore on close)
+		 * - bind keydown handler
+		 * - move focus into popover
+		 */
+		function activateTrap() {
+			if (trapActive) return;
+			trapActive = true;
+
+			restoreFocusTo = document.activeElement;
+
+			// Use document-level listener so focus cannot “slip past” the popover boundary.
+			document.addEventListener("keydown", onKeydownTrap);
+
+			// Defer focus move until after open has fully committed.
+			queueMicrotask(focusFirstInside);
+		}
+
+		/**
+		 * Deactivate the trap:
+		 * - remove keydown handler
+		 * - restore focus to opener (usually the toggle button)
+		 */
+		function deactivateTrap() {
+			if (!trapActive) return;
+			trapActive = false;
+
+			document.removeEventListener("keydown", onKeydownTrap);
+
+			// Restore focus if the saved element still exists; otherwise use the toggle button.
+			const target =
+				restoreFocusTo && document.contains(restoreFocusTo) ? restoreFocusTo : toggleBtn;
+
+			// If focus is currently nowhere useful (body) or inside the (now closed) popover,
+			// restore it to the opener.
+			const active = document.activeElement;
+			const shouldRestore =
+				!active ||
+				active === document.body ||
+				(active && popoverEl.contains(active));
+
+			if (shouldRestore) {
+				queueMicrotask(() => target.focus({ preventScroll: true }));
+			}
+
+			restoreFocusTo = null;
+		}
+
+		// --- Core wiring: rely on Popover API events -----------------------------------------
+
+		/**
+		 * The Popover API fires a "toggle" event when the popover opens/closes, no matter how:
+		 * - toggle button (popovertargetaction="toggle")
+		 * - close button (popovertargetaction="hide")
+		 * - ESC
+		 * - click-away light dismiss (popover="auto")
+		 *
+		 * This is the best single event to sync ARIA + focus trap.
+		 */
+		popoverEl.addEventListener("toggle", (e) => {
+			// Modern browsers provide e.newState: "open" | "closed".
+			// If absent, fall back to :popover-open.
+			const open = e && e.newState ? (e.newState === "open") : isOpen();
+
+			setExpanded(open);
+
+			// Enforce “desktop must be closed” even if something tries to open it on desktop.
+			if (open && mqDesktop.matches) {
+				closePopover(); // triggers another toggle -> closed
+				return;
+			}
+
+			// Focus trap toggles with the popover state.
+			if (open) activateTrap();
+			else deactivateTrap();
+		});
+
+		/**
+		 * When crossing into desktop width, force close.
+		 * (If already closed, it’s a no-op.)
+		 */
+		if (typeof mqDesktop.addEventListener === "function") {
+			mqDesktop.addEventListener("change", enforceDesktopClosed);
+		} else {
+			// Older Safari
+			mqDesktop.addListener(enforceDesktopClosed);
+		}
+
+		// --- Initial state sync ----------------------------------------------------------------
+
+		// Ensure aria-expanded matches whatever the popover state is at load.
+		setExpanded(isOpen());
+
+		// Enforce desktop closed immediately on load if needed.
+		enforceDesktopClosed();
+
+		// If the popover happens to be open at load on mobile (rare), activate the trap.
+		if (isOpen() && !mqDesktop.matches) activateTrap();
 	}
-  });
 })();
 
+/* =========================
+   Splash arrow bounce
+   ========================= */
 (function () {
   "use strict";
 
   function initSplashBounce() {
-	var el = document.querySelector(".splash-down-link img");
+	const el = document.querySelector(".splash-down-link img");
 	if (!el) return;
 
-	function runBounce() {
-	  // Remove to restart animation cleanly
+	function restartBounceCycle() {
 	  el.classList.remove("bounce-run");
-
-	  // Force reflow so the browser recognizes a “fresh” animation start
 	  void el.offsetWidth;
-
-	  // Add bounce animation
 	  el.classList.add("bounce-run");
 
-	  // Duration 1.6s × 5 iterations = 8s total
-	  // + 7s pause before next run
-	  setTimeout(runBounce, (1.6 * 5 * 1000) + 7000);
+	  setTimeout(restartBounceCycle, (1.6 * 5 * 1000) + 7000);
 	}
 
-	runBounce();
+	restartBounceCycle();
   }
 
   if (document.readyState === "loading") {
@@ -93,77 +345,70 @@
   }
 })();
 
+/* =========================
+   Header opacity on scroll
+   ========================= */
 (function () {
   "use strict";
 
-  function initNavOpacity() {
-	var nav = document.querySelector("header");
-	if (!nav) return;
+  function initHeaderOpacity() {
+	const header = document.querySelector("header");
+	if (!header) return;
 
-	var threshold = 40; // px
+	const threshold = 40;
 
-	function updateNavOpacity() {
-	  if (window.scrollY > threshold) {
-		nav.classList.add("header-transparent");
-	  } else {
-		nav.classList.remove("header-transparent");
-	  }
+	function updateHeaderOpacity() {
+	  header.classList.toggle("header-transparent", window.scrollY > threshold);
 	}
 
-	// Run immediately in case the user reloads while scrolled down
-	updateNavOpacity();
-
-	window.addEventListener("scroll", updateNavOpacity, { passive: true });
+	updateHeaderOpacity();
+	window.addEventListener("scroll", updateHeaderOpacity, { passive: true });
   }
 
-  // Make sure the DOM is ready before querying .nav-wrapper
   if (document.readyState === "loading") {
-	document.addEventListener("DOMContentLoaded", initNavOpacity);
+	document.addEventListener("DOMContentLoaded", initHeaderOpacity);
   } else {
-	initNavOpacity();
+	initHeaderOpacity();
   }
 })();
 
+/* =========================
+   Fade-up reveal on scroll
+   ========================= */
 (function () {
   "use strict";
 
   function isInViewport(el) {
-	var rect = el.getBoundingClientRect();
-	var vh = window.innerHeight || document.documentElement.clientHeight;
+	const rect = el.getBoundingClientRect();
+	const vh = window.innerHeight || document.documentElement.clientHeight;
 	return rect.top < vh && rect.bottom > 0;
   }
 
   function initFadeSelected() {
-	var main = document.querySelector("main");
+	const main = document.querySelector("main");
 	if (!main) return;
 
-	// Only headings and images inside <main>
-	var elements = main.querySelectorAll(
+	const elements = main.querySelectorAll(
 	  "h1, h2, h3, h4, h5, h6, img, div"
 	);
-
 	if (!elements.length) return;
 
-	// Honour reduced-motion
-	var prefersReducedMotion =
+	if (
 	  window.matchMedia &&
-	  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-	if (prefersReducedMotion) {
-	  elements.forEach(function (el) {
-		el.classList.remove("fade-up-init", "fade-up-visible");
-	  });
+	  window.matchMedia("(prefers-reduced-motion: reduce)").matches
+	) {
+	  elements.forEach(el =>
+		el.classList.remove("fade-up-init", "fade-up-visible")
+	  );
 	  return;
 	}
 
-	var toObserve = [];
+	const toObserve = [];
 
-	elements.forEach(function (el) {
+	elements.forEach(el => {
 	  if (isInViewport(el)) {
-		// Already visible on load – no animation
 		el.classList.remove("fade-up-init", "fade-up-visible");
 	  } else {
-		// Prepare for reveal animation
 		el.classList.add("fade-up-init");
 		toObserve.push(el);
 	  }
@@ -171,32 +416,24 @@
 
 	if (!toObserve.length) return;
 
-	// No IntersectionObserver support = reveal immediately
 	if (!("IntersectionObserver" in window)) {
-	  toObserve.forEach(function (el) {
-		el.classList.add("fade-up-visible");
-	  });
+	  toObserve.forEach(el => el.classList.add("fade-up-visible"));
 	  return;
 	}
 
-	var observer = new IntersectionObserver(
-	  function (entries, obs) {
-		entries.forEach(function (entry) {
-		  if (!entry.isIntersecting) return;
+	function handleIntersection(entries, observer) {
+	  entries.forEach(entry => {
+		if (!entry.isIntersecting) return;
+		entry.target.classList.add("fade-up-visible");
+		observer.unobserve(entry.target);
+	  });
+	}
 
-		  entry.target.classList.add("fade-up-visible");
-		  obs.unobserve(entry.target); // animate once only
-		});
-	  },
-	  {
-		root: null,
-		threshold: 0.2
-	  }
-	);
-
-	toObserve.forEach(function (el) {
-	  observer.observe(el);
+	const observer = new IntersectionObserver(handleIntersection, {
+	  threshold: 0.2
 	});
+
+	toObserve.forEach(el => observer.observe(el));
   }
 
   if (document.readyState === "loading") {
@@ -206,475 +443,34 @@
   }
 })();
 
+/* =========================
+   Scroll-to-top button
+   ========================= */
+(function () {
+  "use strict";
 
-//IIFE for UX code pux.js to avoid global namespace problems
-(function() {
-	// Function to update aria-expanded based on viewport width
-	function updateAriaExpanded() {
-		const navigation = document.getElementById('site-navigation');
-		const hamburgerNav = document.getElementById('hamburger-nav');
+  function initScrollToTop() {
+	const scrollBtn = document.querySelector("#scroll-to-top");
+	if (!scrollBtn) return;
 
-		if (hamburgerNav && hamburgerNav.getAttribute('aria-expanded') === 'true') {
-			navigation.setAttribute('aria-expanded', 'true');
-		} else {
-			navigation.setAttribute('aria-expanded', window.innerWidth >= 768 ? 'true' : 'false');
-		}
-	}
-	// Function to toggle a specified attribute between two values
-	function toggleAttribute(selector, attribute, value1, value2) {
-		// Select the element
-		const elem = document.querySelector(selector);
+	const threshold = 300;
 
-		// Get the current value of the attribute
-		const currentValue = elem.getAttribute(attribute);
-
-		// Set the attribute to the opposite value
-		elem.setAttribute(attribute, currentValue === value1 ? value2 : value1);
+	function updateScrollButtonVisibility() {
+	  scrollBtn.classList.toggle("is-visible", window.scrollY > threshold);
 	}
 
-	// Function to toggle the attributes of the navigation elements when clicked
-	function attributeToggler(e) {
-		// Toggle data-state attribute between "closed" and "open"
-		toggleAttribute("#mobile-nav-banner", "data-state", "closed", "open");
-		toggleAttribute("#site-header", "data-state", "closed", "open");
-
-		// Toggle aria-expanded attribute between "false" and "true"
-		toggleAttribute("#hamburger-nav", "aria-expanded", "false", "true");
-
-		// Add site-navigation element to toggle data-state and aria-expanded attributes
-		toggleAttribute("#site-navigation", "aria-expanded", "false", "true");
-
-		// Prevent default action of the click event
-		e.preventDefault();
+	function handleScrollToTopClick() {
+	  window.scrollTo({ top: 0, behavior: "smooth" });
 	}
 
-	// Function to add event listeners to all navigation toggle elements
-	function handleTogglers() {
-		// Select all elements with class ".mobile-nav-toggle"
-		const togglers = document.querySelectorAll(".mobile-nav-toggle");
-
-		// Attach a click event listener to each toggle element
-		function clickHandler(e) {
-			attributeToggler(e);
-		}
-
-		togglers.forEach(function(toggler) {
-			toggler.addEventListener("click", clickHandler);
-		});
-	}
-
-	function addScrollButton() {
-	  // Select the first h2 element
-	  const h2Element = document.querySelector('h2');
-
-	  // Select the scroll-to-top link
-	  const scrollToTopLink = document.querySelector('.scroll-to-top');
-
-	  // Set aria-hidden to true on page load
-	  scrollToTopLink.setAttribute('aria-hidden', 'true');
-
-	  // Define options for the Intersection Observer
-	  const options = {
-		threshold: 0.25 // Adjust the threshold value as needed
-	  };
-
-	  // Define the callback function
-	  function callback(entries, observer) {
-		entries.forEach(function(entry) {
-		  if (entry.target === h2Element && entry.isIntersecting) {
-			// First h2 element is visible, hide the scroll-to-top link
-			scrollToTopLink.style.opacity = '0';
-			scrollToTopLink.setAttribute('aria-hidden', 'true');
-		  } else {
-			// First h2 element is not visible, show the scroll-to-top link
-			scrollToTopLink.style.opacity = '1';
-			scrollToTopLink.setAttribute('aria-hidden', 'false');
-		  }
-		});
-	  }
-
-	  // Create a new Intersection Observer
-	  const observer = new IntersectionObserver(callback, options);
-
-	  // Start observing the h2 element
-	if(h2Element){
-		observer.observe(h2Element);
-	}
-	}
-
-	// Function to hide and show the header based on scroll direction
-	// An immediately-invoked function expression (IIFE) to avoid polluting the global namespace.
-	function headerShowHide() {
-		// Cache the header element to avoid repeatedly querying the DOM in the scroll event handler.
-		const header = document.getElementById('site-header');
-
-		// Check if the header element has the class 'show-hide'
-		if (!header || !header.classList.contains('show-hide')) {
-			return; // Exit the function if the header does not have the 'show-hide' class
-		}
-
-
-		// Debounce function to limit the rate at which a function can fire.
-		function debounce(func, wait = 10, immediate = true) {
-			// Declare a variable for the timeout.
-			let timeout;
-
-			// This is the function that will be called when debounced.
-			function debounced() {
-				// Capture the context (this) and arguments of the function that will be debounced.
-				let context = this,
-					args = arguments;
-
-				// Function to be called after the delay. If 'immediate' is false,
-				// call the debounced function.
-				function later() {
-					// Reset timeout to null when the wait time is over.
-					timeout = null;
-
-					// Call the function if immediate is false.
-					// This will execute the function after wait time if immediate is false.
-					if (!immediate) func.apply(context, args);
-				}
-
-				// If 'immediate' is true and there's no pending timeout,
-				// call the function and start the wait time.
-				let callNow = immediate && !timeout;
-
-				// If a timeout is pending, clear it. This resets the timer.
-				clearTimeout(timeout);
-
-				// Start waiting by setting the timeout.
-				timeout = setTimeout(later, wait);
-
-				// If 'immediate' is true and there was no timeout pending,
-				// call the function immediately without waiting.
-				if (callNow) func.apply(context, args);
-			}
-
-			return debounced;
-		}
-
-		// This variable keeps track of the last scroll position.
-		let lastScrollTop = 0;
-
-		// Add a debounced event listener to the window object for scroll events.
-		window.addEventListener('scroll', debounce(function() {
-			// Get the current scroll position.
-			let st = window.pageYOffset || document.documentElement.scrollTop;
-
-			// If the current scroll position is greater than the last scroll position,
-			// the user is scrolling down, so set the class of the header to 'closed'.
-			if (st > lastScrollTop) {
-				header.className = 'closed';
-			} else {
-				// If the current scroll position is not greater than the last scroll position,
-				// the user is scrolling up, so set the class of the header to 'open'.
-				header.className = 'open';
-			}
-
-			// Update lastScrollTop to the current scroll position,
-			// or reset to 0 if the user has scrolled to the very top of the page.
-			lastScrollTop = st <= 0 ? 0 : st;
-		}), false);
-	}
-
-// Main function for controlling the lightbox dialog.
-	function dialogLightBox() {
-		// Retrieve necessary elements from the DOM.
-		const lightboxGrid = document.querySelector('.lightbox-grid');
-		if (!lightboxGrid) return; // If there's no lightboxGrid, don't proceed further
-
-		const dialog = document.getElementById('lightbox-dialog');
-		if (!dialog) return; // If there's no dialog, don't proceed further
-
-		const lightboxImage = document.getElementById('lightbox-image');
-		const lightboxCaption = document.getElementById('lightbox-caption');
-		const lightboxCounter = document.getElementById('lightbox-counter');
-		const figures = document.querySelectorAll('.lightbox-figure');
-		if (!figures.length) return; // If there are no figures, don't proceed further
-
-		let currentFigureIndex = 0;
-
-// Map each figure to an object containing its relevant data.
-		const figureData = Array.from(figures).map((figure) => {
-			const img = figure.querySelector('img');
-			const link = figure.querySelector('a.original-image');
-			const caption = figure.querySelector('span.caption-text');
-			let captionText = ""; // Initialize captionText as an empty string
-			if (caption) { // If caption exists (is not null), get its textContent
-				captionText = caption.textContent;
-			}
-			return {
-				src: img.src,
-				alt: img.alt,
-				class: img.className,                          // Capture class
-				width: img.getAttribute('width'),               // Get inline width attribute
-				height: img.getAttribute('height'),             // Get inline height attribute
-				link: link.outerHTML,                           // Store the entire HTML of the link
-				caption: captionText                            // Store the cleaned-up caption text
-			};
-		});
-
-		// Update the dialog with data from the figure at the given index.
-		function updateDialog(index) {
-			lightboxImage.src = figureData[index].src;
-			lightboxImage.alt = figureData[index].alt;
-			lightboxImage.className = figureData[index].class;   // Set class
-			lightboxImage.setAttribute('width', figureData[index].width);  // Set width
-			lightboxImage.setAttribute('height', figureData[index].height); // Set height
-			lightboxCaption.innerHTML = figureData[index].caption + figureData[index].link;
-			lightboxCounter.textContent = `Viewing figure ${index + 1} of ${figureData.length}`;
-		}
-
-
-
-
-		// Event delegation for figures.
-		lightboxGrid.addEventListener('click', function(event) {
-			const figure = event.target.closest('.lightbox-figure');
-			if (figure) {
-				currentFigureIndex = Array.from(figures).indexOf(figure);
-				updateDialog(currentFigureIndex);
-				document.body.style.overflow = 'hidden'; // Prevent scrolling when dialog is open.
-				dialog.showModal();
-				nextButton.focus(); // Set focus on the next button after the dialog is shown.
-			}
-		});
-
-		// Previous button event handler.
-		const prevButton = document.getElementById('prev-button');
-		if (prevButton) { // Check if the prevButton exists
-			prevButton.addEventListener('click', () => {
-				if (currentFigureIndex > 0) {
-					currentFigureIndex--;
-					updateDialog(currentFigureIndex);
-				}
-			});
-		}
-
-		// Next button event handler.
-		const nextButton = document.getElementById('next-button');
-		if (nextButton) { // Check if the nextButton exists
-			nextButton.addEventListener('click', () => {
-				if (currentFigureIndex < figureData.length - 1) {
-					currentFigureIndex++;
-					updateDialog(currentFigureIndex);
-				}
-			});
-		}
-
-		// Close button event handler.
-		const closeButton = document.getElementById('close-lightbox');
-		if (closeButton) { // Check if the closeButton exists
-			closeButton.addEventListener('click', () => {
-				dialog.close();
-				document.body.style.overflow = ''; // Allow scrolling again when dialog is closed.
-			});
-		}
-
-		// Keyboard navigation handlers.
-		window.addEventListener('keydown', function(event) {
-			switch (event.key) {
-				case 'ArrowLeft':
-					if (currentFigureIndex > 0) {
-						currentFigureIndex--;
-						updateDialog(currentFigureIndex);
-					}
-					break;
-				case 'ArrowRight':
-					if (currentFigureIndex < figureData.length - 1) {
-						currentFigureIndex++;
-						updateDialog(currentFigureIndex);
-					}
-					break;
-					case 'Escape':
-					dialog.close();
-					document.body.style.overflow = ''; // Allow scrolling again when dialog is closed.
-					break;
-			}
-		});
-	}
-
-
-	// Wait for the DOM to load before running the following functions
-	document.addEventListener("DOMContentLoaded", function() {
-		updateAriaExpanded();
-		handleTogglers();
-		addScrollButton();
-		headerShowHide();
-		dialogLightBox();
-	});
-}());
-
-
-/**
- * Clicky Menus v1.2.0
- */
-
-( function() {
-	'use strict';
-
-	const ClickyMenus = function( menu ) {
-		// DOM element(s)
-		const container = menu.parentElement;
-		let currentMenuItem,
-			i,
-			len;
-
-		this.init = function() {
-			menuSetup();
-			document.addEventListener( 'click', closeIfClickOutsideMenu );
-			// custom event to allow outside scripts to close submenus
-			menu.addEventListener( 'clickyMenusClose', closeOpenSubmenu );
-		};
-
-		/*===================================================
-		=            Menu Open / Close Functions            =
-		===================================================*/
-		function toggleOnMenuClick( e ) {
-			const button = e.currentTarget;
-
-			// close open menu if there is one
-			if ( currentMenuItem && button !== currentMenuItem ) {
-				toggleSubmenu( currentMenuItem );
-			}
-
-			toggleSubmenu( button );
-		}
-
-		function toggleSubmenu( button ) {
-			const submenu = document.getElementById( button.getAttribute( 'aria-controls' ) );
-
-			if ( 'true' === button.getAttribute( 'aria-expanded' ) ) {
-				button.setAttribute( 'aria-expanded', false );
-				submenu.setAttribute( 'aria-hidden', true );
-				currentMenuItem = false;
-			} else {
-				button.setAttribute( 'aria-expanded', true );
-				submenu.setAttribute( 'aria-hidden', false );
-				preventOffScreenSubmenu( submenu );
-				currentMenuItem = button;
-			}
-		}
-
-		function preventOffScreenSubmenu( submenu ) {
-			const 	screenWidth =	window.innerWidth ||
-									document.documentElement.clientWidth ||
-									document.body.clientWidth,
-				parent = submenu.offsetParent,
-				menuLeftEdge = parent.getBoundingClientRect().left,
-				menuRightEdge = menuLeftEdge + submenu.offsetWidth;
-
-			if ( menuRightEdge + 32 > screenWidth ) { // adding 32 so it's not too close
-				submenu.classList.add( 'sub-menu--right' );
-			}
-		}
-
-		function closeOnEscKey( e ) {
-			if (	27 === e.keyCode ) {
-				// we're in a submenu item
-				if ( null !== e.target.closest( 'ul[aria-hidden="false"]' ) ) {
-					currentMenuItem.focus();
-					toggleSubmenu( currentMenuItem );
-
-				// we're on a parent item
-				} else if ( 'true' === e.target.getAttribute( 'aria-expanded' ) ) {
-					toggleSubmenu( currentMenuItem );
-				}
-			}
-		}
-
-		function closeIfClickOutsideMenu( e ) {
-			if ( currentMenuItem && ! e.target.closest( '#' + container.id ) ) {
-				toggleSubmenu( currentMenuItem );
-			}
-		}
-
-		function closeOpenSubmenu() {
-			if( currentMenuItem ) {
-				toggleSubmenu( currentMenuItem );
-			}
-		}
-
-		/*===========================================================
-		=            Modify Menu Markup & Bind Listeners            =
-		=============================================================*/
-		function menuSetup() {
-			menu.classList.remove( 'no-js' );
-			const submenuSelector = 'clickySubmenuSelector' in menu.dataset ? menu.dataset.clickySubmenuSelector : 'ul';
-
-			menu.querySelectorAll( submenuSelector ).forEach( ( submenu ) => {
-				const menuItem = submenu.parentElement;
-
-				if ( 'undefined' !== typeof submenu ) {
-					const button = convertLinkToButton( menuItem );
-
-					setUpAria( submenu, button );
-
-					// bind event listener to button
-					button.addEventListener( 'click', toggleOnMenuClick );
-					menu.addEventListener( 'keyup', closeOnEscKey );
-				}
-			} );
-		}
-
-		/**
-		 * Why do this? See https://justmarkup.com/articles/2019-01-21-the-link-to-button-enhancement/
-		 *
-		 * @param {HTMLElement} menuItem An element representing a link to be converted to a button
-		 */
-		function convertLinkToButton( menuItem ) {
-			const 	link = menuItem.getElementsByTagName( 'a' )[ 0 ],
-				linkHTML = link.innerHTML,
-				linkAtts = link.attributes,
-				button = document.createElement( 'button' );
-
-			if ( null !== link ) {
-				// copy button attributes and content from link
-				button.innerHTML = linkHTML.trim();
-				for ( i = 0, len = linkAtts.length; i < len; i++ ) {
-					const attr = linkAtts[ i ];
-					if ( 'href' !== attr.name ) {
-						button.setAttribute( attr.name, attr.value );
-					}
-				}
-
-				menuItem.replaceChild( button, link );
-			}
-
-			return button;
-		}
-
-		function setUpAria( submenu, button ) {
-			const submenuId = submenu.getAttribute( 'id' );
-
-			let id;
-			if ( null === submenuId ) {
-				id = button.textContent.trim().replace( /\s+/g, '-' ).toLowerCase() + '-submenu';
-			} else {
-				id = submenuId + '-submenu';
-			}
-
-			// set button ARIA
-			button.setAttribute( 'aria-controls', id );
-			button.setAttribute( 'aria-expanded', false );
-
-			// set submenu ARIA
-			submenu.setAttribute( 'id', id );
-			submenu.setAttribute( 'aria-hidden', true );
-		}
-	};
-
-	/* Create a ClickMenus object and initiate menu for any menu with .clicky-menu class */
-	document.addEventListener( 'DOMContentLoaded', function() {
-		const menus = document.querySelectorAll( '.clicky-menu' );
-
-		menus.forEach( ( menu ) => {
-			const clickyMenu = new ClickyMenus( menu );
-			clickyMenu.init();
-		} );
-	} );
-}() );
-
-
-
+	scrollBtn.addEventListener("click", handleScrollToTopClick);
+	window.addEventListener("scroll", updateScrollButtonVisibility, { passive: true });
+	updateScrollButtonVisibility();
+  }
+
+  if (document.readyState === "loading") {
+	document.addEventListener("DOMContentLoaded", initScrollToTop);
+  } else {
+	initScrollToTop();
+  }
+})();
