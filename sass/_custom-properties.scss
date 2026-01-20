@@ -15,9 +15,12 @@ $desktop-height:"900px";
 
 $macbook-height: 832px;
 
+$desktop-break: 768px;
 
 //CSS custom properties
 :root {
+	
+	
 	
 	--desktop-sm: 1024px;
 	--desktop-md: 1280px;
@@ -25,13 +28,15 @@ $macbook-height: 832px;
 	
 	
 	//page background (not content column)
-	--viewport-bg-color: #e6e6e6;
+	--viewport-bg-color: #ffffff;
 
 	//fonts
-	--primary-sans: 'Inter', Verdana, Geneva, Tahoma, sans-serif;
+	--primary-sans: 'Roboto', Verdana, Geneva, Tahoma, sans-serif;
 	--primary-serif: 'Source Serif', Georgia, Times New Roman, serif;
 	--primary-serif-sc: 'Alegreya SC', Georgia, Times New Roman, serif;
 
+	//borders 
+	--border-color: #D5D7DA;
 	
 
 	//hamburger menu
@@ -44,11 +49,7 @@ $macbook-height: 832px;
 	--mobile-nav-bg-color: rgba(79, 106, 23, 1);
 	--mobile-nav-bg-color-closed: #ffffff;
 
-	//lightbox
-	--lightbox-max-width: 500px;
-	--dialog-lightbox-border: 1px solid var(--divider-bg-color);
-	--dialog-lightbox-boxshadow: 0 4px 8px 0 rgba(0, 0, 0, 0.25), inset 0 0 50px rgba(0, 0, 0, 0.15), 0 0 5px rgba(0, 0, 0, 0.25);
-	--dialog-lightbox-bg-color: #ffffff;
+	
 
 
 	//cards
@@ -119,7 +120,7 @@ $macbook-height: 832px;
 	--body-internal-bg: #fdfdfd;
 
 	--page-bg: #fafafa;
-	--highlight: #FFB500;;
+	--highlight: #D60000;;
 	--text-color: #222222;
 	--underline: #FFB500;;
 	--underline-active: transparent;

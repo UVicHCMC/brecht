@@ -2,50 +2,18 @@
 $fontPath : "../../fonts/";
 
 @font-face {
-	font-family: 'Alegreya';
+	font-family: 'Roboto';
 	font-weight: 100 900;
 	font-style: normal;
-	src: url("#{$fontPath}Alegreya-VariableFont_wght.woff2") format("woff2");
+	src: url("#{$fontPath}Roboto-VariableFont.woff2") format("woff2");
 	font-display: swap;
 }
 
 @font-face {
-	font-family: 'Source Serif';
-	font-weight: 100 900;
-	font-style: normal;
-	src: url("#{$fontPath}SourceSerif4-VariableFont.woff2") format("woff2");
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'Source Serif';
+	font-family: 'Roboto';
 	font-weight: 100 900;
 	font-style: italic;
-	src: url("#{$fontPath}SourceSerif4-Italic-VariableFont.woff2") format("woff2");
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'Source Sans';
-	font-weight: 100 900;
-	font-style: normal;
-	src: url("#{$fontPath}SourceSans3-VariableFont.woff2") format("woff2");
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'Source Sans';
-	font-weight: 100 900;
-	font-style: italic;
-	src: url("#{$fontPath}SourceSans3-Italic-VariableFont.woff2") format("woff2");
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'Alegreya SC';
-	font-weight: 500;
-	font-style: normal;
-	src: url("#{$fontPath}AlegreyaSC-Medium.woff2") format("woff2");
+	src: url("#{$fontPath}Roboto-Italic-VariableFont.woff2") format("woff2");
 	font-display: swap;
 }
 
