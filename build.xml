@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="fullBuild" name="brecht" xmlns:if="ant:if"
-    xmlns:unless="ant:unless">
+         xmlns:unless="ant:unless">
     <description>
         #####################################################################
         #    Project build file by Illya Nokhrin (inokhrin@uvic.ca), 2025, based on previous
@@ -19,7 +19,7 @@
         Bilingual (Other Language Pair, eg. English/German):
         ant fullBilingualBuild -Dlang1=en -Dlang2=de
         
-
+        
         
         There are two build processes: monolingual and bilingual.
         
@@ -28,11 +28,11 @@
         All content for the site pages is expected to be in XML format in the /content/ directory.        
         
         The default build process expects a monolingual build. The default language is English. If you want to change this, use -Dlang1=xx.       
-
+        
         The bilingual build processes expects that all inputs will follow a bilingual directory structure (eg. that the content/ directory will have content/en and content/fr subdirectories that house all the actual content files.).
         It also expects template files that have multiple data attributes (eg. data-en="Home" data-fr="Accuiel"). 
         At this stage, the file names have to be the same in both languages (eg. content/en/gettinghere.xml and content/fr/gettinghere.xml, not content/fr/venir.xml).
-
+        
         This build file does these basic tasks:
         
         * Runs a script to determine the dimensions of all images and creates a text file storing those dimensions
@@ -44,7 +44,7 @@
         * Uses a properties XML file to store site data and file locations
         
         * Takes the properties of said properties XML file and uses them to fill in templates    
-
+        
         It requires java libraries that are in the /lib/ folder.
         
         It also requires ant-contrib.
@@ -61,11 +61,11 @@
         to push the results up to the live site (requires pwak3
         credentials on web.uvic.ca).
         
-
+        
         #                                                                   #
         #####################################################################
         
-
+        
     </description>
     
     <!-- Load ant-contrib tasks -->
@@ -320,7 +320,7 @@
             </fileset>
         </delete>
     </target>
-
+    
     <target name="getImageDimensions">
         <description>
             TARGET getImageDimensions
@@ -338,17 +338,17 @@
     <target name="buildCss">
         <description>
             TARGET buildCss
-            This builds the SCSS file to create CSS and map file for the output site.
+            This builds the SCSS files to create CSS files for the output site.
         </description>
         <echo message="${echo.separator}"/>
-        <echo message="Building SCSS source to create CSS file in HTML folder."/>
+        <echo message="Building SCSS source to create CSS files in HTML folder."/>
         <mkdir dir="${basedir}/site/css"/>
-        <exec executable="sass">
-            <arg value="${basedir}/sass/brecht.scss"/>
-            <arg value="${basedir}/css/brecht.css"/>
+        <exec executable="scss">
+            <arg value="--no-source-map"/>
+            <arg value="${basedir}/sass:${basedir}/css"/>
         </exec>
     </target>
-
+    
     
     <target name="copyWebResources">
         <description>
@@ -359,7 +359,7 @@
         <echo message="${echo.separator}"/>
         <echo message="Building CSS..."/>
         <antcall target="buildCss"/>
-
+        
         <echo message="Copying required resources to the 'site' folder."/>
         
         <echo message="Copying CSS to the 'site/css' folder."/>
@@ -389,49 +389,49 @@
         </pathconvert>
         <echo message="Copied images: ${copied.images}"/>
         <!--<copy todir="site" preservelastmodified="true">
-            <fileset dir="favicons">
-                <include name="*.*"/>
-            </fileset>
-        </copy>-->
+             <fileset dir="favicons">
+             <include name="*.*"/>
+             </fileset>
+             </copy>-->
+     </target>
+    
+    <target name="buildSitemap">
+        <description>
+            TARGET buildSitemap
+            This builds a sitemap in Standard Sitemap Protocol format (https://www.sitemaps.org/)
+            to aid search engines.
+        </description>
+        <echo message="${echo.separator}"/>
+        <echo message="Building the sitemap required by Google search indexing."/>
+        <java fork="true" classname="net.sf.saxon.Transform" classpath="${saxon}" failonerror="true">
+            <jvmarg value="-Xmx1024m"/>
+            <arg value="-s:xsl/master_build_sitemap.xsl"/>
+            <arg value="-xsl:xsl/master_build_sitemap.xsl"/>
+            <arg value="-o:site/sitemap.xml"/>
+            <arg value="--suppressXsltNamespaceCheck:on"/>
+        </java>
     </target>
-
-        <target name="buildSitemap">
-            <description>
-                TARGET buildSitemap
-                This builds a sitemap in Standard Sitemap Protocol format (https://www.sitemaps.org/)
-                to aid search engines.
-            </description>
-            <echo message="${echo.separator}"/>
-            <echo message="Building the sitemap required by Google search indexing."/>
-            <java fork="true" classname="net.sf.saxon.Transform" classpath="${saxon}" failonerror="true">
-                <jvmarg value="-Xmx1024m"/>
-                <arg value="-s:xsl/master_build_sitemap.xsl"/>
-                <arg value="-xsl:xsl/master_build_sitemap.xsl"/>
-                <arg value="-o:site/sitemap.xml"/>
-                <arg value="--suppressXsltNamespaceCheck:on"/>
-            </java>
-        </target>
-        
-        <target name="validateSite">
-            <description>
-                TARGET validateSite
-                This target validates the complete collection of XHTML5 documents
-                comprising the output site, using the VNU validator (the same validator used by
-                the W3C's online validation service).
-                Before it can proceed, it has to copy the jar file, which is stored with an
-                obfuscated name so that it doesn't break Oxygen's ability to build TEI ODD
-                files due to a duplicate class.
-            </description>
-            <echo message="${echo.separator}"/>
-            <echo message="Validating the HTML pages produced in the build using the VNU validator."/>
-            <copy file="${basedir}/lib/vnu.jarx" tofile="${basedir}/lib/vnu.jar"/>
-            <java jar="${basedir}/lib/vnu.jar" failonerror="false" fork="true">
-                <arg value="--format text"/>
-                <arg value="--skip-non-html"/>
-                <arg value="--errors-only"/>
-                <arg value="${basedir}/site"/>
-            </java>
-            <delete file="${basedir}/lib/vnu.jar"/>
-        </target>
+    
+    <target name="validateSite">
+        <description>
+            TARGET validateSite
+            This target validates the complete collection of XHTML5 documents
+            comprising the output site, using the VNU validator (the same validator used by
+            the W3C's online validation service).
+            Before it can proceed, it has to copy the jar file, which is stored with an
+            obfuscated name so that it doesn't break Oxygen's ability to build TEI ODD
+            files due to a duplicate class.
+        </description>
+        <echo message="${echo.separator}"/>
+        <echo message="Validating the HTML pages produced in the build using the VNU validator."/>
+        <copy file="${basedir}/lib/vnu.jarx" tofile="${basedir}/lib/vnu.jar"/>
+        <java jar="${basedir}/lib/vnu.jar" failonerror="false" fork="true">
+            <arg value="--format text"/>
+            <arg value="--skip-non-html"/>
+            <arg value="--errors-only"/>
+            <arg value="${basedir}/site"/>
+        </java>
+        <delete file="${basedir}/lib/vnu.jar"/>
+    </target>
     
 </project>
