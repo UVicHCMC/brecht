@@ -15,7 +15,7 @@
    <body id="top">
       <header data-state="closed" id="site-header" class="open">
          <span class="internalTitle">Healing Forests</span>
-         <span class="internalSubTitle">Indigenous Knowledges &amp;amp; Traditional Medicines&lt;br /&gt;with the Khasi People of Meghalaya, Northeast India</span>
+         <span class="internalSubTitle">Indigenous Knowledges &amp; Traditional Medicines<br />with the Khasi People of Meghalaya, Northeast India</span>
          <span class="subheaderInternal">
             <div class="place">Event Venue/Host</div>
             <div class="date">June 15-17, 2024</div>
@@ -29,7 +29,25 @@
          <div class="nav-wrapper">
             <nav class="main-menu" id="site-navigation" aria-expanded="true">
                <ul class="clicky-menu no-js" role="menu">
-                    </ul>
+                  <li>
+                     <a class="item" href="index.html">Home</a>
+                  </li>
+                  <li>
+                     <a class="item" href="registration.html">Registration</a>
+                  </li>
+                  <li>
+                     <a class="item" href="program.html">Program</a>
+                  </li>
+                  <li>
+                     <a class="item" href="accommodations.html">Accommodations</a>
+                  </li>
+                  <li>
+                     <a class="item" href="gettinghere.html">Getting here</a>
+                  </li>
+                  <li>
+                     <a class="item" href="about.html">About</a>
+                  </li>
+               </ul>
                <div class="mobile-nav-footer">
                   <img class="mobile-footer-logo"
                        src=""

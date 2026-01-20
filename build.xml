@@ -171,12 +171,12 @@
     <target name="fullBuild">
         <description>Full monolingual build (DEFAULT)</description>
         <echo message="Monolingual build complete (lang=${lang1})!"/>
+        <antcall target="copyWebResources"/>
         <antcall target="getImageDimensions"/>
         <antcall target="generateMonoLandingTemplate"/>
         <antcall target="generateMonoContentTemplate"/>
         <antcall target="makeMonoLandingPage"/>
-        <antcall target="processMonoContent"/>
-        <antcall target="copyWebResources"/>
+        <antcall target="processMonoContent"/>        
     </target>
     
     <!-- ========================================= -->
@@ -362,19 +362,32 @@
 
         <echo message="Copying required resources to the 'site' folder."/>
         
+        <echo message="Copying CSS to the 'site/css' folder."/>
         <copy todir="${basedir}/site/css" preservelastmodified="true">
             <fileset dir="${basedir}/css" includes="*.css"/>
         </copy>
+        
+        <echo message="Copying fonts to the 'site/fonts' folder."/>
         <copy todir="${basedir}/site/fonts" preservelastmodified="true">
             <fileset dir="${basedir}/fonts"/>
         </copy>
-        <!--<copy todir="${basedir}/site/js" preservelastmodified="true">
+        <copy todir="${basedir}/site/js" preservelastmodified="true">
             <fileset dir="${basedir}/js"/>
-        </copy>-->
-        <copy todir="${basedir}/site/images" preservelastmodified="true">
-            <fileset dir="${basedir}/content/images">
-            </fileset>
         </copy>
+        <echo message="Copying images to the 'site/images' folder."/>
+        <path id="image.files">
+            <fileset dir="${basedir}/images" includes="**/*"/>
+            <fileset dir="${basedir}/content/images" includes="**/*" erroronmissingdir="false"/>
+        </path>
+        <copy todir="${basedir}/site/images" preservelastmodified="true">
+            <path refid="image.files"/>
+        </copy>
+        <pathconvert property="copied.images" refid="image.files" pathsep=", ">
+            <mapper>
+                <regexpmapper from="^${basedir}/(.*)$" to="\1"/>
+            </mapper>
+        </pathconvert>
+        <echo message="Copied images: ${copied.images}"/>
         <!--<copy todir="site" preservelastmodified="true">
             <fileset dir="favicons">
                 <include name="*.*"/>

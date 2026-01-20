@@ -90,7 +90,7 @@
       </xsl:when>
       
       <xsl:when test="name() = 'splashSubtitle'">
-        <xsl:call-template name="get-text-value">
+        <xsl:call-template name="get-html-value">
           <xsl:with-param name="element" select="$properties/metadata/splashSubtitle"/>
         </xsl:call-template>
       </xsl:when>
@@ -130,6 +130,12 @@
         </xsl:variable>
         
         <img src="{$logoPath}" alt="{$altText}" class="uvic-logo-internal"/>
+      </xsl:when>
+      
+      <xsl:when test="name() = 'fontPreloads'">
+        <xsl:for-each select="$properties/files/font">
+          <link rel="preload" href="{.}" as="font" xmlns="http://www.w3.org/1999/xhtml"/>
+        </xsl:for-each>
       </xsl:when>
       
       <xsl:when test="name() = 'bilingualSwitcher'">
@@ -280,15 +286,35 @@
   
   <!-- Template to build navigation menu -->
   <xsl:template name="build-navigation">
-    <xsl:for-each select="$properties/navigation/menu">
-      <li>
-        <a href="{@href}">
+    <xsl:for-each select="$properties/navigation/*">
+      <xsl:apply-templates select="." mode="copy-nav-element"/>
+    </xsl:for-each>
+  </xsl:template>
+  
+  <!-- Template to copy navigation elements and resolve language attributes -->
+  <xsl:template match="*" mode="copy-nav-element">
+    <xsl:element name="{local-name()}">
+      <!-- Copy all non-language attributes -->
+      <xsl:copy-of select="@*[not(local-name() = map:keys($langLabels))]"/>
+      
+      <!-- Process child elements and text -->
+      <xsl:choose>
+        <xsl:when test="@*[local-name() = $lang] or @en">
+          <!-- Element has language attributes, get text value -->
           <xsl:call-template name="get-text-value">
             <xsl:with-param name="element" select="."/>
           </xsl:call-template>
-        </a>
-      </li>
-    </xsl:for-each>
+        </xsl:when>
+        <xsl:when test="*">
+          <!-- Element has children, process them recursively -->
+          <xsl:apply-templates select="*" mode="copy-nav-element"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <!-- Element has text content, copy it -->
+          <xsl:value-of select="."/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:element>
   </xsl:template>  
   
 </xsl:stylesheet>
