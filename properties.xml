@@ -50,11 +50,11 @@
         <faviconSvg>images/favicon.svg</faviconSvg>
         <splashIcon>images/splash-icon.png</splashIcon>
         <siteManifest>site.webmanifest</siteManifest>
-        <uvicLogo>images/logo-uvic.webp</uvicLogo>
-        <siteLogo>images/site-logo-top.webp</siteLogo>
-        <mobileLogo>images/site-logo-top.webp</mobileLogo>
-        <footerLogo>images/footer-logo.webp</footerLogo>
-        <mobileFooterLogo>images/mobile-nav-footer-logo.webp</mobileFooterLogo>
+        <uvicLogo>images/logo-uvic.png</uvicLogo>
+        <siteLogo>images/logo-splash-brecht.webp</siteLogo>
+        <!--<mobileLogo>images/site-logo-top.webp</mobileLogo>-->
+        <!--<footerLogo>images/footer-logo.webp</footerLogo>-->
+        <!--<mobileFooterLogo>images/mobile-nav-footer-logo.webp</mobileFooterLogo>-->
     </files>
 
     <urls>
