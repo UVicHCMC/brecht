@@ -63,7 +63,7 @@
         <uvicUrl>https://hcmc.uvic.ca</uvicUrl>
     </urls>
 
-    <footer>
+    <footerContent>
     
     <div class="footer-container">
         <ul class="footer-items">
@@ -80,7 +80,7 @@
         <copyrightText en="&lt;p&gt;© 2024 Organization Name&lt;/p&gt;" de="&lt;p&gt;© 2024 Name der Organisation&lt;/p&gt;" />
         <citationText en="How to cite this site" de="Wie zitiert man diese Seite" />
         <acknowledgementsText en="&lt;p&gt;Acknowledgements text here&lt;/p&gt;" de="&lt;p&gt;Danksagung Text hier&lt;/p&gt;" /> -->
-    </footer>
+    </footerContent>
 
     <navigation>
        <li><a class="item" href="index.html" en="Home" de="Startseite" /></li>
