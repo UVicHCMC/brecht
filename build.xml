@@ -343,9 +343,9 @@
         <echo message="${echo.separator}"/>
         <echo message="Building SCSS source to create CSS files in HTML folder."/>
         <mkdir dir="${basedir}/site/css"/>
-        <exec executable="scss">
+        <exec executable="sass">
             <arg value="--no-source-map"/>
-            <arg value="${basedir}/sass:${basedir}/css"/>
+            <arg value="${basedir}/scss:${basedir}/css"/>
         </exec>
     </target>
     

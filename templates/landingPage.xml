@@ -13,7 +13,13 @@
             sizes="any"
             type="image/svg+xml"/>
       <link rel="manifest" href="site.webmanifest"/>
-      <?fontPreloads?>
+      <link rel="preload" href="fonts/InterVariable.woff2" as="font"/>
+      <link rel="preload" href="fonts/InterVariable-Italic.woff2" as="font"/>
+      <link rel="preload" href="fonts/InterVariable.woff2" as="font"/>
+      <link rel="preload"
+            href="fonts/Roboto-Italic-VariableFont.woff2"
+            as="font"/>
+      <link rel="preload" href="fonts/Roboto-VariableFont.woff2" as="font"/>
       <script src="js/pux.js"/>
       <meta name="description"
             content="Description of the website for SEO purposes."/>
@@ -85,8 +91,25 @@
                 </div> -->
                         </div>
                         <ul class="popover-nav-items">
-                                <?navigation?>
-                            </ul>
+                           <li>
+                              <a class="item" href="index.html">Home</a>
+                           </li>
+                           <li>
+                              <a class="item" href="registration.html">Registration</a>
+                           </li>
+                           <li>
+                              <a class="item" href="program.html">Program</a>
+                           </li>
+                           <li>
+                              <a class="item" href="accommodations.html">Accommodations</a>
+                           </li>
+                           <li>
+                              <a class="item" href="gettinghere.html">Getting here</a>
+                           </li>
+                           <li>
+                              <a class="item" href="about.html">About</a>
+                           </li>
+                        </ul>
                      </div>
                   </nav>
                   <button class="lang-chooser"
@@ -105,8 +128,19 @@
             </div>
          </main>
          <footer>
-            <?footerContent?>
-        </footer>
+            <div class="footer-container">
+               <ul class="footer-items">
+                  <li>
+                     <a href="https://hcmc.uvic.ca">
+                        <img src="images/logo-uvic.svg"
+                             alt="University of Victoria, Humanities Computing and Media Centre"
+                             width="225"
+                             height="33"/>
+                     </a>
+                  </li>
+               </ul>
+            </div>
+         </footer>
       </div>
    </body>
 </html>

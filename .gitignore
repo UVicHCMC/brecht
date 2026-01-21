@@ -3,7 +3,7 @@
 
 #Dont track CSS
 css/
-sass/*.css
+scss/*.css
 
 # Ignore source files 
 src/
