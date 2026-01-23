@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
    <head>
-      <title>Website Title</title>
+      <title>Brecht in the Anthropocene</title>
       <meta charset="utf-8"/>
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
       <link rel="stylesheet" href="css/brecht.css"/>
@@ -57,7 +57,7 @@
                </div>
             </nav>
             <a href="index.html">
-               <img class="site-logo" src="images/logo-splash-brecht.webp" alt=""/>
+               <img class="site-logo" src="" alt=""/>
             </a>
          </div>
       </header>
@@ -75,7 +75,7 @@
          <div class="citation"/>
          <div class="logos">
             <a class="uvic-logo-internal" href="https://hcmc.uvic.ca">
-               <img src="images/logo-uvic.png" alt=""/>
+               <img src="" alt=""/>
             </a>
          </div>
          <div class="acknowledgements"/>

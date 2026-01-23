@@ -24,7 +24,7 @@
     </languages>
     <metadata>
         <metaDescription en="Description of the website for SEO purposes." de="Beschreibung der Website für SEO-Zwecke" />
-        <siteTitle en="Website Title" de="Website-Titel" />
+        <siteTitle en="Brecht in the Anthropocene" de="Brecht im Anthropozän" />
         <organization en="Organization Name" de="Name der Organisation" />
         <splashTitle en="Healing Forests" de="Heilende Wälder" />
         <splashSubtitle en="Indigenous Knowledges &amp;amp; Traditional Medicines&lt;br /&gt;with the Khasi People of Meghalaya, Northeast India" 
@@ -45,13 +45,13 @@
         <font>fonts/InterVariable-Italic.woff2</font>
         <font>fonts/InterVariable.woff2</font>
         <font>fonts/Roboto-Italic-VariableFont.woff2</font>
-        <font>fonts/Roboto-VariableFont.woff2</font>
-        <faviconIco>images/favicon.ico</faviconIco>
+        <font>fonts/Roboto-VariableFont.woff2</font> 
         <faviconSvg>images/favicon.svg</faviconSvg>
-        <splashIcon>images/splash-icon.png</splashIcon>
+        <faviconIco>images/favicon.ico</faviconIco>
+        <!-- <splashIcon>images/splash-icon.png</splashIcon> -->
         <siteManifest>site.webmanifest</siteManifest>
-        <uvicLogo>images/logo-uvic.png</uvicLogo>
-        <siteLogo>images/logo-splash-brecht.webp</siteLogo>
+        <!-- <uvicLogo>images/logo-uvic.png</uvicLogo>
+        <siteLogo>images/logo-splash-brecht.webp</siteLogo> -->
         <!--<mobileLogo>images/site-logo-top.webp</mobileLogo>-->
         <!--<footerLogo>images/footer-logo.webp</footerLogo>-->
         <!--<mobileFooterLogo>images/mobile-nav-footer-logo.webp</mobileFooterLogo>-->
