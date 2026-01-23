@@ -233,24 +233,24 @@ button.popover-nav-close {
 	position: static;
 	width: max-content;
 	height: max-content;
-	inset: auto;
+	inset: auto; 
 	margin-inline: auto;
 	z-index: auto;
 	background-color: transparent;
 	box-shadow: none;
 	opacity: 1;
   }
-
-
-  html:has(&),
-  body:has(&) {
-	overflow: hidden;
-	scrollbar-gutter: stable;
-  }
-
+  
   @starting-style {
 	opacity: 0;
   }
+}
+
+/* scroll lock */
+html:has(#site-navigation[popover]:popover-open),
+body:has(#site-navigation[popover]:popover-open) {
+  overflow: hidden;
+  scrollbar-gutter: stable;
 }
 
 #site-navigation:popover-open>.popover-group-container>.popover-nav-items {
