@@ -51,6 +51,8 @@
   
   <!-- Main template -->
   <xsl:template match="/">
+    <xsl:comment>DO NOT EDIT THESE FILES. THEY ARE OVERWRITTEN DURING THE BUILD PROCESS</xsl:comment>
+    <xsl:comment>If you want to edit template files, edit those in the boilerplate/ folder</xsl:comment>
     <xsl:apply-templates select="." mode="process-template"/>
   </xsl:template>
   
@@ -396,22 +398,43 @@
     <xsl:param name="text"/>
     
     <xsl:choose>
-      <xsl:when test="matches($text, '\{\?[a-zA-Z]+\}')">
-        <xsl:variable name="placeholder" select="substring-before(substring-after($text, '{?'), '}')"/>
-        <xsl:variable name="element" select="$properties//*[local-name() = $placeholder]"/>
+      <xsl:when test="contains($text, '{?')">
+        <xsl:variable name="before" select="substring-before($text, '{?')"/>
+        <xsl:variable name="after" select="substring-after($text, '{?')"/>
         
         <xsl:choose>
-          <xsl:when test="$element">
-            <xsl:variable name="value">
-              <xsl:call-template name="get-text-value">
-                <xsl:with-param name="element" select="$element"/>
-              </xsl:call-template>
-            </xsl:variable>
-            <xsl:value-of select="replace($text, concat('\{\?', $placeholder, '\}'), string($value))"/>
+          <xsl:when test="contains($after, '}')">
+            <xsl:variable name="placeholder" select="substring-before($after, '}')"/>
+            <xsl:variable name="remainder" select="substring-after($after, '}')"/>
+            <xsl:variable name="element" select="$properties//*[local-name() = $placeholder]"/>
+            
+            <xsl:choose>
+              <xsl:when test="$element">
+                <xsl:variable name="value">
+                  <xsl:call-template name="get-text-value">
+                    <xsl:with-param name="element" select="$element"/>
+                  </xsl:call-template>
+                </xsl:variable>
+                <!-- Output: before + value + recursively process remainder -->
+                <xsl:value-of select="$before"/>
+                <xsl:value-of select="$value"/>
+                <xsl:call-template name="replace-placeholders">
+                  <xsl:with-param name="text" select="$remainder"/>
+                </xsl:call-template>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:message>Warning: No value found for placeholder {?<xsl:value-of select="$placeholder"/>}</xsl:message>
+                <!-- Output: before + recursively process remainder (skip placeholder) -->
+                <xsl:value-of select="$before"/>
+                <xsl:call-template name="replace-placeholders">
+                  <xsl:with-param name="text" select="$remainder"/>
+                </xsl:call-template>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:message>Warning: No value found for placeholder {?<xsl:value-of select="$placeholder"/>}</xsl:message>
-            <xsl:value-of select="replace($text, concat('\{\?', $placeholder, '\}'), '')"/>
+            <!-- Malformed placeholder - just output as-is -->
+            <xsl:value-of select="$text"/>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>
@@ -436,7 +459,7 @@
       </xsl:when>
       <!-- Fallback to text content (for monolingual) -->
       <xsl:otherwise>
-        <xsl:value-of select="normalize-space($element/text())"/>
+        <xsl:value-of select="normalize-space(string($element))"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
