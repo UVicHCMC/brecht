@@ -19,8 +19,6 @@
         Bilingual (Other Language Pair, eg. English/German):
         ant fullBilingualBuild -Dlang1=en -Dlang2=de
         
-        
-        
         There are two build processes: monolingual and bilingual.
         
         At this stage, the landing/splash page is always assumed to be monolingual. We may change this later.
@@ -224,15 +222,32 @@
         <sequential unless:true="${needsLanguageSelector}">
             <echo message="Creating landing page at site/index.html (lang=${defaultLang})..."/>
             <mkdir dir="site"/>
-            <java fork="true" classname="net.sf.saxon.Transform" 
-                  classpath="${saxon}" failonerror="true">
-                <arg value="-s:templates/landingPage.xml"/>
-                <arg value="-xsl:xsl/processLandingPage.xsl"/>
-                <arg value="-o:site/index.html"/>
-                <arg value="isMultilingual=${isMultilingual}"/>
-                <arg value="defaultLang=${defaultLang}"/>
-                <arg value="languages=${languages}"/>
-            </java>
+            
+            <!-- Monolingual: use templates/landingPage.xml -->
+            <sequential if:true="${isMonolingual}">
+                <java fork="true" classname="net.sf.saxon.Transform" 
+                      classpath="${saxon}" failonerror="true">
+                    <arg value="-s:templates/landingPage.xml"/>
+                    <arg value="-xsl:xsl/processLandingPage.xsl"/>
+                    <arg value="-o:site/index.html"/>
+                    <arg value="isMultilingual=${isMultilingual}"/>
+                    <arg value="defaultLang=${defaultLang}"/>
+                    <arg value="languages=${languages}"/>
+                </java>
+            </sequential>
+            
+            <!-- Multilingual: use templates/{defaultLang}/landingPage.xml -->
+            <sequential if:true="${isMultilingual}">
+                <java fork="true" classname="net.sf.saxon.Transform" 
+                      classpath="${saxon}" failonerror="true">
+                    <arg value="-s:templates/${defaultLang}/landingPage.xml"/>
+                    <arg value="-xsl:xsl/processLandingPage.xsl"/>
+                    <arg value="-o:site/index.html"/>
+                    <arg value="isMultilingual=${isMultilingual}"/>
+                    <arg value="defaultLang=${defaultLang}"/>
+                    <arg value="languages=${languages}"/>
+                </java>
+            </sequential>
         </sequential>
         
         <!-- Create per-language landing pages for multilingual sites -->
