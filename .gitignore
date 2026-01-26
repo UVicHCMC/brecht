@@ -9,8 +9,7 @@ css/
 scss/*.css
 
 #ignore generated template files
-templates/contentPage.xml
-templates/landingPage.xml
+templates/
 
 #Ignore sass cache
 .sass-cache/
