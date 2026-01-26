@@ -130,9 +130,7 @@
         <en>Site Menu</en>
         <de>Seitenmenü</de>
     </nav-toggle-label>
-    
 
-    
     <!--For div.footer-container-->
     <footer-content>
         <items>
@@ -141,7 +139,6 @@
             </item>
         </items>
     </footer-content>
-    
 
     <!-- For div.popover-nav-items-->
     <navigation>
@@ -170,7 +167,5 @@
             <de>Über uns</de>
         </item>
     </navigation>
-    
 
-    
 </site>
