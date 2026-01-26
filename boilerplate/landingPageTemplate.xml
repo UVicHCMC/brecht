@@ -1,6 +1,6 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 
-    <head xmlns="http://www.w3.org/1999/xhtml">
+    <head>
         <title>
             <?siteTitle?>
         </title>
@@ -8,7 +8,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="{?cssFile}" />
         <link rel="icon" href="{?faviconIco}" sizes="48x48" />
-        <link rel="icon" href="{?faviconSvg}" sizes="any" type="image/svg+xml" />
+        <link
+            rel="icon"
+            href="{?faviconSvg}"
+            sizes="any"
+            type="image/svg+xml"
+        />
         <link rel="manifest" href="{?siteManifest}" />
         <?fontPreloads?>
         <script src="{?jsFile}" />
@@ -20,12 +25,12 @@
         <div class="page-wrapper">
 
             <!-- Site chrome -->
-            <header id="site-header">
+            <header id="site-header" class="site-masthead">
                 <a href="#content" class="skip-link"><?skip-link?></a>
 
                 <div class="nav-wrapper">
                     <!--Insert instruction for mobile header logo-->
-                    <?mobile-header?>
+                    <img class="mobile-header" src="{?mobile-header}" />
 
                     <div class="button-wrapper">
                         <button
@@ -38,23 +43,66 @@
                             aria-haspopup="true"
                             aria-expanded="false"
                         >
-                            <span class="nav-toggle-label"><?nav-toggle-label?></span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="menu-burger" width="24" height="24" fill="none">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18" />
+                            <span
+                                class="nav-toggle-label"
+                            ><?nav-toggle-label?></span>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="menu-burger"
+                                width="24"
+                                height="24"
+                                fill="none"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M3 12h18M3 6h18M3 18h18"
+                                />
                             </svg>
                         </button>
 
-                        <nav id="site-navigation" class="main-menu" aria-label="{?site-navigation-label}" popover="auto">
-                            <button type="button" class="popover-nav-close" aria-label="{?popover-close-label}" popovertarget="site-navigation" popovertargetaction="hide">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="close-x" width="24" height="24" fill="none" viewbox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6 6 18M6 6l12 12" />
+                        <nav
+                            id="site-navigation"
+                            class="main-menu"
+                            aria-label="{?site-navigation-label}"
+                            popover="auto"
+                        >
+                            <button
+                                type="button"
+                                class="popover-nav-close"
+                                aria-label="{?popover-close-label}"
+                                popovertarget="site-navigation"
+                                popovertargetaction="hide"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="close-x"
+                                    width="24"
+                                    height="24"
+                                    fill="none"
+                                    viewbox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M18 6 6 18M6 6l12 12"
+                                    />
                                 </svg>
                             </button>
 
 
                             <div class="popover-group-container">
                                 <div class="popover-header" aria-hidden="true">
-                                    <?popover-splash-icon?>
+                                    <img
+                                        class="popover-splash-icon"
+                                        alt=""
+                                        src="{?popover-splash-icon}"
+                                        width="901"
+                                        height="257"
+                                    />
+
                                 </div>
 
                                 <ul class="popover-nav-items">
@@ -63,7 +111,11 @@
 
                             </div>
                         </nav>
-                        <?lang-chooser?>
+                        <button
+                            class="lang-chooser"
+                            aria-label="{?lang-chooser-aria-label}"
+                            lang="{?lang-abbreviation}"
+                        ><?lang-abbreviation?></button>
                     </div>
                 </div>
 

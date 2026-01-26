@@ -75,12 +75,26 @@
         </aria-label>
     </lang-chooser>
 
+    <lang-chooser-aria-label>
+        <aria-label>
+            <en>Change to German</en>
+            <de>Wechseln zu Englisch</de>
+        </aria-label>
+    </lang-chooser-aria-label>
+
+    <lang-abbreviation>
+        <en>DE</en>
+        <de>EN</de>
+    </lang-abbreviation>
+
     <!--For img.slash-logo-->
     <splash-logo>
         <class>splash-logo</class>
         <src>images/logo-splash-brecht.webp</src>
-        <en>Brecht in the anthropocene, 18th symposium of the International Brecht Society. University of Victoria, Victoria, BC, Canada: July 22-26, 2026.</en>
-        <de>Brecht im Anthropozän, 18. Symposium der Internationalen Brecht-Gesellschaft. Universität Victoria, Victoria, BC, Kanada: 22. bis 26. Juli 2026.</de>
+        <en
+        >Brecht in the anthropocene, 18th symposium of the International Brecht Society. University of Victoria, Victoria, BC, Canada: July 22-26, 2026.</en>
+        <de
+        >Brecht im Anthropozän, 18. Symposium der Internationalen Brecht-Gesellschaft. Universität Victoria, Victoria, BC, Kanada: 22. bis 26. Juli 2026.</de>
     </splash-logo>
 
     <!--For img.uvic-logo-->
@@ -88,8 +102,10 @@
         <href>https://hcmc.uvic.ca</href>
         <src>images/logo-uvic.svg</src>
         <alt>
-            <en>University of Victoria Humanities Computing and Media Centre</en>
-            <de>Zentrum für Geisteswissenschaften, Informatik und Medien der Universität Victoria</de>
+            <en
+            >University of Victoria Humanities Computing and Media Centre</en>
+            <de
+            >Zentrum für Geisteswissenschaften, Informatik und Medien der Universität Victoria</de>
         </alt>
     </uvic-logo>
 
