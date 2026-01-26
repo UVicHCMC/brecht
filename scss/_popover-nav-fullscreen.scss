@@ -215,43 +215,42 @@ button.popover-nav-close {
 
 /* Open state (only applies when popover is actually open) */
 #site-navigation[popover]:popover-open {
-	opacity: 1;
-	background: var(--popover-bg-color);
-	//transform: translateY(0);
-	border: none;
-	width: 100dvw;
-	height: 100dvh;
-	inset: 0;
-	z-index: 1000;
-	box-shadow:
+  position: fixed;
+  inset: 0;
+  width: 100dvw;
+  height: 100dvh;
+  z-index: 1000;
+
+  background: var(--popover-bg-color);
+  border: none;
+  box-shadow:
 	inset 0 0 22px rgba(0, 0, 0, 0.25),
 	inset 6px 6px 14px rgba(0, 0, 0, 0.18);
-	opacity: .95;
 
-	/*For desktop display the open state is the same as clossed or default above*/
-	@media (width >=768px) {
-		position: static;
-		display: block;
-		width: max-content;
-		height: max-content;
-		border: none;
-		inset: unset;
-		margin-inline: auto;
-		z-index: auto;
-		background-color: transparent;
-		box-shadow: none;
-		opacity: 1;
-		
-	}
+  opacity: .95;
 
-	/* Prevent body scroll while open on mobile */
-	body:has(&) {
-		overflow: hidden;
-	}
+  @media (width >= 768px) {
+	position: static;
+	width: max-content;
+	height: max-content;
+	inset: auto; 
+	margin-inline: auto;
+	z-index: auto;
+	background-color: transparent;
+	box-shadow: none;
+	opacity: 1;
+  }
+  
+  @starting-style {
+	opacity: 0;
+  }
+}
 
-	@starting-style {
-		opacity: 0;
-	}
+/* scroll lock */
+html:has(#site-navigation[popover]:popover-open),
+body:has(#site-navigation[popover]:popover-open) {
+  overflow: hidden;
+  scrollbar-gutter: stable;
 }
 
 #site-navigation:popover-open>.popover-group-container>.popover-nav-items {

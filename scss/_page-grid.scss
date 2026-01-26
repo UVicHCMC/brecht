@@ -1,0 +1,333 @@
+// ==========================================================================
+// Page Layout + Grid System (+ Optional TOC, Full-bleed, Bands)
+// ==========================================================================
+//
+// OVERVIEW
+// --------
+// This stylesheet defines a small set of layout primitives intended to be
+// composed together. The system is layered so that each wrapper has a single,
+// clear responsibility.
+//
+// Layers:
+//
+//   Layer A — Page chrome + safe area
+//     .page-wrapper
+//       - defines global horizontal padding (“safe area”)
+//       - keeps header/footer aligned without repeating padding
+//
+//   Layer B — Reading layout (optionally with a right-hand TOC)
+//     .doc-shell + .doc-layout (+ optional .toc)
+//       - centres the reading unit
+//       - automatically becomes 2 columns when a TOC exists
+//       - collapses back to 1 column when the *container* is too narrow
+//
+//   Layer C — Content geometry ruler
+//     .page-grid
+//       - defines named spans: content / wide / full
+//       - children explicitly opt into spans via utility classes
+//
+//   Layer D — Structural utilities
+//     .full-bleed
+//       - explicit escape hatch to reach viewport edges
+//     .band
+//       - vertical rhythm + background for horizontal “slices”
+//
+// DESIGN INTENT
+// -------------
+// - Default behaviour is readable and safe.
+// - Breakouts are explicit.
+// - Edge-to-edge is always opt-in and visible in markup.
+//
+// ==========================================================================
+
+// --------------------------------------------------------------------------
+// COMMON STRUCTURE (reference diagram)
+// --------------------------------------------------------------------------
+//
+// <body>
+//   <div class="page-wrapper">
+//
+//     <header class="site-masthead" id="site-header">…</header>
+//
+//     <div class="doc-shell">
+//       <div class="doc-layout">
+//
+//         <main class="page-grid" id="content">
+//           <!-- .content / .content--wide / .content--full -->
+//         </main>
+//
+//         <aside class="toc">…</aside> <!-- optional -->
+//
+//       </div>
+//     </div>
+//
+//     <footer class="site-footer">…</footer>
+//
+//   </div>
+// </body>
+//
+// Rule of thumb:
+//   “If it touches the viewport edge, it must be wrapped in .full-bleed.”
+//
+// ==========================================================================
+
+// --------------------------------------------------------------------------
+// SCSS breakpoints (compile-time constants)
+// --------------------------------------------------------------------------
+
+$bp-mobile: 48rem; // generic mobile behaviour
+$bp-toc-collapse: 64rem; // reading layout: TOC → no TOC
+$bp-grid-collapse: 52rem; // content geometry: wide → content
+
+// --------------------------------------------------------------------------
+// Global defaults (tokens)
+// --------------------------------------------------------------------------
+
+:root {
+    --page-grid-gutter: clamp(1rem, 4vw, 3rem);
+    --page-grid-content-max: 65ch;
+    --page-grid-wide-max: 90rem;
+
+    --toc-min: 14rem;
+    --toc-max: 18rem;
+    --toc-gap: var(--page-grid-gutter);
+    --toc-shell-extra: calc(var(--toc-max) + var(--toc-gap));
+
+    --surface-muted: transparent;
+    --accent-bg: transparent;
+    --accent-fg: inherit;
+    --surface-dark: transparent;
+    --surface-dark-fg: inherit;
+}
+
+// ==========================================================================
+// Layer A — Page chrome + safe area
+// ==========================================================================
+
+.page-wrapper {
+    padding-inline: var(--page-grid-gutter);
+}
+
+// ==========================================================================
+// Layer A.1 — Site header hook
+// ==========================================================================
+
+.site-masthead {
+    // Header-specific styles live elsewhere
+}
+
+// ==========================================================================
+// Layer B — Reading layout (+ optional TOC)
+// ==========================================================================
+//
+// .doc-shell is the token + container boundary.
+// Override layout values here for different page types if needed.
+// ==========================================================================
+
+.doc-shell {
+    margin-inline: auto;
+    padding-inline: 0;
+
+    container-type: inline-size;
+
+    // Explicit token boundary (inherits from :root unless overridden)
+    --page-grid-gutter: var(--page-grid-gutter);
+    --page-grid-content-max: var(--page-grid-content-max);
+    --page-grid-wide-max: var(--page-grid-wide-max);
+    --toc-min: var(--toc-min);
+    --toc-max: var(--toc-max);
+    --toc-gap: var(--toc-gap);
+    --toc-shell-extra: var(--toc-shell-extra);
+
+    max-inline-size: var(--page-grid-wide-max);
+}
+
+.doc-layout {
+    display: grid;
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.doc-layout:has(.toc) {
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(var(--toc-min), var(--toc-max));
+    gap: var(--toc-gap);
+}
+
+// Widen centred unit only when TOC exists
+.doc-shell:has(.doc-layout > .toc) {
+    max-inline-size: calc(var(--page-grid-wide-max) + var(--toc-shell-extra));
+}
+
+.doc-layout > .page-grid {
+    grid-column: 1;
+    min-inline-size: 0;
+}
+
+.doc-layout > .toc {
+    grid-column: 2;
+    position: sticky;
+    top: var(--page-grid-gutter);
+    max-block-size: calc(100dvh - (var(--page-grid-gutter) * 2));
+    overflow: auto;
+    min-inline-size: 0;
+}
+
+// --------------------------------------------------------------------------
+// Container-query TOC collapse (container-based)
+// --------------------------------------------------------------------------
+
+@container (max-width: #{$bp-toc-collapse}) {
+    .doc-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .doc-layout > .toc {
+        display: none;
+    }
+
+    .doc-shell {
+        max-inline-size: var(--page-grid-wide-max);
+    }
+}
+
+// ==========================================================================
+// Layer C — Content geometry ruler (.page-grid)
+// ==========================================================================
+
+.page-grid {
+    container-type: inline-size;
+    display: grid;
+
+    grid-template-columns:
+        [full-start]
+        minmax(var(--page-grid-gutter), 1fr)
+        [wide-start]
+        minmax(0, calc((var(--page-grid-wide-max) - var(--page-grid-content-max)) / 2))
+        [content-start]
+        minmax(0, var(--page-grid-content-max))
+        [content-end]
+        minmax(0, calc((var(--page-grid-wide-max) - var(--page-grid-content-max)) / 2))
+        [wide-end]
+        minmax(var(--page-grid-gutter), 1fr)
+        [full-end];
+}
+
+// Span utilities
+.content {
+    grid-column: content;
+}
+.content--wide {
+    grid-column: wide;
+}
+.content--full {
+    grid-column: full;
+}
+
+// Intrinsic sizing override
+.content,
+.content--wide,
+.content--full {
+    min-inline-size: 0;
+}
+
+// Figure integration
+figure.content--wide,
+figure.content--full {
+    display: grid;
+    grid-template-columns: inherit;
+    margin: 0;
+}
+
+figure.content--wide > img,
+figure.content--full > img {
+    grid-column: full;
+    display: block;
+    inline-size: 100%;
+    max-inline-size: 100%;
+    block-size: auto;
+}
+
+figure.content--wide > figcaption,
+figure.content--full > figcaption {
+    grid-column: content;
+    margin-block-start: 0.75rem;
+}
+
+// Tables
+.table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-wrap > table {
+    inline-size: 100%;
+    border-collapse: collapse;
+}
+
+// Code blocks
+.codeblock {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 1rem;
+    border-radius: 0.75rem;
+}
+
+// --------------------------------------------------------------------------
+// Container-query collapse for page-grid geometry
+// --------------------------------------------------------------------------
+// When the reading unit becomes too narrow to support wide breakouts,
+// collapse wide → content by making the math resolve to zero.
+//
+
+@container (max-width: #{$bp-grid-collapse}) {
+    .page-grid {
+        --page-grid-content-max: 100%;
+        --page-grid-wide-max: 100%;
+        --page-grid-gutter: clamp(1rem, 3vw, 1.5rem);
+    }
+}
+
+// ==========================================================================
+// Layer D — Structural utilities (full-bleed + bands)
+// ==========================================================================
+
+.full-bleed {
+    margin-inline: calc(var(--page-grid-gutter) * -1);
+}
+
+.full-bleed--mobile {
+    margin-inline: calc(var(--page-grid-gutter) * -1);
+
+    @media (width >= #{$bp-mobile}) {
+        margin-inline: 0;
+    }
+}
+
+// Band utility: vertical rhythm + background
+.band {
+    padding-block: clamp(3rem, 8vw, 6rem);
+    background: transparent;
+}
+
+.band--tight {
+    padding-block: clamp(2rem, 5vw, 3rem);
+}
+.band--loose {
+    padding-block: clamp(4rem, 10vw, 8rem);
+}
+
+.band--muted {
+    background: var(--surface-muted);
+}
+
+.band--accent {
+    background: var(--accent-bg);
+    color: var(--accent-fg);
+}
+
+.band--dark {
+    background: var(--surface-dark);
+    color: var(--surface-dark-fg);
+}
