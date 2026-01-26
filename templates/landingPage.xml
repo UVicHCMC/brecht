@@ -13,10 +13,8 @@
             sizes="any"
             type="image/svg+xml"/>
       <link rel="manifest" href="site.webmanifest"/>
-      <?fontPreloads?>
       <script src="js/pux.js"/>
-      <meta name="description"
-            content="Description of the website for SEO purposes."/>
+      <meta name="description" content=""/>
    </head>
    <body>
       <div class="page-wrapper">
@@ -85,8 +83,25 @@
                 </div> -->
                         </div>
                         <ul class="popover-nav-items">
-                                <?navigation?>
-                            </ul>
+                           <li>
+                              <a class="item" href="index.html">Home</a>
+                           </li>
+                           <li>
+                              <a class="item" href="registration.html">Registration</a>
+                           </li>
+                           <li>
+                              <a class="item" href="program.html">Program</a>
+                           </li>
+                           <li>
+                              <a class="item" href="accommodations.html">Accommodations</a>
+                           </li>
+                           <li>
+                              <a class="item" href="gettinghere.html">Getting here</a>
+                           </li>
+                           <li>
+                              <a class="item" href="about.html">About</a>
+                           </li>
+                        </ul>
                      </div>
                   </nav>
                   <button class="lang-chooser"
@@ -105,8 +120,16 @@
             </div>
          </main>
          <footer>
-            <?footerContent?>
-        </footer>
+            <div class="footer-container">
+               <ul class="footer-items">
+                  <li>
+                     <a href="https://www.hcmc.uvic.ca">
+                        <img src="images/logo-uvic.png">University of Victoria Humanities Computing and Media Centre</img>
+                     </a>
+                  </li>
+               </ul>
+            </div>
+         </footer>
       </div>
    </body>
 </html>

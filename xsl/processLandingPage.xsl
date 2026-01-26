@@ -14,11 +14,14 @@
               doctype-system="about:legacy-compat"/>
   
   <!-- Parameters -->
-  <xsl:param name="isBilingual" select="'false'"/>
-  <xsl:param name="firstLang" select="'en'"/>
+  <xsl:param name="isMultilingual" select="'false'"/>
+  <xsl:param name="currentLang" select="''"/>
+  <xsl:param name="defaultLang" select="'en'"/>
+  <xsl:param name="languages" select="'en'"/>
   
-  <!-- Convert string parameter to boolean -->
-  <xsl:variable name="isBilingualBool" select="$isBilingual = 'true'"/>
+  <!-- Convert string parameters to usable values -->
+  <xsl:variable name="isMultilingualBool" select="$isMultilingual = 'true'"/>
+  <xsl:variable name="lang" select="if ($currentLang != '') then $currentLang else $defaultLang"/>
   
   <!-- Image dimensions handling -->
   <xsl:variable name="txtDimensions" select="unparsed-text('../utilities/imageDimensions.txt')"/>
@@ -44,7 +47,29 @@
     </xsl:copy>
   </xsl:template>
   
-  <!-- Fix internal page links for bilingual builds -->
+  <!-- Fix resource paths (CSS, JS, images) for multilingual builds -->
+  <xsl:template match="xhtml:link/@href[not(starts-with(., 'http')) and not(starts-with(., '/'))]" priority="3">
+    <xsl:attribute name="href">
+      <xsl:if test="$isMultilingualBool">../</xsl:if>
+      <xsl:value-of select="."/>
+    </xsl:attribute>
+  </xsl:template>
+  
+  <xsl:template match="xhtml:script/@src[not(starts-with(., 'http')) and not(starts-with(., '/'))]" priority="3">
+    <xsl:attribute name="src">
+      <xsl:if test="$isMultilingualBool">../</xsl:if>
+      <xsl:value-of select="."/>
+    </xsl:attribute>
+  </xsl:template>
+  
+  <xsl:template match="xhtml:img/@src[not(starts-with(., 'http')) and not(starts-with(., '/'))]" priority="3">
+    <xsl:attribute name="src">
+      <xsl:if test="$isMultilingualBool">../</xsl:if>
+      <xsl:value-of select="."/>
+    </xsl:attribute>
+  </xsl:template>
+  
+  <!-- Fix internal page links for multilingual builds -->
   <xsl:template match="xhtml:a/@href[not(starts-with(., 'http')) and 
       not(starts-with(., 'https')) and
       not(starts-with(., '#')) and 
@@ -52,14 +77,7 @@
       not(contains(., '://')) and
       ends-with(., '.html')]" priority="2">
     <xsl:attribute name="href">
-      <xsl:choose>
-        <xsl:when test="$isBilingualBool">
-          <xsl:value-of select="concat($firstLang, '/', .)"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="."/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:value-of select="."/>
     </xsl:attribute>
   </xsl:template>
   
@@ -83,7 +101,12 @@
                 <xsl:copy-of select="@class"/>
               </xsl:otherwise>
             </xsl:choose>
-            <xsl:copy-of select="$currImg/@*[not(local-name() = 'width' or local-name() = 'height' or local-name() = 'class')]"/>
+            <!-- Fix src path for multilingual builds -->
+            <xsl:attribute name="src">
+              <xsl:if test="$isMultilingualBool">../</xsl:if>
+              <xsl:value-of select="@src"/>
+            </xsl:attribute>
+            <xsl:copy-of select="$currImg/@*[not(local-name() = 'width' or local-name() = 'height' or local-name() = 'class' or local-name() = 'src')]"/>
           </xsl:copy>
         </xsl:for-each>
       </xsl:when>

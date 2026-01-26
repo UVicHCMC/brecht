@@ -9,7 +9,7 @@
                 xmlns:tei="http://www.tei-c.org/ns/1.0"
                 xmlns:map="http://www.w3.org/2005/xpath-functions/map"
                 version="3.0">
-
+  
   <xsl:output method="xml" indent="yes" encoding="UTF-8" omit-xml-declaration="no"/>
   
   <!-- Load properties file -->
@@ -23,22 +23,15 @@
   <!-- Check if bilingual -->
   <xsl:variable name="isBilingual" select="contains($languages, ',')"/>
   
-  <!-- Get other language for switcher (dynamically) -->
-  <xsl:variable name="langList" select="tokenize($languages, ',')"/>
-  <xsl:variable name="otherLang" select="
-    if ($isBilingual) then
-      string($langList[not(. = $lang)][1])
-    else ''
-                  "/>
+  <!-- Get list of all languages -->
+  <xsl:variable name="langList" select="tokenize($languages, ',')" />
   
-  <!-- Language labels (add more as needed) -->
+  <!-- Build language labels map from properties.xml -->
   <xsl:variable name="langLabels" as="map(xs:string, xs:string)">
     <xsl:map>
-      <xsl:map-entry key="'en'" select="'English'"/>
-      <xsl:map-entry key="'fr'" select="'Français'"/>
-      <xsl:map-entry key="'de'" select="'Deutsch'"/>
-      <xsl:map-entry key="'es'" select="'Español'"/>
-      <xsl:map-entry key="'it'" select="'Italiano'"/>
+      <xsl:for-each select="$properties/languages/lang">
+        <xsl:map-entry key="string(@code)" select="string(@label)"/>
+      </xsl:for-each>
     </xsl:map>
   </xsl:variable>
   
@@ -52,7 +45,7 @@
         upper-case(substring($langCode, 1, 1)) || substring($langCode, 2)
                     "/>
   </xsl:function>
-
+  
   <!-- Main template -->
   <xsl:template match="/">
     <xsl:apply-templates select="." mode="process-template"/>
@@ -74,100 +67,318 @@
     </xsl:attribute>
   </xsl:template>
   
-  <!-- Process processing instructions -->
+  <!-- ============================================================
+       GENERIC PROCESSING INSTRUCTION HANDLER
+       Automatically looks up any PI name in properties.xml
+       ============================================================ -->
   <xsl:template match="processing-instruction()" mode="process-template" priority="1">
+    <xsl:variable name="piName" select="name()"/>
+    <xsl:variable name="element" select="$properties//*[local-name() = $piName]"/>
+    
     <xsl:choose>
-      <xsl:when test="name() = 'siteTitle'">
-        <xsl:call-template name="get-text-value">
-          <xsl:with-param name="element" select="$properties/metadata/siteTitle"/>
-        </xsl:call-template>
+      <!-- Special handling for specific PIs that need custom logic -->
+      <xsl:when test="$piName = 'lang-chooser'">
+        <xsl:call-template name="build-lang-chooser"/>
       </xsl:when>
       
-      <xsl:when test="name() = 'splashTitle'">
-        <xsl:call-template name="get-text-value">
-          <xsl:with-param name="element" select="$properties/metadata/splashTitle"/>
-        </xsl:call-template>
-      </xsl:when>
-      
-      <xsl:when test="name() = 'splashSubtitle'">
-        <xsl:call-template name="get-html-value">
-          <xsl:with-param name="element" select="$properties/metadata/splashSubtitle"/>
-        </xsl:call-template>
-      </xsl:when>
-      
-      <xsl:when test="name() = 'splashWhereWhen'">
-        <xsl:call-template name="build-where-when"/>
-      </xsl:when>
-      
-      <xsl:when test="name() = 'navigation' or name() = 'navigationMenu' or name() = 'splashNavigationMenu'">
+      <xsl:when test="$piName = 'navigation'">
         <xsl:call-template name="build-navigation"/>
       </xsl:when>
       
-      <xsl:when test="name() = 'copyrightText'">
-        <xsl:call-template name="get-html-value">
-          <xsl:with-param name="element" select="$properties/footer/copyrightText"/>
-        </xsl:call-template>
-      </xsl:when>
-      
-      <xsl:when test="name() = 'citationText'">
-        <xsl:call-template name="get-text-value">
-          <xsl:with-param name="element" select="$properties/footer/citationText"/>
-        </xsl:call-template>
-      </xsl:when>
-      
-      <xsl:when test="name() = 'acknowledgementsText'">
-        <xsl:call-template name="get-html-value">
-          <xsl:with-param name="element" select="$properties/footer/acknowledgementsText"/>
-        </xsl:call-template>
-      </xsl:when>
-      
-      <xsl:when test="name() = 'footerContent'">
-        <!-- Insert footer markup from properties.xml, converting elements into XHTML -->
-        <xsl:for-each select="$properties/footerContent/*">
-          <xsl:apply-templates select="." mode="copy-nav-element"/>
-        </xsl:for-each>
-      </xsl:when>
-      
-      <xsl:when test="name() = 'uvic-logo'">
-        <xsl:variable name="logoPath" select="$properties/files/uvicLogo"/>
-        <xsl:variable name="altText">
-          <xsl:call-template name="get-text-value">
-            <xsl:with-param name="element" select="$properties/footer/uvicLogoAlt"/>
-          </xsl:call-template>
-        </xsl:variable>
-        
-        <img src="{$logoPath}" alt="{$altText}" class="uvic-logo-internal"/>
-      </xsl:when>
-      
-      <xsl:when test="name() = 'fontPreloads'">
-        <xsl:for-each select="$properties/files/font">
-          <link rel="preload" href="{.}" as="font" xmlns="http://www.w3.org/1999/xhtml"/>
-        </xsl:for-each>
-      </xsl:when>
-      
-      <xsl:when test="name() = 'bilingualSwitcher'">
-        <xsl:choose>
-          <xsl:when test="$isBilingual and $otherLang != ''">
-            <a id="bilingualSwitcher" href="../{$otherLang}/{{{{currentPage}}}}">
-              <xsl:value-of select="hcmc:getLanguageLabel($otherLang)"/>
-            </a>
-          </xsl:when>
-          <xsl:otherwise>
-            <!-- No switcher in monolingual mode -->
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:when>
-      
-      <xsl:when test="name() = 'docContent'">
-        <!-- This will be replaced by actual document content during build -->
+      <xsl:when test="$piName = 'docContent'">
         <xsl:processing-instruction name="docContent"/>
       </xsl:when>
       
+      <!-- Element found in properties.xml -->
+      <xsl:when test="$element">
+        <xsl:call-template name="render-property-element">
+          <xsl:with-param name="element" select="$element"/>
+        </xsl:call-template>
+      </xsl:when>
+      
+      <!-- Not found - output warning and pass through -->
       <xsl:otherwise>
+        <xsl:message>Warning: No handler or property found for PI: &lt;?<xsl:value-of select="$piName"/>?&gt;</xsl:message>
         <xsl:copy/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+  
+  <!-- ============================================================
+       GENERIC PROPERTY ELEMENT RENDERER
+       Determines what type of content an element has and renders appropriately
+       ============================================================ -->
+  <xsl:template name="render-property-element">
+    <xsl:param name="element"/>
+    
+    <xsl:choose>
+      <!-- Element has @type="img-link" or has both href and src - render as linked image -->
+      <xsl:when test="$element/@type = 'img-link' or ($element/href and $element/src)">
+        <xsl:call-template name="render-img-link">
+          <xsl:with-param name="element" select="$element"/>
+        </xsl:call-template>
+      </xsl:when>
+      
+      <!-- Element has @type="img" - render as image -->
+      <xsl:when test="$element/@type = 'img' or $element/src">
+        <xsl:call-template name="render-img">
+          <xsl:with-param name="element" select="$element"/>
+        </xsl:call-template>
+      </xsl:when>
+      
+      <!-- Element has @type="link" or has href - render as link -->
+      <xsl:when test="$element/@type = 'link' or ($element/href and not($element/src))">
+        <xsl:call-template name="render-link">
+          <xsl:with-param name="element" select="$element"/>
+        </xsl:call-template>
+      </xsl:when>
+      
+      <!-- Element has <items> children - render as list -->
+      <xsl:when test="$element/items">
+        <xsl:call-template name="render-list">
+          <xsl:with-param name="element" select="$element"/>
+        </xsl:call-template>
+      </xsl:when>
+      
+      <!-- Element has HTML children (any non-language element children) -->
+      <xsl:when test="$element/*[not(local-name() = ('en', 'de', 'fr', 'es', 'it', 'pt', 'nl', 'ru', 'zh', 'ja', 'ko'))]">
+        <xsl:call-template name="render-html-content">
+          <xsl:with-param name="element" select="$element"/>
+        </xsl:call-template>
+      </xsl:when>
+      
+      <!-- Simple text content (possibly with language variants) -->
+      <xsl:otherwise>
+        <xsl:call-template name="get-text-value">
+          <xsl:with-param name="element" select="$element"/>
+        </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <!-- ============================================================
+       RENDER TEMPLATES FOR DIFFERENT CONTENT TYPES
+       ============================================================ -->
+  
+  <!-- Render an image element -->
+  <xsl:template name="render-img">
+    <xsl:param name="element"/>
+    <xsl:variable name="altText">
+      <xsl:call-template name="get-text-value">
+        <xsl:with-param name="element" select="$element/alt"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <img src="{$element/src}" alt="{$altText}">
+      <xsl:if test="$element/width">
+        <xsl:attribute name="width" select="$element/width"/>
+      </xsl:if>
+      <xsl:if test="$element/height">
+        <xsl:attribute name="height" select="$element/height"/>
+      </xsl:if>
+      <xsl:if test="$element/class">
+        <xsl:attribute name="class" select="$element/class"/>
+      </xsl:if>
+    </img>
+  </xsl:template>
+  
+  <!-- Render a link element -->
+  <xsl:template name="render-link">
+    <xsl:param name="element"/>
+    <xsl:variable name="linkText">
+      <xsl:call-template name="get-text-value">
+        <xsl:with-param name="element" select="$element/text"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <a href="{$element/href}">
+      <xsl:if test="$element/class">
+        <xsl:attribute name="class" select="$element/class"/>
+      </xsl:if>
+      <xsl:if test="$element/aria-label">
+        <xsl:attribute name="aria-label">
+          <xsl:call-template name="get-text-value">
+            <xsl:with-param name="element" select="$element/aria-label"/>
+          </xsl:call-template>
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:value-of select="$linkText"/>
+    </a>
+  </xsl:template>
+  
+  <!-- Render a linked image element -->
+  <xsl:template name="render-img-link">
+    <xsl:param name="element"/>
+    <xsl:variable name="altText">
+      <xsl:call-template name="get-text-value">
+        <xsl:with-param name="element" select="$element/alt"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <a href="{$element/href}">
+      <xsl:if test="$element/class">
+        <xsl:attribute name="class" select="$element/class"/>
+      </xsl:if>
+      <img src="{$element/src}" alt="{$altText}">
+        <xsl:if test="$element/width">
+          <xsl:attribute name="width" select="$element/width"/>
+        </xsl:if>
+        <xsl:if test="$element/height">
+          <xsl:attribute name="height" select="$element/height"/>
+        </xsl:if>
+      </img>
+    </a>
+  </xsl:template>
+  
+  <!-- Render a list with items -->
+  <xsl:template name="render-list">
+    <xsl:param name="element"/>
+    <xsl:variable name="wrapperClass" select="$element/@wrapper-class"/>
+    <xsl:variable name="listClass" select="$element/@list-class"/>
+    
+    <xsl:choose>
+      <xsl:when test="$wrapperClass">
+        <div class="{$wrapperClass}">
+          <ul>
+            <xsl:if test="$listClass">
+              <xsl:attribute name="class" select="$listClass"/>
+            </xsl:if>
+            <xsl:for-each select="$element/items/item">
+              <li>
+                <xsl:apply-templates select="node()" mode="render-item-content"/>
+              </li>
+            </xsl:for-each>
+          </ul>
+        </div>
+      </xsl:when>
+      <xsl:otherwise>
+        <ul>
+          <xsl:if test="$listClass">
+            <xsl:attribute name="class" select="$listClass"/>
+          </xsl:if>
+          <xsl:for-each select="$element/items/item">
+            <li>
+              <xsl:apply-templates select="node()" mode="render-item-content"/>
+            </li>
+          </xsl:for-each>
+        </ul>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <!-- Render item content (handles nested PIs and elements) -->
+  <xsl:template match="processing-instruction()" mode="render-item-content">
+    <xsl:apply-templates select="." mode="process-template"/>
+  </xsl:template>
+  
+  <xsl:template match="*" mode="render-item-content">
+    <xsl:element name="{local-name()}">
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates select="node()" mode="render-item-content"/>
+    </xsl:element>
+  </xsl:template>
+  
+  <xsl:template match="text()" mode="render-item-content">
+    <xsl:value-of select="."/>
+  </xsl:template>
+  
+  <!-- Render HTML content (copy structure, resolve language) -->
+  <xsl:template name="render-html-content">
+    <xsl:param name="element"/>
+    <xsl:apply-templates select="$element/*" mode="copy-html-element"/>
+  </xsl:template>
+  
+  <!-- Copy HTML elements, resolving language where needed -->
+  <xsl:template match="*" mode="copy-html-element">
+    <xsl:element name="{local-name()}">
+      <xsl:copy-of select="@*[not(local-name() = map:keys($langLabels))]"/>
+      <xsl:choose>
+        <xsl:when test="*[local-name() = $lang]">
+          <xsl:apply-templates select="*[local-name() = $lang]/node()" mode="copy-html-element"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:apply-templates select="node()" mode="copy-html-element"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:element>
+  </xsl:template>
+  
+  <xsl:template match="text()" mode="copy-html-element">
+    <xsl:value-of select="."/>
+  </xsl:template>
+  
+  <xsl:template match="processing-instruction()" mode="copy-html-element">
+    <xsl:apply-templates select="." mode="process-template"/>
+  </xsl:template>
+  
+  <!-- ============================================================
+       SPECIAL HANDLERS (lang-chooser, navigation, etc.)
+       ============================================================ -->
+  
+  <!-- Language chooser -->
+  <xsl:template name="build-lang-chooser">
+    <xsl:choose>
+      <xsl:when test="count($langList) = 2">
+        <xsl:variable name="otherLang" select="string($langList[not(. = $lang)][1])"/>
+        <xsl:variable name="otherLangLabel" select="upper-case(string($otherLang))"/>
+        <xsl:variable name="ariaLabel">
+          <xsl:call-template name="get-text-value">
+            <xsl:with-param name="element" select="$properties/lang-chooser/aria-label"/>
+          </xsl:call-template>
+        </xsl:variable>
+        <a class="lang-chooser"
+           aria-label="{$ariaLabel}" lang="{$otherLang}">
+          <xsl:attribute name="href">
+            <xsl:text>../</xsl:text>
+            <xsl:value-of select="$otherLang"/>
+            <xsl:text>/{{currentPage}}</xsl:text>
+          </xsl:attribute>
+          <xsl:value-of select="$otherLangLabel"/>
+        </a>
+      </xsl:when>
+      <xsl:when test="count($langList) gt 2">
+        <div id="languageSwitcher" class="language-switcher-dropdown">
+          <button class="language-switcher-button">
+            <xsl:value-of select="hcmc:getLanguageLabel($lang)"/>
+            <span class="dropdown-arrow">▼</span>
+          </button>
+          <ul class="language-switcher-menu">
+            <xsl:for-each select="$langList[not(. = $lang)]">
+              <li>
+                <a>
+                  <xsl:attribute name="href">
+                    <xsl:text>../</xsl:text>
+                    <xsl:value-of select="."/>
+                    <xsl:text>/{{currentPage}}</xsl:text>
+                  </xsl:attribute>
+                  <xsl:value-of select="hcmc:getLanguageLabel(.)"/>
+                </a>
+              </li>
+            </xsl:for-each>
+          </ul>
+        </div>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:template>
+  
+  <!-- Navigation menu -->
+  <xsl:template name="build-navigation">
+    <xsl:for-each select="$properties/navigation/item">
+      <li>
+        <a class="item" href="{@href}">
+          <xsl:choose>
+            <xsl:when test="*[local-name() = $lang]">
+              <xsl:value-of select="*[local-name() = $lang]"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="text()"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </a>
+      </li>
+    </xsl:for-each>
+  </xsl:template>
+  
+  <!-- ============================================================
+       UTILITY TEMPLATES
+       ============================================================ -->
   
   <!-- Template to replace placeholders in attribute values -->
   <xsl:template name="replace-placeholders">
@@ -176,66 +387,23 @@
     <xsl:choose>
       <xsl:when test="matches($text, '\{\?[a-zA-Z]+\}')">
         <xsl:variable name="placeholder" select="substring-before(substring-after($text, '{?'), '}')"/>
-        
-        <!-- Try to find in files (these are always simple text values) -->
-        <xsl:variable name="fileValue" select="$properties/files/*[local-name() = $placeholder]"/>
-        
-        <!-- Try to find in urls (may have language attributes) -->
-        <xsl:variable name="urlElement" select="$properties/urls/*[local-name() = $placeholder]"/>
-        
-        <!-- Try to find anywhere else in properties -->
-        <xsl:variable name="anyElement" select="$properties//*[local-name() = $placeholder]"/>
+        <xsl:variable name="element" select="$properties//*[local-name() = $placeholder]"/>
         
         <xsl:choose>
-          <!-- Files: direct text value -->
-          <xsl:when test="$fileValue">
-            <xsl:value-of select="replace($text, concat('\{\?', $placeholder, '\}'), string($fileValue))"/>
+          <xsl:when test="$element">
+            <xsl:variable name="value">
+              <xsl:call-template name="get-text-value">
+                <xsl:with-param name="element" select="$element"/>
+              </xsl:call-template>
+            </xsl:variable>
+            <xsl:value-of select="replace($text, concat('\{\?', $placeholder, '\}'), string($value))"/>
           </xsl:when>
-          
-          <!-- URLs: may need language handling -->
-          <xsl:when test="$urlElement">
-            <xsl:choose>
-              <xsl:when test="$urlElement/@*[local-name() = $lang]">
-                <xsl:variable name="urlValue">
-                  <xsl:call-template name="get-text-value">
-                    <xsl:with-param name="element" select="$urlElement"/>
-                  </xsl:call-template>
-                </xsl:variable>
-                <xsl:value-of select="replace($text, concat('\{\?', $placeholder, '\}'), string($urlValue))"/>
-              </xsl:when>
-              <xsl:otherwise>
-                <!-- URL has no language attributes, use as-is -->
-                <xsl:value-of select="replace($text, concat('\{\?', $placeholder, '\}'), string($urlElement))"/>
-              </xsl:otherwise>
-            </xsl:choose>
-          </xsl:when>
-          
-          <!-- Other elements: check if they need language handling -->
-          <xsl:when test="$anyElement">
-            <xsl:choose>
-              <xsl:when test="$anyElement/@*[local-name() = $lang]">
-                <xsl:variable name="value">
-                  <xsl:call-template name="get-text-value">
-                    <xsl:with-param name="element" select="$anyElement"/>
-                  </xsl:call-template>
-                </xsl:variable>
-                <xsl:value-of select="replace($text, concat('\{\?', $placeholder, '\}'), string($value))"/>
-              </xsl:when>
-              <xsl:otherwise>
-                <!-- Element exists but has no language attributes - use text content -->
-                <xsl:value-of select="replace($text, concat('\{\?', $placeholder, '\}'), string($anyElement))"/>
-              </xsl:otherwise>
-            </xsl:choose>
-          </xsl:when>
-          
           <xsl:otherwise>
-            <!-- Not found anywhere - output warning and leave blank -->
             <xsl:message>Warning: No value found for placeholder {?<xsl:value-of select="$placeholder"/>}</xsl:message>
             <xsl:value-of select="replace($text, concat('\{\?', $placeholder, '\}'), '')"/>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:when>
-      
       <xsl:otherwise>
         <xsl:value-of select="$text"/>
       </xsl:otherwise>
@@ -247,81 +415,19 @@
     <xsl:param name="element"/>
     
     <xsl:choose>
-      <xsl:when test="$lang = 'fr' and $element/@fr">
-        <xsl:value-of select="$element/@fr"/>
+      <!-- Check for child element matching current language -->
+      <xsl:when test="$element/*[local-name() = $lang]">
+        <xsl:value-of select="$element/*[local-name() = $lang]"/>
       </xsl:when>
-      <xsl:when test="$element/@en">
-        <xsl:value-of select="$element/@en"/>
+      <!-- Check for attribute matching current language -->
+      <xsl:when test="$element/@*[local-name() = $lang]">
+        <xsl:value-of select="$element/@*[local-name() = $lang]"/>
       </xsl:when>
+      <!-- Fallback to text content (for monolingual) -->
       <xsl:otherwise>
-        <xsl:value-of select="$element"/>
+        <xsl:value-of select="normalize-space($element/text())"/>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
-  <!-- Template to get HTML content (unescapes entities) -->
-  <xsl:template name="get-html-value">
-    <xsl:param name="element"/>
-    
-    <xsl:variable name="text">
-      <xsl:call-template name="get-text-value">
-        <xsl:with-param name="element" select="$element"/>
-      </xsl:call-template>
-    </xsl:variable>
-    
-    <xsl:value-of select="$text" disable-output-escaping="yes"/>
-  </xsl:template>
-  
-  <!-- Template to build where/when section -->
-  <xsl:template name="build-where-when">
-    <div class="place">
-      <xsl:call-template name="get-text-value">
-        <xsl:with-param name="element" select="$properties/metadata/splashWhereWhen/place"/>
-      </xsl:call-template>
-    </div>
-    <div class="date">
-      <xsl:call-template name="get-text-value">
-        <xsl:with-param name="element" select="$properties/metadata/splashWhereWhen/date"/>
-      </xsl:call-template>
-    </div>
-    <div class="location">
-      <xsl:call-template name="get-text-value">
-        <xsl:with-param name="element" select="$properties/metadata/splashWhereWhen/location"/>
-      </xsl:call-template>
-    </div>
-  </xsl:template>
-  
-  <!-- Template to build navigation menu -->
-  <xsl:template name="build-navigation">
-    <xsl:for-each select="$properties/navigation/*">
-      <xsl:apply-templates select="." mode="copy-nav-element"/>
-    </xsl:for-each>
-  </xsl:template>
-  
-  <!-- Template to copy navigation elements and resolve language attributes -->
-  <xsl:template match="*" mode="copy-nav-element">
-    <xsl:element name="{local-name()}">
-      <!-- Copy all non-language attributes -->
-      <xsl:copy-of select="@*[not(local-name() = map:keys($langLabels))]"/>
-      
-      <!-- Process child elements and text -->
-      <xsl:choose>
-        <xsl:when test="@*[local-name() = $lang] or @en">
-          <!-- Element has language attributes, get text value -->
-          <xsl:call-template name="get-text-value">
-            <xsl:with-param name="element" select="."/>
-          </xsl:call-template>
-        </xsl:when>
-        <xsl:when test="*">
-          <!-- Element has children, process them recursively -->
-          <xsl:apply-templates select="*" mode="copy-nav-element"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <!-- Element has text content, copy it -->
-          <xsl:value-of select="."/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:element>
-  </xsl:template>  
   
 </xsl:stylesheet>

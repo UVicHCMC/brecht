@@ -78,232 +78,252 @@
     <!-- Properties with default values -->
     <property name="templates.dir" value="templates"/>
     <property name="saxon" value="lib/saxon-he-12.jar"/>
-    <property name="lang1" value="en"/>  <!-- First language for bilingual -->
-    <property name="lang2" value="fr"/>  <!-- Second language for bilingual -->
+    
+    <!-- Load languages from properties.xml using XSLT -->
+    <tempfile property="temp.languages.file" suffix=".properties" deleteonexit="true"/>
+    
+    <xslt in="properties.xml" out="${temp.languages.file}" style="xsl/extractLanguages.xsl" classpath="${saxon}" force="true">
+        <factory name="net.sf.saxon.TransformerFactoryImpl"/>
+    </xslt>
+    
+    <property file="${temp.languages.file}"/>
+    
+    <!-- Set defaults if not loaded -->
+    <property name="languages" value="en"/>
+    <property name="defaultLang" value="en"/>
+    <property name="languageCount" value="1"/>
+    <property name="hasLanguageSelector" value="false"/>
+    
+    <!-- Determine if monolingual or multilingual -->
+    <condition property="isMonolingual">
+        <equals arg1="${languageCount}" arg2="1"/>
+    </condition>
+    
+    <condition property="isMultilingual">
+        <not><equals arg1="${languageCount}" arg2="1"/></not>
+    </condition>
+    
+    <condition property="needsLanguageSelector">
+        <and>
+            <istrue value="${hasLanguageSelector}"/>
+            <istrue value="${isMultilingual}"/>
+        </and>
+    </condition>
+    
+    <echo message="Detected languages: ${languages}"/>
+    <echo message="Default language: ${defaultLang}"/>
+    <echo message="Language count: ${languageCount}"/>
+    <echo message="Has language selector: ${hasLanguageSelector}"/>
     
     <!-- ========================================= -->
-    <!-- MONOLINGUAL BUILD TARGETS                 -->
+    <!-- UNIFIED MULTILINGUAL BUILD TARGETS        -->
     <!-- ========================================= -->
     
-    <!-- Generate monolingual landing page template -->
-    <target name="generateMonoLandingTemplate">
-        <description>Generates monolingual landing page template</description>
-        <echo message="Generating monolingual landing page template (lang=${lang1})..."/>
+    <!-- Generate landing page template (monolingual or multilingual) -->
+    <target name="generateLandingTemplate">
+        <description>Generates landing page template(s)</description>
+        
+        <!-- Monolingual: generate single template -->
+        <sequential if:true="${isMonolingual}">
+            <echo message="Generating monolingual landing page template (lang=${defaultLang})..."/>
+            <mkdir dir="${templates.dir}"/>
+            <java fork="true" classname="net.sf.saxon.Transform" 
+                  classpath="${saxon}" failonerror="true">
+                <arg value="-s:boilerplate/landingPageTemplate.xml"/>
+                <arg value="-xsl:xsl/createTemplates.xsl"/>
+                <arg value="-o:templates/landingPage.xml"/>
+                <arg value="lang=${defaultLang}"/>
+                <arg value="languages=${languages}"/>
+            </java>
+        </sequential>
+        
+        <!-- Multilingual: generate templates for each language -->
+        <sequential if:true="${isMultilingual}">
+            <echo message="Generating multilingual landing page templates (${languages})..."/>
+            <for list="${languages}" param="lang" delimiter=",">
+                <sequential>
+                    <echo message="  Generating landing template for @{lang}..."/>
+                    <mkdir dir="${templates.dir}/@{lang}"/>
+                    <java fork="true" classname="net.sf.saxon.Transform" 
+                          classpath="${saxon}" failonerror="true">
+                        <arg value="-s:boilerplate/landingPageTemplate.xml"/>
+                        <arg value="-xsl:xsl/createTemplates.xsl"/>
+                        <arg value="-o:templates/@{lang}/landingPage.xml"/>
+                        <arg value="lang=@{lang}"/>
+                        <arg value="languages=${languages}"/>
+                    </java>
+                </sequential>
+            </for>
+        </sequential>
+    </target>
+    
+    <!-- Generate content page templates for all languages -->
+    <target name="generateContentTemplates">
+        <description>Generates content page templates for all languages</description>
+        <echo message="Generating content page templates..."/>
         
         <mkdir dir="${templates.dir}"/>
         
-        <java fork="true" classname="net.sf.saxon.Transform" 
-              classpath="${saxon}" failonerror="true">
-            <arg value="-s:boilerplate/landingPageTemplate.xml"/>
-            <arg value="-xsl:xsl/createTemplates.xsl"/>
-            <arg value="-o:templates/landingPage.xml"/>
-            <arg value="lang=${lang1}"/>
-            <arg value="languages=${lang1}"/>
-        </java>
+        <!-- Monolingual: generate single template -->
+        <sequential if:true="${isMonolingual}">
+            <echo message="Generating monolingual content template (lang=${defaultLang})..."/>
+            <java fork="true" classname="net.sf.saxon.Transform" 
+                  classpath="${saxon}" failonerror="true">
+                <arg value="-s:boilerplate/contentPageTemplate.xml"/>
+                <arg value="-xsl:xsl/createTemplates.xsl"/>
+                <arg value="-o:templates/contentPage.xml"/>
+                <arg value="lang=${defaultLang}"/>
+                <arg value="languages=${languages}"/>
+            </java>
+        </sequential>
+        
+        <!-- Multilingual: generate templates for each language -->
+        <sequential if:true="${isMultilingual}">
+            <echo message="Generating multilingual content templates (${languages})..."/>
+            <for list="${languages}" param="lang" delimiter=",">
+                <sequential>
+                    <echo message="  Generating template for @{lang}..."/>
+                    <mkdir dir="${templates.dir}/@{lang}"/>
+                    <java fork="true" classname="net.sf.saxon.Transform" 
+                          classpath="${saxon}" failonerror="true">
+                        <arg value="-s:boilerplate/contentPageTemplate.xml"/>
+                        <arg value="-xsl:xsl/createTemplates.xsl"/>
+                        <arg value="-o:templates/@{lang}/contentPage.xml"/>
+                        <arg value="lang=@{lang}"/>
+                        <arg value="languages=${languages}"/>
+                    </java>
+                </sequential>
+            </for>
+        </sequential>
     </target>
     
-    <!-- Generate monolingual content page template -->
-    <target name="generateMonoContentTemplate">
-        <description>Generates monolingual content page template</description>
-        <echo message="Generating monolingual content page template (lang=${lang1})..."/>
-        
-        <mkdir dir="${templates.dir}"/>
-        
-        <java fork="true" classname="net.sf.saxon.Transform" 
-              classpath="${saxon}" failonerror="true">
-            <arg value="-s:boilerplate/contentPageTemplate.xml"/>
-            <arg value="-xsl:xsl/createTemplates.xsl"/>
-            <arg value="-o:templates/contentPage.xml"/>
-            <arg value="lang=${lang1}"/>
-            <arg value="languages=${lang1}"/>
-        </java>
-    </target>
-    
-    <!-- Process monolingual landing page into site/index.html -->
-    <target name="makeMonoLandingPage">
-        <description>Creates monolingual site/index.html</description>
-        <echo message="Creating monolingual site/index.html..."/>
+    <!-- Generate language selector splash page (if needed) -->
+    <target name="generateLanguageSelector" if="needsLanguageSelector">
+        <description>Generates language selector splash page at site/index.html</description>
+        <echo message="Generating language selector splash page..."/>
         
         <mkdir dir="site"/>
         
+        <!-- Generate language selector using XSLT -->
         <java fork="true" classname="net.sf.saxon.Transform" 
               classpath="${saxon}" failonerror="true">
-            <arg value="-s:templates/landingPage.xml"/>
-            <arg value="-xsl:xsl/processLandingPage.xsl"/>
+            <arg value="-s:properties.xml"/>
+            <arg value="-xsl:xsl/generateLanguageSelector.xsl"/>
             <arg value="-o:site/index.html"/>
-            <arg value="isBilingual=false"/>
-            <arg value="firstLang=${lang1}"/>
+            <arg value="languages=${languages}"/>
         </java>
+        
+        <echo message="Language selector page created at site/index.html"/>
     </target>
     
-    <!-- Process monolingual content files -->
-    <target name="processMonoContent">
-        <description>Processes monolingual content files from content/*.xml</description>
-        <echo message="Processing monolingual content files..."/>
+    <!-- Process landing page into site/index.html (or site/{lang}/index.html) -->
+    <target name="makeLandingPage" depends="generateLandingTemplate">
+        <description>Creates landing page(s)</description>
         
-        <mkdir dir="site"/>
+        <!-- Monolingual or multilingual without language selector: create site/index.html as default language -->
+        <sequential unless:true="${needsLanguageSelector}">
+            <echo message="Creating landing page at site/index.html (lang=${defaultLang})..."/>
+            <mkdir dir="site"/>
+            <java fork="true" classname="net.sf.saxon.Transform" 
+                  classpath="${saxon}" failonerror="true">
+                <arg value="-s:templates/landingPage.xml"/>
+                <arg value="-xsl:xsl/processLandingPage.xsl"/>
+                <arg value="-o:site/index.html"/>
+                <arg value="isMultilingual=${isMultilingual}"/>
+                <arg value="defaultLang=${defaultLang}"/>
+                <arg value="languages=${languages}"/>
+            </java>
+        </sequential>
         
-        <!-- Process each content file -->
-        <foreach target="processOneMonoContent" param="content.file">
-            <path>
-                <fileset dir="content" includes="*.xml"/>
-            </path>
-        </foreach>
+        <!-- Create per-language landing pages for multilingual sites -->
+        <sequential if:true="${isMultilingual}">
+            <echo message="Creating per-language landing pages..."/>
+            <for list="${languages}" param="lang" delimiter=",">
+                <sequential>
+                    <echo message="  Creating landing page for @{lang}..."/>
+                    <mkdir dir="site/@{lang}"/>
+                    <java fork="true" classname="net.sf.saxon.Transform" 
+                          classpath="${saxon}" failonerror="true">
+                        <arg value="-s:templates/@{lang}/landingPage.xml"/>
+                        <arg value="-xsl:xsl/processLandingPage.xsl"/>
+                        <arg value="-o:site/@{lang}/index.html"/>
+                        <arg value="isMultilingual=true"/>
+                        <arg value="currentLang=@{lang}"/>
+                        <arg value="defaultLang=${defaultLang}"/>
+                        <arg value="languages=${languages}"/>
+                    </java>
+                </sequential>
+            </for>
+        </sequential>
+        
+        <!-- Generate language selector splash page if needed -->
+        <antcall target="generateLanguageSelector"/>
     </target>
     
-    <!-- Helper: Process one monolingual content file -->
-    <target name="processOneMonoContent">
+    <!-- Process content files -->
+    <target name="processContent" depends="generateContentTemplates,getImageDimensions">
+        <description>Processes content files for all languages</description>
+        <echo message="Processing content files..."/>
+        
+        <!-- Monolingual: process content/*.xml --> 
+        <sequential if:true="${isMonolingual}">
+            <echo message="Processing monolingual content files (lang=${defaultLang})..."/>
+            <mkdir dir="site"/>
+            <foreach target="processOneContent" param="content.file">
+                <path>
+                    <fileset dir="content" includes="*.xml" erroronmissingdir="false"/>
+                </path>
+                <param name="currentLang" value="${defaultLang}"/>
+                <param name="outputDir" value="site"/>
+            </foreach>
+        </sequential>
+        
+        <!-- Multilingual: process content/{lang}/*.xml -->
+        <sequential if:true="${isMultilingual}">
+            <echo message="Processing multilingual content files (${languages})..."/>
+            <for list="${languages}" param="lang" delimiter=",">
+                <sequential>
+                    <echo message="  Processing content for @{lang}..."/>
+                    <mkdir dir="site/@{lang}"/>
+                    <foreach target="processOneContent" param="content.file">
+                        <path>
+                            <fileset dir="content/@{lang}" includes="*.xml" erroronmissingdir="false"/>
+                        </path>
+                        <param name="currentLang" value="@{lang}"/>
+                        <param name="outputDir" value="site/@{lang}"/>
+                    </foreach>
+                </sequential>
+            </for>
+        </sequential>
+    </target>
+    
+    <!-- Helper: Process one content file -->
+    <target name="processOneContent">
         <basename property="content.basename" file="${content.file}" suffix=".xml"/>
         
-        <echo message="Processing ${content.basename}.xml → site/${content.basename}.html"/>
+        <echo message="    Processing ${content.basename}.xml → ${outputDir}/${content.basename}.html"/>
         
         <java fork="true" classname="net.sf.saxon.Transform" 
               classpath="${saxon}" failonerror="true">
             <arg value="-s:${content.file}"/>
             <arg value="-xsl:xsl/processContent.xsl"/>
-            <arg value="-o:site/${content.basename}.html"/>
+            <arg value="-o:${outputDir}/${content.basename}.html"/>
+            <arg value="currentLang=${currentLang}"/>
+            <arg value="languages=${languages}"/>
         </java>
         
         <var name="content.basename" unset="true"/>
     </target>
     
-    <!-- Full monolingual build -->
-    <target name="fullBuild">
-        <description>Full monolingual build (DEFAULT)</description>
-        <echo message="Monolingual build complete (lang=${lang1})!"/>
-        <antcall target="copyWebResources"/>
-        <antcall target="getImageDimensions"/>
-        <antcall target="generateMonoLandingTemplate"/>
-        <antcall target="generateMonoContentTemplate"/>
-        <antcall target="makeMonoLandingPage"/>
-        <antcall target="processMonoContent"/>        
+    <!-- Full build target -->
+    <target name="fullBuild" depends="copyWebResources,makeLandingPage,processContent">
+        <description>Full multilingual build (DEFAULT)</description>
+        <echo message="Build complete! Languages: ${languages}"/>
     </target>
     
     <!-- ========================================= -->
-    <!-- BILINGUAL BUILD TARGETS                   -->
+    <!-- UTILITY TARGETS                           -->
     <!-- ========================================= -->
-    
-    <!-- Generate bilingual landing page template -->
-    <target name="generateBilingualLandingTemplate">
-        <description>Generates bilingual landing page template (uses lang1)</description>
-        <echo message="Generating bilingual landing page template (${lang1}/${lang2})..."/>
-        
-        <mkdir dir="${templates.dir}"/>
-        
-        <java fork="true" classname="net.sf.saxon.Transform" 
-              classpath="${saxon}" failonerror="true">
-            <arg value="-s:boilerplate/landingPageTemplate.xml"/>
-            <arg value="-xsl:xsl/createTemplates.xsl"/>
-            <arg value="-o:templates/landingPage.xml"/>
-            <arg value="lang=${lang1}"/>
-            <arg value="languages=${lang1},${lang2}"/>
-        </java>
-    </target>
-    
-    <!-- Generate bilingual content page templates -->
-    <target name="generateBilingualContentTemplates">
-        <description>Generates bilingual content page templates</description>
-        <echo message="Generating bilingual content page templates (${lang1}/${lang2})..."/>
-        
-        <mkdir dir="${templates.dir}/${lang1}"/>
-        <mkdir dir="${templates.dir}/${lang2}"/>
-        
-        <!-- Language 1 template -->
-        <java fork="true" classname="net.sf.saxon.Transform" 
-              classpath="${saxon}" failonerror="true">
-            <arg value="-s:boilerplate/contentPageTemplate.xml"/>
-            <arg value="-xsl:xsl/createTemplates.xsl"/>
-            <arg value="-o:templates/${lang1}/contentPage.xml"/>
-            <arg value="lang=${lang1}"/>
-            <arg value="languages=${lang1},${lang2}"/>
-        </java>
-        
-        <!-- Language 2 template -->
-        <java fork="true" classname="net.sf.saxon.Transform" 
-              classpath="${saxon}" failonerror="true">
-            <arg value="-s:boilerplate/contentPageTemplate.xml"/>
-            <arg value="-xsl:xsl/createTemplates.xsl"/>
-            <arg value="-o:templates/${lang2}/contentPage.xml"/>
-            <arg value="lang=${lang2}"/>
-            <arg value="languages=${lang1},${lang2}"/>
-        </java>
-    </target>
-    
-    <!-- Process bilingual landing page into site/index.html -->
-    <target name="makeBilingualLandingPage" depends="generateBilingualLandingTemplate">
-        <description>Creates bilingual site/index.html</description>
-        <echo message="Creating bilingual site/index.html..."/>
-        
-        <mkdir dir="site"/>
-        
-        <java fork="true" classname="net.sf.saxon.Transform" 
-              classpath="${saxon}" failonerror="true">
-            <arg value="-s:templates/landingPage.xml"/>
-            <arg value="-xsl:xsl/processLandingPage.xsl"/>
-            <arg value="-o:site/index.html"/>
-            <arg value="isBilingual=true"/>
-            <arg value="firstLang=${lang1}"/>
-        </java>
-    </target>
-    
-    <!-- Process bilingual content files -->
-    <target name="processBilingualContent" depends="generateBilingualContentTemplates,getImageDimensions">
-        <description>Processes bilingual content files</description>
-        <echo message="Processing bilingual content files (${lang1}/${lang2})..."/>
-        
-        <mkdir dir="site/${lang1}"/>
-        <mkdir dir="site/${lang2}"/>
-        
-        <!-- Process language 1 content -->
-        <foreach target="processOneBilingualContent" param="content.file">
-            <path>
-                <fileset dir="content/${lang1}" includes="*.xml" erroronmissingdir="false"/>
-            </path>
-            <param name="lang" value="${lang1}"/>
-        </foreach>
-        
-        <!-- Process language 2 content -->
-        <foreach target="processOneBilingualContent" param="content.file">
-            <path>
-                <fileset dir="content/${lang2}" includes="*.xml" erroronmissingdir="false"/>
-            </path>
-            <param name="lang" value="${lang2}"/>
-        </foreach>
-    </target>
-    
-    <!-- Helper: Process one bilingual content file -->
-    <target name="processOneBilingualContent">
-        <basename property="content.basename" file="${content.file}" suffix=".xml"/>
-        
-        <echo message="Processing ${lang}/${content.basename}.xml → site/${lang}/${content.basename}.html"/>
-        
-        <java fork="true" classname="net.sf.saxon.Transform" 
-              classpath="${saxon}" failonerror="true">
-            <arg value="-s:${content.file}"/>
-            <arg value="-xsl:xsl/processContent.xsl"/>
-            <arg value="-o:site/${lang}/${content.basename}.html"/>
-        </java>
-        
-        <var name="content.basename" unset="true"/>
-    </target>
-    
-    <!-- Full bilingual build -->
-    <target name="fullBilingualBuild" depends="makeBilingualLandingPage,processBilingualContent,copyWebResources">
-        <description>Full bilingual build</description>
-        <echo message="Bilingual build complete (${lang1}/${lang2})!"/>
-    </target>
-    
-    <target name="makeLandingPage">
-        <description>
-            Target makeLandingPage:
-            Generates site/index.html from landing page template.
-            Calls getImageDimensions, then generateLandingTemplate and finally makeLandingPage
-        </description>
-        <antcall target="getImageDimensions"/>
-        <antcall target="generateLandingTemplate"/>
-        <antcall target="createIndexHtml"/>
-    </target>
-    
     
     <target name="clean">
         <description>
@@ -343,9 +363,10 @@
         <echo message="${echo.separator}"/>
         <echo message="Building SCSS source to create CSS files in HTML folder."/>
         <mkdir dir="${basedir}/site/css"/>
-        <exec executable="scss">
-            <arg value="--no-source-map"/>
-            <arg value="${basedir}/sass:${basedir}/css"/>
+        <exec executable="sass">
+            <arg value="--sourcemap=none"/>
+            <arg value="${basedir}/scss/brecht.scss"/>
+            <arg value="${basedir}/css/brecht.css"/>
         </exec>
     </target>
     

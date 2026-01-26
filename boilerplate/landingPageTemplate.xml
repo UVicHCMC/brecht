@@ -18,26 +18,27 @@
 <body>
     <div class="page-wrapper">
         <header id="site-header">
-            <a href="#content" class="skip-link">Skip to content</a>
+            <a href="#content" class="skip-link"><?skip-link?></a>
 
             <div class="nav-wrapper">
                 <!-- <a href="index.html" class="nav-logo">
         <img src="images/splash-icon.png" alt="" width="35" height="35">
       </a> -->
-
-                <img class="mobile-header" src="images/logo-mobile-header.webp" width="300" height="100" />
+                    
+        <!--Insert instruction for mobile header logo--> 
+        <?mobile-header?>
 
                 <div class="button-wrapper">
                     <button id="site-menu-toggle" class="popover-nav-open" type="button" popovertarget="site-navigation" popovertargetaction="toggle" aria-controls="site-navigation" aria-haspopup="true" aria-expanded="false">
-
-                        <span class="nav-toggle-label">Site Menu</span>
+                            
+                        <span class="nav-toggle-label"><?nav-toggle-label?></span>
                         <svg class="menu-burger" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18" />
                         </svg>
                     </button>
 
-                    <nav id="site-navigation" class="main-menu" aria-label="Primary" popover="auto">
-                        <button type="button" class="popover-nav-close" aria-label="Close menu" popovertarget="site-navigation" popovertargetaction="hide">
+                    <nav id="site-navigation" class="main-menu" aria-label="{?site-navigation-label}" popover="auto">
+                        <button type="button" class="popover-nav-close" aria-label="{?popover-close-label}" popovertarget="site-navigation" popovertargetaction="hide">
 
                             <svg class="close-x" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewbox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6 6 18M6 6l12 12" />
@@ -49,10 +50,6 @@
                             <div class="popover-header" aria-hidden="true">
                                 <img class="popover-splash-icon" alt="" src="images/logo-mobile-popover.webp" width="901" height="257" />
 
-                                <!-- <div class="popover-header-text">
-                  <span class="main-title">Text here</span>
-                  <span class="sub-title">Text here</span>
-                </div> -->
                             </div>
 
                             <ul class="popover-nav-items">
@@ -61,7 +58,7 @@
 
                         </div>
                     </nav>
-                    <button class="lang-chooser" aria-label="Switch site language to German" lang="de">DE</button>
+                    <?lang-chooser?>
                 </div>
             </div>
 
@@ -69,11 +66,11 @@
 
         <main>
             <div class="blob">
-                <img class="splash-logo" src="images/logo-splash-brecht.webp" width="1500" height="1340" alt="Brecht in the anthropocene, 18th symposium of the International Brecht Society. University of Victoria, Victoria, BC, Canada: July 22-26, 2026." />
+                <?splash-logo?>
             </div>
         </main>
         <footer>
-            <?footerContent?>
+            <?footer-content?>
         </footer>
     </div>
 </body>

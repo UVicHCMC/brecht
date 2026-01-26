@@ -4,90 +4,181 @@
      This file contains metadata and properties for conference websites.
      
      FOR MONOLINGUAL SITES:
-     - Use only the 'en' attribute (or rename to your target language)
-     - Remove unused language attributes
+    - Simply encode text content within each property element.
      
      FOR BILINGUAL SITES:  
-     - Include both 'en' and 'de' attributes
-     - Ensure all translatable content has both languages
+    - For each property, create a separate element for each language specified in the languages section.
      
      EXAMPLE:
-     Monolingual: <siteTitle en="My Site Title"/>
-     Bilingual:   <siteTitle en="My Site Title" de="Titre de mon site"/>
+     Monolingual: <siteTitle>My Site Title</siteTitle>
+     Bilingual:   <siteTitle> 
+                        <en>My Site Title</en>
+                        <de>Mein Seitentitel</de>
+                    </siteTitle>
 -->
 
 <site>
-    <!--Listing languages here for now. Not sure if we will keep them. -->
+    <!--The build process will pull this list of languages and use that to create the necessary build targets and outputs. 
+         This can be overwritten by running the build with -Dlanguages and specifying just the languages your want -->
     <languages>
-        <lang>en</lang>
-        <lang>de</lang>
+        <lang code="en" label="English" default="true"/>
+        <lang code="de" label="Deutsch"/>
     </languages>
-    <metadata>
-        <metaDescription en="Description of the website for SEO purposes." de="Beschreibung der Website für SEO-Zwecke" />
-        <siteTitle en="Website Title" de="Website-Titel" />
-        <organization en="Organization Name" de="Name der Organisation" />
-        <splashTitle en="Healing Forests" de="Heilende Wälder" />
-        <splashSubtitle en="Indigenous Knowledges &amp;amp; Traditional Medicines&lt;br /&gt;with the Khasi People of Meghalaya, Northeast India" 
-                        de="Indigenes Wissen &amp;amp; traditionelle Medizin &lt;br /&gt;bei den Khasi in Meghalaya, Nordostindien" />
-        <splashIconAlt en="Healing forests logo, a pitcher plant" de="Logo des Heilwaldes, eine Kannenpflanze" />
-        
-        <splashWhereWhen>
-            <place en="Event Venue/Host" de="Veranstaltungsort/Gastgeber" />
-            <date en="June 15-17, 2024" de="15. bis 17. Juni 2024" />
-            <location en="Victoria, BC" de="Victoria, BC" />
-        </splashWhereWhen>
-    </metadata>
-
+    
     <files>
         <cssFile>css/brecht.css</cssFile>
         <jsFile>js/pux.js</jsFile>
-        <font>fonts/InterVariable.woff2</font>
-        <font>fonts/InterVariable-Italic.woff2</font>
-        <font>fonts/InterVariable.woff2</font>
-        <font>fonts/Roboto-Italic-VariableFont.woff2</font>
-        <font>fonts/Roboto-VariableFont.woff2</font>
         <faviconIco>images/favicon.ico</faviconIco>
         <faviconSvg>images/favicon.svg</faviconSvg>
-        <splashIcon>images/splash-icon.png</splashIcon>
         <siteManifest>site.webmanifest</siteManifest>
-        <uvicLogo>images/logo-uvic.png</uvicLogo>
-        <siteLogo>images/logo-splash-brecht.webp</siteLogo>
-        <!--<mobileLogo>images/site-logo-top.webp</mobileLogo>-->
-        <!--<footerLogo>images/footer-logo.webp</footerLogo>-->
-        <!--<mobileFooterLogo>images/mobile-nav-footer-logo.webp</mobileFooterLogo>-->
     </files>
-
-    <urls>
-        <home en="index.html" de="index.html" />
-        <homeUrl en="index.html" de="index.html" />
-        <uvicUrl>https://hcmc.uvic.ca</uvicUrl>
-    </urls>
-
-    <footerContent>
     
-    <div class="footer-container">
-        <ul class="footer-items">
-          <li>
-            <a href="https://hcmc.uvic.ca">
-              <img src="images/logo-uvic.svg" alt="University of Victoria, Humanities Computing and Media Centre" width="225" height="33" />
-            </a>
-          </li>
-        </ul>
-      </div>
+    <metadata>
+        <siteTitle>
+            <en>Website Title</en>
+            <de>Website-Titel</de>
+        </siteTitle>
+        <organizationName>
+            <en>Organization Name</en>
+            <de>Name der Organisation</de>
+        </organizationName>
+        
+        <WhereWhen>
+            <place> 
+                <en>Event Venue/Host</en> 
+                <de>Veranstaltungsort/Gastgeber</de> 
+            </place>
+            <date> 
+                <en>June 15-17, 2024</en>
+                <de>15. bis 17. Juni 2024</de> 
+            </date>
+            <location> 
+                <en>Victoria, BC</en> 
+                <de>Victoria, BC</de> 
+            </location>
+        </WhereWhen>
+    </metadata>
+      
 
-       <!--  <uvicLogoAlt en="University of Victoria: Humanities Computing and Media Centre" de="Université de Victoria : Centre informatique et médiatique des sciences humaines" />
-        <LogoAlt en="back to home" de="Zurück zur Startseite" />
-        <copyrightText en="&lt;p&gt;© 2024 Organization Name&lt;/p&gt;" de="&lt;p&gt;© 2024 Name der Organisation&lt;/p&gt;" />
-        <citationText en="How to cite this site" de="Wie zitiert man diese Seite" />
-        <acknowledgementsText en="&lt;p&gt;Acknowledgements text here&lt;/p&gt;" de="&lt;p&gt;Danksagung Text hier&lt;/p&gt;" /> -->
-    </footerContent>
+    <!--Uncomment this and update the heading options if you want to have a language selector splash page-->
+    <!-- For language selector page -->
+    <!--<languageSelector>
+        <heading>
+            <en>Select your language</en>
+            <de>Wählen Sie Ihre Sprache</de>
+        </heading>
+    </languageSelector>-->
+    
+    <!-- For div.lang-chooser -->
+    <lang-chooser>
+        <aria-label>
+            <en>Change to German</en>
+            <de>Wechseln zu Englisch</de>
+        </aria-label>
+    </lang-chooser>         
 
+    <!--For img.slash-logo-->         
+    <splash-logo>
+        <class>splash-logo</class>
+        <src>images/logo-splash-brecht.webp</src>
+        <en>Brecht in the anthropocene, 18th symposium of the International Brecht Society. University of Victoria, Victoria, BC, Canada: July 22-26, 2026.</en>
+        <de>Brecht im Anthropozän, 18. Symposium der Internationalen Brecht-Gesellschaft. Universität Victoria, Victoria, BC, Kanada: 22. bis 26. Juli 2026.</de>
+    </splash-logo>
+    
+    <!--For img.uvic-logo-->
+    <uvic-logo>
+        <href>https://hcmc.uvic.ca</href>
+        <src>images/logo-uvic.png</src>
+        <alt>
+            <en>University of Victoria Humanities Computing and Media Centre</en>
+            <de>Zentrum für Geisteswissenschaften, Informatik und Medien der Universität Victoria</de>
+        </alt>
+    </uvic-logo>
+    
+    <!--For img.mobile-header-->
+    <mobile-header>
+        <src>images/logo-mobile-header.webp</src>
+        <alt/>
+    </mobile-header>
+    
+    <!--For img.ehco-logo-->
+    <ehco-logo>
+        <href>https://hcmc.uvic.ca</href>
+        <src>images/ehco-logo.webp</src>
+        <alt>EHCo</alt>
+    </ehco-logo>
+    
+    <!--For popover.splash-icon-->
+    <popover-splash-icon>
+        <src>images/logo-mobile-popover.webp</src>
+        <alt/>
+    </popover-splash-icon>
+    
+    <!-- For a.skip-link-->
+    <skip-link>
+        <en>Skip to Content</en>
+        <de>Weiter zum Inhalt</de>
+    </skip-link>
+
+    <!-- For nav.aria-label-->
+    <site-navigation-label>
+        <en>Primary</en>
+        <de>Primär</de>
+    </site-navigation-label>
+    
+    <!--For button.aria-label-->
+    <popover-close-label>
+        <en>Close</en>
+        <de>Schließen</de>
+    </popover-close-label>
+    
+    <!--For span.nav-toggle-label-->
+    <nav-toggle-label>
+        <en>Site Menu</en>
+        <de>Seitenmenü</de>
+    </nav-toggle-label>
+    
+
+    
+    <!--For div.footer-container-->
+    <footer-content>
+        <items>
+            <item>
+                <?uvic-logo?>
+                <?ehco-logo?>
+            </item>
+        </items>
+    </footer-content>
+    
+
+    <!-- For div.popover-nav-items-->
     <navigation>
-       <li><a class="item" href="index.html" en="Home" de="Startseite" /></li>
-       <li><a class="item" href="registration.html" en="Registration" de="Anmeldung" /></li>
-       <li><a class="item" href="program.html" en="Program" de="Programm" /></li>
-       <li><a class="item" href="accommodations.html" en="Accommodations" de="Unterkünfte" /></li>
-       <li><a class="item" href="gettinghere.html" en="Getting here" de="Anreise" /></li>
-       <li><a class="item" href="about.html" en="About" de="Über uns" /></li>
+        <item href="index.html">
+            <en>Home</en>
+            <de>Startseite</de>
+        </item>
+        <item href="registration.html">
+            <en>Registration</en>
+            <de>Anmeldung</de>
+        </item>
+        <item href="program.html">
+            <en>Program</en>
+            <de>Programm</de>
+        </item>
+        <item href="accommodations.html">
+            <en>Accommodations</en>
+            <de>Unterkünfte</de>
+        </item>
+        <item href="gettinghere.html">
+            <en>Getting here</en>
+            <de>Anreise</de>
+        </item>
+        <item href="about.html">
+            <en>About</en>
+            <de>Über uns</de>
+        </item>
     </navigation>
+    
+
+    
 </site>
