@@ -5,6 +5,9 @@
 css/
 scss/*.css
 
+#Ignore sass cache
+.sass-cache/
+
 # Ignore source files
 src/
 
