@@ -22,6 +22,11 @@
         <lang code="en" label="English" default="true" />
         <lang code="de" label="Deutsch" />
     </languages>
+        
+    <lang-abbreviation>
+        <en>DE</en>
+        <de>EN</de>
+    </lang-abbreviation>
 
     <files>
         <cssFile>css/brecht.css</cssFile>
@@ -76,16 +81,10 @@
     </lang-chooser>
 
     <lang-chooser-aria-label>
-        <aria-label>
-            <en>Change to German</en>
-            <de>Wechseln zu Englisch</de>
-        </aria-label>
+        <en>Change to German</en>
+        <de>Wechseln zu Englisch</de>
     </lang-chooser-aria-label>
 
-    <lang-abbreviation>
-        <en>DE</en>
-        <de>EN</de>
-    </lang-abbreviation>
 
     <!--For img.slash-logo-->
     <splash-logo>
@@ -102,10 +101,8 @@
         <href>https://hcmc.uvic.ca</href>
         <src>images/logo-uvic.svg</src>
         <alt>
-            <en
-            >University of Victoria Humanities Computing and Media Centre</en>
-            <de
-            >Zentrum für Geisteswissenschaften, Informatik und Medien der Universität Victoria</de>
+            <en>University of Victoria Humanities Computing and Media Centre</en>
+            <de>Zentrum für Geisteswissenschaften, Informatik und Medien der Universität Victoria</de>
         </alt>
     </uvic-logo>
 
