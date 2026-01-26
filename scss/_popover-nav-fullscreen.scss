@@ -88,12 +88,13 @@ header {
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
-    text-decoration: none;
+    text-decoration-color: transparent;
 
     &:is(:hover, :focus-visible) {
         color: var(--lang-chooser-color-active);
         background-color: var(--lang-chooser-bg-color-active);
         border: 2px solid var(--highlight);
+        text-decoration-color: transparent;
     }
 }
 
