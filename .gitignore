@@ -2,7 +2,7 @@
 .DS_Store
 
 #ignore imageDimensions.txt
-imageDimensions.txt
+utilities/imageDimensions.txt
 
 #Dont track CSS
 css/
