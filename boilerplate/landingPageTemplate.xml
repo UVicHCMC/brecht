@@ -111,7 +111,7 @@
 
                             </div>
                         </nav>
-                        <button class="lang-chooser"><?lang-chooser?></button>
+                        <?lang-chooser?>
                     </div>
                 </div>
 
