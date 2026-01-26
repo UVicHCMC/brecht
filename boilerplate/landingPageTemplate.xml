@@ -111,11 +111,7 @@
 
                             </div>
                         </nav>
-                        <button
-                            class="lang-chooser"
-                            aria-label="{?lang-chooser-aria-label}"
-                            lang="{?lang-abbreviation}"
-                        ><?lang-abbreviation?></button>
+                        <button class="lang-chooser"><?lang-chooser?></button>
                     </div>
                 </div>
 

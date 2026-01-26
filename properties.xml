@@ -72,7 +72,7 @@
         </heading>
     </languageSelector>-->
 
-    <!-- For div.lang-chooser -->
+    <!-- For a.lang-chooser -->
     <lang-chooser>
         <aria-label>
             <en>Change to German</en>
@@ -86,7 +86,7 @@
     </lang-chooser-aria-label>
 
 
-    <!--For img.slash-logo-->
+    <!--For img.splash-logo-->
     <splash-logo>
         <class>splash-logo</class>
         <src>images/logo-splash-brecht.webp</src>
