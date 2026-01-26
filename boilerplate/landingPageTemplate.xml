@@ -1,5 +1,5 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-    
+
     <head xmlns="http://www.w3.org/1999/xhtml">
         <title>
             <?siteTitle?>
@@ -11,22 +11,22 @@
         <link rel="icon" href="{?faviconSvg}" sizes="any" type="image/svg+xml" />
         <link rel="manifest" href="{?siteManifest}" />
         <?fontPreloads?>
-        <script src="{?jsFile}"></script>
+        <script src="{?jsFile}" />
         <meta name="description" content="{?metaDescription}" />
     </head>
-    
+
     <body>
         <!-- Global safe-area wrapper -->
         <div class="page-wrapper">
-            
+
             <!-- Site chrome -->
             <header id="site-header">
                 <a href="#content" class="skip-link"><?skip-link?></a>
-                
-                <div class="nav-wrapper">                    
-                    <!--Insert instruction for mobile header logo--> 
+
+                <div class="nav-wrapper">
+                    <!--Insert instruction for mobile header logo-->
                     <?mobile-header?>
-                    
+
                     <div class="button-wrapper">
                         <button
                             id="site-menu-toggle"
@@ -37,47 +37,57 @@
                             aria-controls="site-navigation"
                             aria-haspopup="true"
                             aria-expanded="false"
-                            >
+                        >
                             <span class="nav-toggle-label"><?nav-toggle-label?></span>
                             <svg xmlns="http://www.w3.org/2000/svg" class="menu-burger" width="24" height="24" fill="none">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18" />
                             </svg>
                         </button>
-                        
+
                         <nav id="site-navigation" class="main-menu" aria-label="{?site-navigation-label}" popover="auto">
                             <button type="button" class="popover-nav-close" aria-label="{?popover-close-label}" popovertarget="site-navigation" popovertargetaction="hide">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="close-x" width="24" height="24" fill="none" viewbox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6 6 18M6 6l12 12" />
                                 </svg>
                             </button>
-                            
-                            
-                            <div class="popover-group-container">                                
+
+
+                            <div class="popover-group-container">
                                 <div class="popover-header" aria-hidden="true">
-                                    <?popover-splash-icon?>                                    
+                                    <?popover-splash-icon?>
                                 </div>
-                                
+
                                 <ul class="popover-nav-items">
                                     <?navigation?>
                                 </ul>
-                                
+
                             </div>
                         </nav>
                         <?lang-chooser?>
                     </div>
                 </div>
-                
+
             </header>
-            
+
             <main>
                 <div class="blob">
                     <?splash-logo?>
                 </div>
             </main>
             <footer>
-                <?footer-content?>
+
+            <div class="footer-container">
+                     <ul class="footer-items">
+                       <li>
+                         <a href="https://hcmc.uvic.ca">
+                         <?uvic-logo?>
+                         </a>
+                       </li>
+                     </ul>
+                   </div>
+
             </footer>
         </div>
     </body>
-    
+
 </html>
