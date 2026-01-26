@@ -1,6 +1,9 @@
 # Ignore annoying Mac files
 .DS_Store
 
+#Ignote image_dimensions.txt
+image_dimensions.txt
+
 #Dont track CSS
 css/
 scss/*.css
