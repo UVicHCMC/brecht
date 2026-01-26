@@ -1,85 +1,131 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-   <head>
-      <title>Brecht in the Anthropocene</title>
-      <meta charset="utf-8"/>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <link rel="stylesheet" href="css/brecht.css"/>
-      <link rel="icon" href="images/favicon.ico" sizes="48x48"/>
-      <link rel="icon"
-            href="images/favicon.svg"
-            sizes="any"
-            type="image/svg+xml"/>
-      <link rel="manifest" href="site.webmanifest"/>
-   </head>
-   <body id="top">
-      <header data-state="closed" id="site-header" class="open">
-         <span class="internalTitle">Healing Forests</span>
-         <span class="internalSubTitle">Indigenous Knowledges &amp; Traditional Medicines<br />with the Khasi People of Meghalaya, Northeast India</span>
-         <span class="subheaderInternal">
-            <div class="place">Event Venue/Host</div>
-            <div class="date">June 15-17, 2024</div>
-            <div class="location">Victoria, BC</div>
-         </span>
-         <div id="mobile-nav-banner" data-state="closed">
-            <a href="index.html">
-               <img class="site-logo-mobile" src="" alt=""/>
-            </a>
-         </div>
-         <div class="nav-wrapper">
-            <nav class="main-menu" id="site-navigation" aria-expanded="true">
-               <ul class="clicky-menu no-js" role="menu">
-                  <li>
-                     <a class="item" href="index.html">Home</a>
-                  </li>
-                  <li>
-                     <a class="item" href="registration.html">Registration</a>
-                  </li>
-                  <li>
-                     <a class="item" href="program.html">Program</a>
-                  </li>
-                  <li>
-                     <a class="item" href="accommodations.html">Accommodations</a>
-                  </li>
-                  <li>
-                     <a class="item" href="gettinghere.html">Getting here</a>
-                  </li>
-                  <li>
-                     <a class="item" href="about.html">About</a>
-                  </li>
-               </ul>
-               <div class="mobile-nav-footer">
-                  <img class="mobile-footer-logo"
-                       src=""
-                       width="50"
-                       height="50"
-                       alt=""/>
-               </div>
+  <head>
+    <title>Brecht in the Anthropocene</title>
+
+    <!-- Core metadata -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Compiled styles (includes page grid + layout system) -->
+    <link rel="stylesheet" href="css/brecht.css" />
+
+    <!-- Favicons / PWA -->
+    <link rel="icon" href="images/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="images/favicon.svg" sizes="any" type="image/svg+xml" />
+    <link rel="manifest" href="site.webmanifest" />
+  </head>
+
+  <body id="top">
+    <!--
+      page-wrapper
+      =============
+      Global safe-area wrapper.
+      Controls page-level padding and prevents accidental edge collisions.
+    -->
+    <div class="page-wrapper">
+
+      <!--
+        site-masthead
+        =============
+        Global site chrome: branding, navigation, language switcher.
+        Intentionally NOT part of the page-grid / content geometry.
+      -->
+      <header id="site-header" class="site-masthead">
+        <a href="#content" class="skip-link">Skip to content</a>
+
+        <div class="nav-wrapper">
+          <img class="mobile-header" src="images/logo-mobile-header.webp" width="300" height="100" alt="" />
+
+          <div class="button-wrapper">
+            <!-- Primary navigation toggle (mobile) -->
+            <button
+                            id="site-menu-toggle"
+                            class="popover-nav-open"
+                            type="button"
+                            popovertarget="site-navigation"
+                            popovertargetaction="toggle"
+                            aria-controls="site-navigation"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                        >
+              <span class="nav-toggle-label">Site Menu</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="menu-burger" width="24" height="24" fill="none">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M3 6h18M3 18h18" />
+              </svg>
+            </button>
+
+            <!-- Primary navigation (popover on small screens) -->
+            <nav id="site-navigation" class="main-menu" aria-label="Primary" popover="auto">
+
+              <button type="button" class="popover-nav-close" aria-label="Close menu" popovertarget="site-navigation" popovertargetaction="hide">
+                <svg xmlns="http://www.w3.org/2000/svg" class="close-x" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6 6 18M6 6l12 12" />
+                </svg>
+              </button>
+
+              <div class="popover-group-container">
+                <div class="popover-header" aria-hidden="true">
+                  <img class="popover-splash-icon" alt="" src="images/logo-mobile-popover.webp" width="901" height="257" />
+                </div>
+
+                <ul class="popover-nav-items">
+                  <li><a class="item" href="index.html">Home</a></li>
+                  <li><a class="item" href="registration.html">Registration</a></li>
+                  <li><a class="item" href="program.html">Program</a></li>
+                  <li><a class="item" href="accommodations.html">Accommodations</a></li>
+                  <li><a class="item" href="gettinghere.html">Getting here</a></li>
+                  <li><a class="item" href="about.html">About</a></li>
+                </ul>
+              </div>
             </nav>
-            <a href="index.html">
-               <img class="site-logo" src="" alt=""/>
-            </a>
-         </div>
+
+            <!-- Language toggle -->
+            <button class="lang-chooser" aria-label="Switch site language to German" lang="de">DE</button>
+          </div>
+        </div>
       </header>
-      <a id="content"/>
-      <!-- NOTE: This processing-instruction will be replaced by the document 
-             content. -->
-      <?docContent?>
-      <footer>
-         <div class="site-specific-footer">
-            <img class="site-footer-logo" src="" alt=""/>
-         </div>
-         <div class="footer-info">
-            <div class="copyright"/>
-         </div>
-         <div class="citation"/>
-         <div class="logos">
-            <a class="uvic-logo-internal" href="https://hcmc.uvic.ca">
-               <img src="" alt=""/>
-            </a>
-         </div>
-         <div class="acknowledgements"/>
-         <div id="buildInfo"><!-- Build info will go here. --></div>
+
+      <!--
+        doc-shell / doc-layout
+        =====================
+        Centers the reading unit.
+        May expand when a TOC is present on interior pages.
+      -->
+      <div class="doc-shell">
+        <div class="doc-layout">
+
+          <!--
+            page-grid
+            =========
+            Content geometry ruler.
+            Children opt into content / wide / full spans via utility classes.
+          -->
+          <main class="page-grid" id="content">
+            <?docContent?>
+          </main>
+
+        </div>
+      </div>
+
+      <!--
+        site-footer
+        ===========
+        Global site chrome.
+        Not constrained by page-grid geometry.
+      -->
+      <footer class="site-footer">
+        <div class="footer-container">
+          <ul class="footer-items">
+            <li>
+              <a href="https://hcmc.uvic.ca">
+                <img src="images/logo-uvic.svg" alt="University of Victoria, Humanities Computing and Media Centre" width="225" height="33" />
+              </a>
+            </li>
+          </ul>
+        </div>
       </footer>
-   </body>
+
+    </div>
+  </body>
 </html>
