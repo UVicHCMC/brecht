@@ -22,6 +22,9 @@
   
   <!-- Check if bilingual -->
   <xsl:variable name="isBilingual" select="contains($languages, ',')"/>
+
+  <!-- Detect if this template is a landing page (no docContent PI) -->
+  <xsl:variable name="isLanding" select="not(//processing-instruction('docContent'))"/>
   
   <!-- Get list of all languages -->
   <xsl:variable name="langList" select="tokenize($languages, ',')" />
@@ -328,7 +331,11 @@
           <xsl:attribute name="href">
             <xsl:text>../</xsl:text>
             <xsl:value-of select="$otherLang"/>
-            <xsl:text>/{{currentPage}}</xsl:text>
+            <xsl:text>/</xsl:text>
+            <xsl:choose>
+              <xsl:when test="$isLanding">index.html</xsl:when>
+              <xsl:otherwise>{{currentPage}}</xsl:otherwise>
+            </xsl:choose>
           </xsl:attribute>
           <xsl:value-of select="$otherLangLabel"/>
         </a>
@@ -346,7 +353,11 @@
                   <xsl:attribute name="href">
                     <xsl:text>../</xsl:text>
                     <xsl:value-of select="."/>
-                    <xsl:text>/{{currentPage}}</xsl:text>
+                    <xsl:text>/</xsl:text>
+                    <xsl:choose>
+                      <xsl:when test="$isLanding">index.html</xsl:when>
+                      <xsl:otherwise>{{currentPage}}</xsl:otherwise>
+                    </xsl:choose>
                   </xsl:attribute>
                   <xsl:value-of select="hcmc:getLanguageLabel(.)"/>
                 </a>

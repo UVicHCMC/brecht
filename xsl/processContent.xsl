@@ -9,22 +9,40 @@
   
   <xsl:output method="xml" indent="yes" encoding="UTF-8" omit-xml-declaration="no"/>
   
+  <!-- Parameters passed from build -->
+  <xsl:param name="currentLang" select="'en'"/>
+  <xsl:param name="languages" select="'en'"/>
+  
   <!-- Get current document filename and page name -->
   <xsl:variable name="currentFile" select="tokenize(base-uri(/), '/')[last()]"/>
   <xsl:variable name="currentPage" select="replace($currentFile, '\.xml$', '.html')"/>
   
-  <!-- Determine language from path (for bilingual builds) -->
+  <!-- Load properties to get valid language codes (use static-base-uri to resolve relative to XSLT file) -->
+  <xsl:variable name="propertiesDoc" select="document(resolve-uri('../properties.xml', static-base-uri()))"/>
+  <xsl:variable name="validLangCodes" select="$propertiesDoc/site/languages/lang/@code"/>
+  
+  <!-- Determine language from path (for bilingual builds) or use parameter -->
   <xsl:variable name="pathParts" select="tokenize(base-uri(/), '/')"/>
   <xsl:variable name="langFromPath" select="
-    if ($pathParts[last() - 1] = ('en', 'fr', 'de', 'es', 'it')) then
+    if ($pathParts[last() - 1] = $validLangCodes) then
       $pathParts[last() - 1]
     else ''
                   "/>
   
+  <!-- Use explicit parameter if provided, otherwise detect from path -->
+  <xsl:variable name="lang" select="
+    if ($currentLang != '' and $currentLang != 'en') then 
+      $currentLang 
+    else if ($langFromPath != '') then 
+      $langFromPath
+    else 
+      'en'
+  "/>
+  
   <!-- Load the appropriate template -->
   <xsl:variable name="templatePath" select="
     if ($langFromPath != '') then
-      concat('../templates/', $langFromPath, '/contentPage.xml')
+      concat('../templates/', $lang, '/contentPage.xml')
     else
       '../templates/contentPage.xml'
                   "/>
@@ -63,9 +81,34 @@
     </xsl:copy>
   </xsl:template>
   
+  <!-- Fix resource paths (CSS, JS, images) for multilingual builds. We do this because the resources are one level up from the HTML pages in bilingual builds. -->
+  <xsl:variable name="isMultilingual" select="count(tokenize($languages, ',')) gt 1"/>
+  
+  <xsl:template match="xhtml:link/@href[not(starts-with(., 'http')) and not(starts-with(., '/')) and (contains(., 'css/') or contains(., 'fonts/'))]" priority="3">
+    <xsl:attribute name="href">
+      <xsl:if test="$isMultilingual">../</xsl:if>
+      <xsl:value-of select="."/>
+    </xsl:attribute>
+  </xsl:template>
+  
+  <xsl:template match="xhtml:script/@src[not(starts-with(., 'http')) and not(starts-with(., '/')) and contains(., 'js/')]" priority="3">
+    <xsl:attribute name="src">
+      <xsl:if test="$isMultilingual">../</xsl:if>
+      <xsl:value-of select="."/>
+    </xsl:attribute>
+  </xsl:template>
+  
+  <xsl:template match="xhtml:img/@src[not(starts-with(., 'http')) and not(starts-with(., '/')) and starts-with(., 'images/')]" priority="4">
+    <xsl:attribute name="src">
+      <xsl:if test="$isMultilingual">../</xsl:if>
+      <xsl:value-of select="."/>
+    </xsl:attribute>
+  </xsl:template>
+  
   <!-- Replace <?docContent?> with actual content -->
   <xsl:template match="processing-instruction('docContent')" priority="5">
-    <xsl:apply-templates select="$contentRoot/xhtml:body/*" mode="content"/>
+    <xsl:message>Inserting content for page: <xsl:value-of select="$currentPage"/></xsl:message>
+    <xsl:apply-templates select="$contentRoot/*/*" mode="content"/>
   </xsl:template>
   
   <!-- Replace {{currentPage}} placeholders in href attributes -->
@@ -78,6 +121,18 @@
     <xsl:copy>
       <xsl:apply-templates select="@* | node()" mode="content"/>
     </xsl:copy>
+  </xsl:template>
+  
+  <!-- Handle non-namespaced elements from content files -->
+  <xsl:template match="*[not(namespace-uri())]" mode="content" priority="1">
+    <xsl:element name="{local-name()}">
+      <xsl:apply-templates select="@* | node()" mode="content"/>
+    </xsl:element>
+  </xsl:template>
+  
+  <!-- Handle text nodes -->
+  <xsl:template match="text() | comment() | processing-instruction()" mode="content">
+    <xsl:copy/>
   </xsl:template>
   
   <!-- Replace img tags with dimensioned versions (for template images) -->
@@ -116,7 +171,12 @@
                 <xsl:copy-of select="@class"/>
               </xsl:otherwise>
             </xsl:choose>
-            <xsl:copy-of select="$img/@*[not(local-name() = 'width' or local-name() = 'height' or local-name() = 'class')]"/>
+            <!-- Fix src path for multilingual builds -->
+            <xsl:attribute name="src">
+              <xsl:if test="$isMultilingual">../</xsl:if>
+              <xsl:value-of select="@src"/>
+            </xsl:attribute>
+            <xsl:copy-of select="$img/@*[not(local-name() = 'width' or local-name() = 'height' or local-name() = 'class' or local-name() = 'src')]"/>
           </xsl:copy>
         </xsl:for-each>
       </xsl:when>
