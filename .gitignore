@@ -1,12 +1,16 @@
 # Ignore annoying Mac files
 .DS_Store
 
-#Ignote imageDimensions.txt
+#ignore imageDimensions.txt
 imageDimensions.txt
 
 #Dont track CSS
 css/
 scss/*.css
+
+#ignore generated template files
+templates/contentPage.xml
+templates/landingPage.xml
 
 #Ignore sass cache
 .sass-cache/
