@@ -3,16 +3,13 @@
 
 #Dont track CSS
 css/
-sass/*.css
+scss/*.css
 
 # Ignore source files 
 src/
 
 # Ignore lib
 lib/
-
-#Ignore content
-content/
 
 #Ignore site
 site/
