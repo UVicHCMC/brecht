@@ -101,13 +101,6 @@
         <alt/>
     </mobile-header>
     
-    <!--For img.ehco-logo-->
-    <ehco-logo>
-        <href>https://hcmc.uvic.ca</href>
-        <src>images/ehco-logo.webp</src>
-        <alt>EHCo</alt>
-    </ehco-logo>
-    
     <!--For popover.splash-icon-->
     <popover-splash-icon>
         <src>images/logo-mobile-popover.webp</src>
@@ -145,7 +138,6 @@
         <items>
             <item>
                 <?uvic-logo?>
-                <?ehco-logo?>
             </item>
         </items>
     </footer-content>
