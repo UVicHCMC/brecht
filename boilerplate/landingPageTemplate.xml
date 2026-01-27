@@ -111,7 +111,7 @@
 
                             </div>
                         </nav>
-                        <?lang-chooser?>
+                        <a class="lang-chooser" aria-label="{?lang-chooser-aria-label}" lang="{?other-lang}" href="{?other-lang-href}"><?other-lang-label?></a>
                     </div>
                 </div>
 

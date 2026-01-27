@@ -22,11 +22,6 @@
         <lang code="en" label="English" default="true" />
         <lang code="de" label="Deutsch" />
     </languages>
-        
-    <lang-abbreviation>
-        <en>DE</en>
-        <de>EN</de>
-    </lang-abbreviation>
 
     <files>
         <cssFile>css/brecht.css</cssFile>
@@ -72,7 +67,18 @@
         </heading>
     </languageSelector>-->
 
-    <!-- For a.lang-chooser -->
+    <!-- For *.lang-chooser -->
+    <lang-config>
+        <en>
+            <other-lang>de</other-lang>
+            <other-lang-label>DE</other-lang-label>
+        </en>
+        <de>
+            <other-lang>en</other-lang>
+            <other-lang-label>EN</other-lang-label>
+        </de>
+    </lang-config>
+
     <lang-chooser>
         <aria-label>
             <en>Change to German</en>
@@ -83,8 +89,7 @@
     <lang-chooser-aria-label>
         <en>Change to German</en>
         <de>Wechseln zu Englisch</de>
-    </lang-chooser-aria-label>
-
+    </lang-chooser-aria-label>    
 
     <!--For img.splash-logo-->
     <splash-logo>
