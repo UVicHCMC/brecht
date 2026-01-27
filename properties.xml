@@ -16,8 +16,9 @@
                     </siteTitle>
 -->
 <site>
-    <!--The build process will pull this list of languages and use that to create the necessary build targets and outputs.
-         This can be overwritten by running the build with -Dlanguages and specifying just the languages your want -->
+    <!--This list of languages defines all of the languages that the site will be built in.
+         The build process will pull this list of languages and use that to create the necessary build targets and outputs.
+         You can overwrite this logic by running the build with -Dlanguages and specifying just the language(s) you want -->
     <languages>
         <lang code="en" label="English" default="true" />
         <lang code="de" label="Deutsch" />
@@ -66,31 +67,13 @@
             <de>Wählen Sie Ihre Sprache</de>
         </heading>
     </languageSelector>-->
-
-    <!-- For *.lang-chooser -->
-    <lang-config>
-        <en>
-            <other-lang>de</other-lang>
-            <other-lang-label>DE</other-lang-label>
-        </en>
-        <de>
-            <other-lang>en</other-lang>
-            <other-lang-label>EN</other-lang-label>
-        </de>
-    </lang-config>
-
-    <lang-chooser>
-        <aria-label>
-            <en>Change to German</en>
-            <de>Wechseln zu Englisch</de>
-        </aria-label>
-    </lang-chooser>
-
-    <lang-chooser-aria-label>
-        <en>Change to German</en>
-        <de>Wechseln zu Englisch</de>
-    </lang-chooser-aria-label>    
-
+    
+    <!-- For nav.aria-label-->
+    <nav-aria-label>
+        <en>Language Selection</en>
+        <de>Sprachauswahl</de>
+    </nav-aria-label>
+    
     <!--For img.splash-logo-->
     <splash-logo>
         <class>splash-logo</class>

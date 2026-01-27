@@ -78,7 +78,11 @@
                         </nav>
                         
                         <!-- Language toggle -->
-                        <a class="lang-chooser" aria-label="{?lang-chooser-aria-label}" lang="{?other-lang}" href="{?other-lang-href}"><?other-lang-label?></a>
+                        <nav aria-label="{?nav-aria-label}">
+                            <!-- The attributes here will be programmatically replaced by the XSLT based on the values of the languages parameter in properties.xml -->
+                            <!-- We've left the attributes here just so that we know what to expect in the output HTML -->
+                            <a class="lang-chooser" aria-label="" hreflang="" lang="" href=""/>
+                        </nav>
                     </div>
                     
                 </div>

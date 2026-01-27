@@ -63,6 +63,103 @@
     </xsl:copy>
   </xsl:template>
   
+  <!-- Process elements with class="lang-chooser" -->
+  <xsl:template match="xhtml:*[contains(@class, 'lang-chooser')]" mode="process-template" priority="3">
+    <xsl:variable name="elementName" select="local-name()"/>
+    
+    <xsl:choose>
+      <!-- Two languages: populate single element with other language -->
+      <xsl:when test="count($langList) = 2">
+        <xsl:variable name="otherLang" select="string($langList[not(. = $lang)][1])"/>
+        <xsl:variable name="otherLangLabel" select="upper-case(string($otherLang))"/>
+        <!-- Get the aria-label from the other language's label in languages section -->
+        <xsl:variable name="ariaLabel" select="$properties/languages/lang[@code = $otherLang]/@label"/>
+        
+        <xsl:element name="{$elementName}">
+          <!-- Process each attribute -->
+          <xsl:for-each select="@*">
+            <xsl:choose>
+              <!-- Empty or computed attributes get filled -->
+              <xsl:when test="local-name() = 'aria-label' and string-length(.) = 0">
+                <xsl:attribute name="aria-label" select="$ariaLabel"/>
+              </xsl:when>
+              <xsl:when test="local-name() = 'lang' and string-length(.) = 0">
+                <xsl:attribute name="lang" select="$otherLang"/>
+              </xsl:when>
+              <xsl:when test="local-name() = 'hreflang' and string-length(.) = 0">
+                <xsl:attribute name="hreflang" select="$otherLang"/>
+              </xsl:when>
+              <xsl:when test="local-name() = 'href' and (string-length(.) = 0 or $elementName = 'a')">
+                <xsl:attribute name="href">
+                  <xsl:text>../</xsl:text>
+                  <xsl:value-of select="$otherLang"/>
+                  <xsl:text>/</xsl:text>
+                  <xsl:choose>
+                    <xsl:when test="$isLanding">index.html</xsl:when>
+                    <xsl:otherwise>{{currentPage}}</xsl:otherwise>
+                  </xsl:choose>
+                </xsl:attribute>
+              </xsl:when>
+              <!-- Skip href-lang or other non-standard attributes with empty values -->
+              <xsl:when test="string-length(.) = 0">
+                <!-- Don't output empty attributes -->
+              </xsl:when>
+              <!-- Copy other attributes normally -->
+              <xsl:otherwise>
+                <xsl:apply-templates select="." mode="process-template"/>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:for-each>
+          
+          <!-- Process content, use computed label if empty -->
+          <xsl:choose>
+            <xsl:when test="node()">
+              <xsl:apply-templates select="node()" mode="process-template"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="$otherLangLabel"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:element>
+      </xsl:when>
+      
+      <!-- Three or more languages: generate dropdown -->
+      <xsl:when test="count($langList) gt 2">
+        <div id="languageSwitcher" class="language-switcher-dropdown">
+          <button class="language-switcher-button">
+            <xsl:value-of select="hcmc:getLanguageLabel($lang)"/>
+            <span class="dropdown-arrow">▼</span>
+          </button>
+          <ul class="language-switcher-menu">
+            <xsl:for-each select="$langList[not(. = $lang)]">
+              <li>
+                <a>
+                  <xsl:attribute name="href">
+                    <xsl:text>../</xsl:text>
+                    <xsl:value-of select="."/>
+                    <xsl:text>/</xsl:text>
+                    <xsl:choose>
+                      <xsl:when test="$isLanding">index.html</xsl:when>
+                      <xsl:otherwise>{{currentPage}}</xsl:otherwise>
+                    </xsl:choose>
+                  </xsl:attribute>
+                  <xsl:value-of select="hcmc:getLanguageLabel(.)"/>
+                </a>
+              </li>
+            </xsl:for-each>
+          </ul>
+        </div>
+      </xsl:when>
+      
+      <!-- Single language: just copy element as-is -->
+      <xsl:otherwise>
+        <xsl:element name="{$elementName}">
+          <xsl:apply-templates select="@* | node()" mode="process-template"/>
+        </xsl:element>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
   <!-- Process attributes with placeholders -->
   <xsl:template match="@*[contains(., '{?') and contains(., '}')]" mode="process-template" priority="2">
     <xsl:attribute name="{name()}">
@@ -82,8 +179,27 @@
     
     <xsl:choose>
       <!-- Special handling for specific PIs that need custom logic -->
-      <xsl:when test="$piName = 'lang-chooser'">
-        <xsl:call-template name="build-lang-chooser"/>
+      <xsl:when test="$piName = 'other-lang'">
+        <xsl:value-of select="$properties/lang-config/*[local-name() = $lang]/other-lang"/>
+      </xsl:when>
+      
+      <xsl:when test="$piName = 'other-lang-text'">
+        <xsl:value-of select="$properties/lang-config/*[local-name() = $lang]/other-lang-text"/>
+      </xsl:when>
+      
+      <xsl:when test="$piName = 'lang-abbreviation'">
+        <xsl:value-of select="$properties/lang-config/*[local-name() = $lang]/other-lang-text"/>
+      </xsl:when>
+      
+      <xsl:when test="$piName = 'other-lang-href'">
+        <xsl:variable name="otherLang" select="$properties/lang-config/*[local-name() = $lang]/other-lang"/>
+        <xsl:text>../</xsl:text>
+        <xsl:value-of select="$otherLang"/>
+        <xsl:text>/</xsl:text>
+        <xsl:choose>
+          <xsl:when test="$isLanding">index.html</xsl:when>
+          <xsl:otherwise>{{currentPage}}</xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       
       <xsl:when test="$piName = 'navigation'">
@@ -314,62 +430,9 @@
   </xsl:template>
   
   <!-- ============================================================
-       SPECIAL HANDLERS (lang-chooser, navigation, etc.)
+       SPECIAL HANDLERS (navigation, etc.)
        ============================================================ -->
   
-  <!-- Language chooser -->
-  <xsl:template name="build-lang-chooser">
-    <xsl:choose>
-      <xsl:when test="count($langList) = 2">
-        <xsl:variable name="otherLang" select="string($langList[not(. = $lang)][1])"/>
-        <xsl:variable name="otherLangLabel" select="upper-case(string($otherLang))"/>
-        <xsl:variable name="ariaLabel">
-          <xsl:call-template name="get-text-value">
-            <xsl:with-param name="element" select="$properties/lang-chooser/aria-label"/>
-          </xsl:call-template>
-        </xsl:variable>
-        <a class="lang-chooser"
-           aria-label="{$ariaLabel}" lang="{$otherLang}">
-          <xsl:attribute name="href">
-            <xsl:text>../</xsl:text>
-            <xsl:value-of select="$otherLang"/>
-            <xsl:text>/</xsl:text>
-            <xsl:choose>
-              <xsl:when test="$isLanding">index.html</xsl:when>
-              <xsl:otherwise>{{currentPage}}</xsl:otherwise>
-            </xsl:choose>
-          </xsl:attribute>
-          <xsl:value-of select="$otherLangLabel"/>
-        </a>
-      </xsl:when>
-      <xsl:when test="count($langList) gt 2">
-        <div id="languageSwitcher" class="language-switcher-dropdown">
-          <button class="language-switcher-button">
-            <xsl:value-of select="hcmc:getLanguageLabel($lang)"/>
-            <span class="dropdown-arrow">▼</span>
-          </button>
-          <ul class="language-switcher-menu">
-            <xsl:for-each select="$langList[not(. = $lang)]">
-              <li>
-                <a>
-                  <xsl:attribute name="href">
-                    <xsl:text>../</xsl:text>
-                    <xsl:value-of select="."/>
-                    <xsl:text>/</xsl:text>
-                    <xsl:choose>
-                      <xsl:when test="$isLanding">index.html</xsl:when>
-                      <xsl:otherwise>{{currentPage}}</xsl:otherwise>
-                    </xsl:choose>
-                  </xsl:attribute>
-                  <xsl:value-of select="hcmc:getLanguageLabel(.)"/>
-                </a>
-              </li>
-            </xsl:for-each>
-          </ul>
-        </div>
-      </xsl:when>
-    </xsl:choose>
-  </xsl:template>
   
   <!-- Navigation menu -->
   <xsl:template name="build-navigation">
@@ -406,15 +469,41 @@
           <xsl:when test="contains($after, '}')">
             <xsl:variable name="placeholder" select="substring-before($after, '}')"/>
             <xsl:variable name="remainder" select="substring-after($after, '}')"/>
-            <xsl:variable name="element" select="$properties//*[local-name() = $placeholder]"/>
+            
+            <!-- Handle special placeholders that need computation -->
+            <xsl:variable name="value">
+              <xsl:choose>
+                <!-- Check lang-config first for language-specific properties -->
+                <xsl:when test="$properties/lang-config/*[local-name() = $lang]/*[local-name() = $placeholder]">
+                  <xsl:call-template name="get-text-value">
+                    <xsl:with-param name="element" select="$properties/lang-config/*[local-name() = $lang]/*[local-name() = $placeholder]"/>
+                  </xsl:call-template>
+                </xsl:when>
+                <!-- Special computed placeholders -->
+                <xsl:when test="$placeholder = 'lang-abbreviation'">
+                  <xsl:value-of select="$properties/lang-config/*[local-name() = $lang]/other-lang-label"/>
+                </xsl:when>
+                <xsl:when test="$placeholder = 'other-lang-href'">
+                  <xsl:variable name="otherLang" select="$properties/lang-config/*[local-name() = $lang]/other-lang"/>
+                  <xsl:text>../</xsl:text>
+                  <xsl:value-of select="$otherLang"/>
+                  <xsl:text>/</xsl:text>
+                  <xsl:choose>
+                    <xsl:when test="$isLanding">index.html</xsl:when>
+                    <xsl:otherwise>{{currentPage}}</xsl:otherwise>
+                  </xsl:choose>
+                </xsl:when>
+                <!-- Check general properties -->
+                <xsl:when test="$properties//*[local-name() = $placeholder]">
+                  <xsl:call-template name="get-text-value">
+                    <xsl:with-param name="element" select="$properties//*[local-name() = $placeholder]"/>
+                  </xsl:call-template>
+                </xsl:when>
+              </xsl:choose>
+            </xsl:variable>
             
             <xsl:choose>
-              <xsl:when test="$element">
-                <xsl:variable name="value">
-                  <xsl:call-template name="get-text-value">
-                    <xsl:with-param name="element" select="$element"/>
-                  </xsl:call-template>
-                </xsl:variable>
+              <xsl:when test="string-length($value) gt 0">
                 <!-- Output: before + value + recursively process remainder -->
                 <xsl:value-of select="$before"/>
                 <xsl:value-of select="$value"/>
