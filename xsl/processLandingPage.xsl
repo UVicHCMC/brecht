@@ -18,7 +18,6 @@
   <xsl:param name="currentLang" select="''"/>
   <xsl:param name="defaultLang" select="'en'"/>
   <xsl:param name="languages" select="'en'"/>
-  <xsl:param name="isRootPage" select="'false'"/>
   
   <!-- Convert string parameters to usable values -->
   <xsl:variable name="isMultilingualBool" select="$isMultilingual = 'true'"/>
@@ -46,22 +45,6 @@
     <xsl:copy>
       <xsl:apply-templates select="@* | node()"/>
     </xsl:copy>
-  </xsl:template>
-  
-  <!-- Fix lang-chooser links: add ../ for non-root pages -->
-  <xsl:template match="xhtml:*[contains(@class, 'lang-chooser')]/@href[starts-with(., '../')]" priority="4">
-    <xsl:attribute name="href">
-      <xsl:choose>
-        <!-- Root page: remove ../ prefix -->
-        <xsl:when test="$isRootPage = 'true'">
-          <xsl:value-of select="substring-after(., '../')"/>
-        </xsl:when>
-        <!-- Non-root: keep ../ as-is -->
-        <xsl:otherwise>
-          <xsl:value-of select="."/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:attribute>
   </xsl:template>
   
   <!-- Fix resource paths (CSS, JS, images) for multilingual builds -->
@@ -94,16 +77,7 @@
       not(contains(., '://')) and
       ends-with(., '.html')]" priority="2">
     <xsl:attribute name="href">
-      <xsl:choose>
-        <!-- Root page: add lang/ prefix for content pages (not index.html) -->
-        <xsl:when test="$isRootPage = 'true' and . != 'index.html'">
-          <xsl:value-of select="concat($lang, '/', .)"/>
-        </xsl:when>
-        <!-- Otherwise: keep as-is -->
-        <xsl:otherwise>
-          <xsl:value-of select="."/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:value-of select="."/>
     </xsl:attribute>
   </xsl:template>
   

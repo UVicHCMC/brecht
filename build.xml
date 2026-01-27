@@ -218,38 +218,31 @@
     <target name="makeLandingPage" depends="generateLandingTemplate">
         <description>Creates landing page(s)</description>
         
-        <!-- Monolingual or multilingual without language selector: create site/index.html as default language -->
-        <sequential unless:true="${needsLanguageSelector}">
+        <!-- Multilingual: create redirect at site/index.html -->
+        <sequential if:true="${isMultilingual}">
+            <echo message="Creating language redirect at site/index.html..."/>
+            <mkdir dir="site"/>
+            <java fork="true" classname="net.sf.saxon.Transform" 
+                  classpath="${saxon}" failonerror="true">
+                <arg value="-s:boilerplate/redirectTemplate.xml"/>
+                <arg value="-xsl:xsl/generateRedirect.xsl"/>
+                <arg value="-o:site/index.html"/>
+            </java>
+        </sequential>
+        
+        <!-- Monolingual: create site/index.html as default language -->
+        <sequential if:true="${isMonolingual}">
             <echo message="Creating landing page at site/index.html (lang=${defaultLang})..."/>
             <mkdir dir="site"/>
-            
-            <!-- Monolingual: use templates/landingPage.xml -->
-            <sequential if:true="${isMonolingual}">
-                <java fork="true" classname="net.sf.saxon.Transform" 
-                      classpath="${saxon}" failonerror="true">
-                    <arg value="-s:templates/landingPage.xml"/>
-                    <arg value="-xsl:xsl/processLandingPage.xsl"/>
-                    <arg value="-o:site/index.html"/>
-                    <arg value="isMultilingual=${isMultilingual}"/>
-                    <arg value="defaultLang=${defaultLang}"/>
-                    <arg value="languages=${languages}"/>
-                    <arg value="isRootPage=true"/>
-                </java>
-            </sequential>
-            
-            <!-- Multilingual: use templates/{defaultLang}/landingPage.xml -->
-            <sequential if:true="${isMultilingual}">
-                <java fork="true" classname="net.sf.saxon.Transform" 
-                      classpath="${saxon}" failonerror="true">
-                    <arg value="-s:templates/${defaultLang}/landingPage.xml"/>
-                    <arg value="-xsl:xsl/processLandingPage.xsl"/>
-                    <arg value="-o:site/index.html"/>
-                    <arg value="isMultilingual=${isMultilingual}"/>
-                    <arg value="defaultLang=${defaultLang}"/>
-                    <arg value="languages=${languages}"/>
-                    <arg value="isRootPage=true"/>
-                </java>
-            </sequential>
+            <java fork="true" classname="net.sf.saxon.Transform" 
+                  classpath="${saxon}" failonerror="true">
+                <arg value="-s:templates/landingPage.xml"/>
+                <arg value="-xsl:xsl/processLandingPage.xsl"/>
+                <arg value="-o:site/index.html"/>
+                <arg value="isMultilingual=${isMultilingual}"/>
+                <arg value="defaultLang=${defaultLang}"/>
+                <arg value="languages=${languages}"/>
+            </java>
         </sequential>
         
         <!-- Create per-language landing pages for multilingual sites -->
@@ -268,7 +261,6 @@
                         <arg value="currentLang=@{lang}"/>
                         <arg value="defaultLang=${defaultLang}"/>
                         <arg value="languages=${languages}"/>
-                        <arg value="isRootPage=false"/>
                     </java>
                 </sequential>
             </for>
