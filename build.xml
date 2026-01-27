@@ -233,6 +233,7 @@
                     <arg value="isMultilingual=${isMultilingual}"/>
                     <arg value="defaultLang=${defaultLang}"/>
                     <arg value="languages=${languages}"/>
+                    <arg value="isRootPage=true"/>
                 </java>
             </sequential>
             
@@ -246,6 +247,7 @@
                     <arg value="isMultilingual=${isMultilingual}"/>
                     <arg value="defaultLang=${defaultLang}"/>
                     <arg value="languages=${languages}"/>
+                    <arg value="isRootPage=true"/>
                 </java>
             </sequential>
         </sequential>
@@ -266,6 +268,7 @@
                         <arg value="currentLang=@{lang}"/>
                         <arg value="defaultLang=${defaultLang}"/>
                         <arg value="languages=${languages}"/>
+                        <arg value="isRootPage=false"/>
                     </java>
                 </sequential>
             </for>
