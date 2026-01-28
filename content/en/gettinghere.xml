@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<div class="content">
-    
+
+
     <h1>Getting here</h1>
-    
+
     <section xml:id="travel-to-victoria">
         <h2>Getting Here: Travel to Victoria</h2>
         <p
@@ -10,7 +10,7 @@
             <a href="https://www.uvic.ca/services/indigenous/">Cheryl Bryce</a>
             of the Songhees Nation, the site “was known for camas harvesting, trading and cultural and spiritual practices.”</p>
     </section>
-    
+
     <section xml:id="by-air">
         <h2>Getting Here: By Air</h2>
         <p><a
@@ -25,7 +25,7 @@
                 href="https://helijet.com/"
                 >HeliJet</a>).</p>
     </section>
-    
+
     <section xml:id="by-ground">
         <h2>Getting Here: By Ground</h2>
         <p>From Vancouver: <a
@@ -33,12 +33,10 @@
                 >Pacific Coach</a> offers a bus service between downtown Vancouver, Vancouver Airport and downtown Victoria 3 times/day. This trip involves taking the ferry from Tsawwassen on the mainland to Swartz Bay on Vancouver Island. Once your bus has driven on to the ferry, you are free to wander the ship, get a snack and relax.</p>
         <p><a href="https://bctransit.com/victoria/">BC Transit</a> provides affordable and convenient bus transportation throughout Victoria.</p>
     </section>
-    
+
     <section xml:id="by-sea">
         <h2>Getting Here: By Sea</h2>
         <p>There are regular ferries from Vancouver and Seattle to Victoria. For more information, visit <a href="https://www.bcferries.com/">BC Ferries</a> or <a
                 href="https://www.clippervacations.com/"
                 >Clipper Ferry</a>. The ferry from Vancouver docks in Swartz Bay, approximately 40 minutes by ground travel from the University or downtown. The Clipper Ferry from Seattle arrives at the Inner Harbour downtown, about 20 minutes by ground from the University.</p>
     </section>
-    
-</div>

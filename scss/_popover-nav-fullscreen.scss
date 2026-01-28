@@ -58,6 +58,7 @@ header {
         justify-content: center;
         align-items: center;
         position: relative;
+        padding-block-end: 1.25rem;
     }
 }
 
@@ -78,7 +79,7 @@ header {
 
 //language chooser button
 .lang-chooser {
-    padding: 0.5rem;
+    padding: 0.5rem 0.65rem;
     width: max-content;
     font-family: var(--primary-sans);
     color: var(--lang-chooser-color);

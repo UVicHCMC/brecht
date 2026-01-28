@@ -1,209 +1,198 @@
-@use 'custom-properties' as *;
+@use "custom-properties" as *;
 
 /*Content stuff, typography, etc.*/
 
 //Splash
 
 #index main h1 {
-	font-family: var(--primary-serif);
-	text-align: center;
+    font-family: var(--primary-serif);
+    text-align: center;
 }
 
 .content-grid {
+    --figure-bg-color: transparent;
+    --figure-border-color: #333;
 
-	--figure-bg-color: transparent;
-	--figure-border-color: #333;;
+    :is(h1, h2, h3, h4) {
+        font-family: var(--primary-serif);
+        margin-block-start: 1.5rem;
+    }
 
+    h1 {
+        margin-block-start: 1.5rem;
+        font-weight: 700;
+    }
 
-	
+    h1 + * {
+        margin-block-start: 1.5rem;
+    }
 
-	:is(h1, h2, h3, h4) {
-		font-family: var(--primary-serif);
-		margin-block-start: 1.5rem;
-	}
+    h2 + * {
+        margin-block-start: 0.5rem;
+    }
 
+    h3 + * {
+        margin-block-start: 0.25rem;
+    }
 
-	h1 {
-		margin-block-start: 1.5rem;
-		font-weight: 700;
-	}
+    h4 + *,
+    h5 + *,
+    h6 + * {
+        margin-block-start: 0;
+    }
 
-	h1+* {
-		margin-block-start: 1.5rem;
-	}
+    h2 {
+        font-weight: 600;
+        font-size: 1.5rem;
+    }
 
-	h2+* {
-		margin-block-start: .5rem;
-	}
+    h3,
+    h4 {
+        font-weight: 600;
+        font-size: 1.375rem;
+    }
 
-	h3+* {
-		margin-block-start: .25rem;
+    h4,
+    h5,
+    h6 {
+        font-weight: 500;
+    }
 
-	}
+    p {
+        font-family: var(--primary-serif);
+        margin-block-start: 0.5rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        font-size: 1rem;
 
-	h4+*,
-	h5+*,
-	h6+* {
-		margin-block-start: 0;
-	}
+        @media only screen and (min-width: $desktop-sm) and (min-height: 500px) {
+            font-size: 1.25rem;
+        }
+    }
 
+    a,
+    a:visited {
+        color: var(--link-inactive);
+        text-decoration: underline;
+        text-decoration-color: var(--underline);
+        transition: all 0.3s ease-in-out;
+        overflow-wrap: anywhere;
 
-	h2 {
-		font-weight: 600;
-		font-size: 1.5rem;
-	}
+        @media (width >= $tablet-portrait-width) {
+            overflow-wrap: normal;
+        }
+    }
 
-	h3, h4 {
-		font-weight: 600;
-		font-size: 1.375rem;
-	}
+    a:hover,
+    a:focus {
+        color: var(--link-active);
+        text-decoration-color: var(--underline-active);
+    }
 
+    p + *,
+    ul + *,
+    ol + *,
+    blockquote + * {
+        margin-block-start: 1.5rem;
+    }
 
-	h4,
-	h5,
-	h6 {
-		font-weight: 500;
-	}
+    * + figure,
+    * + video {
+        margin-block-start: 3rem;
+    }
 
-	p {
-		font-family: var(--primary-serif);
-		margin-block-start: .5rem;
-		font-size: 1rem;
-		line-height: 1.5;
-		font-size: 1rem;
+    figure + *,
+    video + * {
+        margin-block-start: 3rem;
+    }
 
-		@media only screen and (min-width: $desktop-sm) and (min-height: 500px) {
-			font-size: 1.25rem;
-		}
-	}
+    blockquote {
+        color: var(--text-color);
+        font-family: var(--primary-serif);
+        font-style: italic;
+        margin-left: 1rem;
+        font-size: 1rem;
 
-	a,
-	a:visited {
-		color: var(--link-inactive);
-		text-decoration: underline;
-		text-decoration-color: var(--underline);
-		transition: all .3s ease-in-out;
-		overflow-wrap: anywhere;
-		
-		@media (width >= $tablet-portrait-width) {
-			overflow-wrap: normal;
-		}
-	}
+        & .blockquote-footer {
+            text-align: right;
+            display: block;
+        }
 
-	a:hover,
-	a:focus {
-		color: var(--link-active);
-		text-decoration-color: var(--underline-active);
-	}
+        @media only screen and (min-width: $desktop-sm) and (min-height: 500px) {
+            font-size: 1.25rem;
+        }
+    }
 
-	p+*,
-	ul+*,
-	ol+*,
-	blockquote+*,
-    {
-		margin-block-start: 1.5rem;
-	}
-	
-	*+figure,
-	*+video {
-		margin-block-start: 3rem;
-	}
-	
-	figure+*,
-	video+* {
-		margin-block-start: 3rem;
-	}
+    ul,
+    ol {
+        font-family: var(--primary-sans);
+        font-size: var(--fs-400);
+        font-weight: 400;
+        color: var(--text-color);
+    }
 
-	blockquote {
-		color: var(--text-color);
-		font-family: var(--primary-serif);
-		font-style: italic;
-		margin-left: 1rem;
-		font-size: 1rem;
-		
-		& .blockquote-footer {
-			text-align: right;
-			display: block;
-		}
-		
-		@media only screen and (min-width: $desktop-sm) and (min-height: 500px) {
-		font-size: 1.25rem;	
-		}
+    ul {
+        list-style: disc outside;
+        margin-inline-start: 1.25rem;
+    }
 
-	}
+    li > ul {
+        margin-inline-start: 1.5rem;
+        margin-block-start: 0.25rem;
+        margin-block-end: 0.25rem;
+    }
 
-	ul,
-	ol {
-		font-family: var(--primary-sans);
-		font-size: var(--fs-400);
-		font-weight: 400;
-		color: var(--text-color);
-	}
+    ol {
+        list-style: decimal outside;
+        margin-inline-start: 1.5rem;
+    }
 
-	ul {
-		list-style: disc outside;
-		margin-inline-start: 1.25rem;
-	}
+    li > ol {
+        margin-inline-start: 1.75rem;
+        margin-block-start: 0.25rem;
+        margin-block-end: 0.25rem;
+    }
 
-	li>ul {
-		margin-inline-start: 1.5rem;
-		margin-block-start: .25rem;
-		margin-block-end: .25rem;
-	}
+    pre {
+        max-width: 100%;
+        overflow-x: scroll;
+        background-color: #000;
+        padding: 0.5rem;
+    }
 
-	ol {
-		list-style: decimal outside;
-		margin-inline-start: 1.5rem;
-	}
+    code {
+        font-family: var(--primary-mono);
+        font-size: var(--fs-300);
+        color: #ffffff;
+    }
 
-	li>ol {
-		margin-inline-start: 1.75rem;
-		margin-block-start: .25rem;
-		margin-block-end: .25rem;
-	}
+    figure {
+        padding: 0;
+        background-color: var(--figure-bg-color);
+        border: none;
+        width: auto;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
 
-	pre {
-		max-width: 100%;
-		overflow-x: scroll;
-		background-color: #000;
-		padding: .5rem;
-	}
+    figure > img {
+        border: 1px solid var(--figure-border-color);
+    }
 
-	code {
-		font-family: var(--primary-mono);
-		font-size: var(--fs-300);
-		color: #ffffff;
+    figure:has(img.portrait) {
+        grid-column: content;
+    }
 
+    figcaption {
+        color: #828282;
+        font-family: var(--primary-sans);
+        text-align: left;
+        font-size: 0.875rem;
+        align-self: flex-start;
+    }
 
-	}
-
-	figure {
-		padding: 0;
-		background-color: var(--figure-bg-color);
-		border: none;
-		width: auto;
-		display: flex;
-		align-items: center;
-		flex-direction: column;
-	}
-	
-	figure>img {
-		border: 1px solid var(--figure-border-color);
-	}
-	
-	figure:has(img.portrait) {
-		grid-column: content;
-	}
-
-	figcaption {
-		color: #828282;
-		font-family: var(--primary-sans);
-		text-align: left;
-		font-size: .875rem;
-		align-self: flex-start;
-	}
-
-	div[id*="map"] {
-		margin-block: 1.5rem;
-	}
+    div[id*="map"] {
+        margin-block: 1.5rem;
+    }
 }

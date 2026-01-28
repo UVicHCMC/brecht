@@ -37,38 +37,6 @@
 // - Default behaviour is readable and safe.
 // - Breakouts are explicit.
 // - Edge-to-edge is always opt-in and visible in markup.
-//
-// ==========================================================================
-
-// --------------------------------------------------------------------------
-// COMMON STRUCTURE (reference diagram)
-// --------------------------------------------------------------------------
-//
-// <body>
-//   <div class="page-wrapper">
-//
-//     <header class="site-masthead" id="site-header">…</header>
-//
-//     <div class="doc-shell">
-//       <div class="doc-layout">
-//
-//         <main class="page-grid" id="content">
-//           <!-- .content / .content--wide / .content--full -->
-//         </main>
-//
-//         <aside class="toc">…</aside> <!-- optional -->
-//
-//       </div>
-//     </div>
-//
-//     <footer class="site-footer">…</footer>
-//
-//   </div>
-// </body>
-//
-// Rule of thumb:
-//   “If it touches the viewport edge, it must be wrapped in .full-bleed.”
-//
 // ==========================================================================
 
 // --------------------------------------------------------------------------
@@ -77,15 +45,28 @@
 
 $bp-mobile: 48rem; // generic mobile behaviour
 $bp-toc-collapse: 64rem; // reading layout: TOC → no TOC
-$bp-grid-collapse: 52rem; // content geometry: wide → content
+$bp-grid-collapse: 52rem; // content geometry: collapse wide tracks
 
 // --------------------------------------------------------------------------
 // Global defaults (tokens)
 // --------------------------------------------------------------------------
+//
+// Fix #1:
+//   Use a responsive length for the readable measure:
+//     min(65ch, 100%)
+//   so the content column never tries to be wider than its container.
+//
+// This avoids percent-based weirdness inside grid track sizing while still
+// letting the column shrink naturally on small viewports.
+// --------------------------------------------------------------------------
 
 :root {
     --page-grid-gutter: clamp(1rem, 4vw, 3rem);
+
+    // Readable measure that can never exceed container width.
     --page-grid-content-max: 65ch;
+
+    // Max width for semi-breakout content.
     --page-grid-wide-max: 90rem;
 
     --toc-min: 14rem;
@@ -126,19 +107,22 @@ $bp-grid-collapse: 52rem; // content geometry: wide → content
 
 .doc-shell {
     margin-inline: auto;
+
+    // page-wrapper already provides safe padding; keep this layer flush
     padding-inline: 0;
 
+    // Container boundary for :has() and container queries
     container-type: inline-size;
 
-    // Explicit token boundary (inherits from :root unless overridden)
-    --page-grid-gutter: var(--page-grid-gutter);
-    --page-grid-content-max: var(--page-grid-content-max);
-    --page-grid-wide-max: var(--page-grid-wide-max);
-    --toc-min: var(--toc-min);
-    --toc-max: var(--toc-max);
-    --toc-gap: var(--toc-gap);
-    --toc-shell-extra: var(--toc-shell-extra);
-
+    // Fix #2:
+    //   Remove the "self-referential" custom property assignments:
+    //     --x: var(--x);
+    //   They do not create a boundary; they only add confusion.
+    //
+    // If you want per-page overrides, do them explicitly, e.g.:
+    //   .doc-shell--wide { --page-grid-content-max: min(75ch, 100%); }
+    //
+    // Default max width (no TOC)
     max-inline-size: var(--page-grid-wide-max);
 }
 
@@ -195,6 +179,17 @@ $bp-grid-collapse: 52rem; // content geometry: wide → content
 // ==========================================================================
 // Layer C — Content geometry ruler (.page-grid)
 // ==========================================================================
+//
+// Fix #3 (important):
+//   Do NOT set grid track maxes to 100% inside collapse logic.
+//   Percent values inside grid track sizing can behave badly (esp. WebKit)
+//   and can manifest as extreme wrapping ("one word per line").
+//
+// Instead, collapse wide tracks by making wide-max == content-max.
+// Then:
+//   (wide-max - content-max) / 2 = 0
+// and the wide expansion zones disappear cleanly.
+// ==========================================================================
 
 .page-grid {
     container-type: inline-size;
@@ -204,20 +199,29 @@ $bp-grid-collapse: 52rem; // content geometry: wide → content
         [full-start]
         minmax(var(--page-grid-gutter), 1fr)
         [wide-start]
-        minmax(0, calc((var(--page-grid-wide-max) - var(--page-grid-content-max)) / 2))
+        minmax(
+            0,
+            calc((var(--page-grid-wide-max) - var(--page-grid-content-max)) / 2)
+        )
         [content-start]
         minmax(0, var(--page-grid-content-max))
         [content-end]
-        minmax(0, calc((var(--page-grid-wide-max) - var(--page-grid-content-max)) / 2))
+        minmax(
+            0,
+            calc((var(--page-grid-wide-max) - var(--page-grid-content-max)) / 2)
+        )
         [wide-end]
         minmax(var(--page-grid-gutter), 1fr)
         [full-end];
+
+    // Default: every direct child lives in the readable column
+    > * {
+        grid-column: content;
+        min-inline-size: 0; // prevents intrinsic overflow surprises
+    }
 }
 
-// Span utilities
-.content {
-    grid-column: content;
-}
+// Opt-out utilities (apply to direct children you want wider)
 .content--wide {
     grid-column: wide;
 }
@@ -225,7 +229,7 @@ $bp-grid-collapse: 52rem; // content geometry: wide → content
     grid-column: full;
 }
 
-// Intrinsic sizing override
+// Intrinsic sizing override (prevents overflow / min-content traps)
 .content,
 .content--wide,
 .content--full {
@@ -277,14 +281,14 @@ figure.content--full > figcaption {
 // --------------------------------------------------------------------------
 // Container-query collapse for page-grid geometry
 // --------------------------------------------------------------------------
-// When the reading unit becomes too narrow to support wide breakouts,
-// collapse wide → content by making the math resolve to zero.
 //
+// Collapse wide → content by setting wide-max == content-max.
+// This keeps track sizing stable and avoids percent-based grid quirks.
+// --------------------------------------------------------------------------
 
 @container (max-width: #{$bp-grid-collapse}) {
     .page-grid {
-        --page-grid-content-max: 100%;
-        --page-grid-wide-max: 100%;
+        --page-grid-wide-max: var(--page-grid-content-max);
         --page-grid-gutter: clamp(1rem, 3vw, 1.5rem);
     }
 }
