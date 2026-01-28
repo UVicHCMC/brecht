@@ -108,7 +108,7 @@
   <!-- Replace <?docContent?> with actual content -->
   <xsl:template match="processing-instruction('docContent')" priority="5">
     <xsl:message>Inserting content for page: <xsl:value-of select="$currentPage"/></xsl:message>
-    <xsl:apply-templates select="$contentRoot/*/*" mode="content"/>
+    <xsl:apply-templates select="$contentRoot/*" mode="content"/>
   </xsl:template>
   
   <!-- Replace {{currentPage}} placeholders in href attributes -->
