@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-
+<div id="root">
     <h1>Getting here</h1>
 
     <section xml:id="travel-to-victoria">
         <h2>Getting Here: Travel to Victoria</h2>
-        <p
-            >The University of Victoria is located on the traditional lands of the Songhees, Esquimalt and WSÁNEĆ peoples, whose historical relationships with the land continue to this day. Specifically, it is located on the ancestral land of the Lekwungen family group, Checkonien and Sungayka village. According to
+        <p>
+            The University of Victoria is located on the traditional lands of the Songhees, Esquimalt and WSÁNEĆ peoples, whose historical relationships with the land continue to this day. Specifically, it is located on the ancestral land of the Lekwungen family group, Checkonien and Sungayka village. According to
             <a href="https://www.uvic.ca/services/indigenous/">Cheryl Bryce</a>
             of the Songhees Nation, the site “was known for camas harvesting, trading and cultural and spiritual practices.”</p>
     </section>
@@ -40,3 +40,4 @@
                 href="https://www.clippervacations.com/"
                 >Clipper Ferry</a>. The ferry from Vancouver docks in Swartz Bay, approximately 40 minutes by ground travel from the University or downtown. The Clipper Ferry from Seattle arrives at the Inner Harbour downtown, about 20 minutes by ground from the University.</p>
     </section>
+</div>
