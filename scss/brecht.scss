@@ -164,11 +164,13 @@ footer {
     width: 100%;
     max-width: $desktop-sm;
     border-block-start: 1px solid var(--border-color);
-}
 
-.footer-items {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    list-style-type: none;
+    & ul {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+        align-items: center;
+        list-style-type: none;
+    }
 }
