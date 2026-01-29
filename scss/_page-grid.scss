@@ -30,17 +30,6 @@ $bp-grid-collapse: 52rem; // content geometry: reduce padding / collapse breakou
 
     /* max width for breakout content */
     --page-grid-wide-max: 90rem;
-
-    --toc-min: 14rem;
-    --toc-max: 18rem;
-    --toc-gap: var(--page-grid-gutter);
-    --toc-shell-extra: calc(var(--toc-max) + var(--toc-gap));
-
-    --surface-muted: transparent;
-    --accent-bg: transparent;
-    --accent-fg: inherit;
-    --surface-dark: transparent;
-    --surface-dark-fg: inherit;
 }
 
 // ==========================================================================
@@ -73,6 +62,11 @@ $bp-grid-collapse: 52rem; // content geometry: reduce padding / collapse breakou
 }
 
 .doc-layout:has(.toc) {
+    --toc-min: 14rem;
+    --toc-max: 18rem;
+    --toc-gap: var(--page-grid-gutter);
+    --toc-shell-extra: calc(var(--toc-max) + var(--toc-gap));
+
     grid-template-columns:
         minmax(0, 1fr)
         minmax(var(--toc-min), var(--toc-max));
@@ -273,32 +267,4 @@ figure.content--full > figcaption {
     @media (width >= #{$bp-mobile}) {
         margin-inline: 0;
     }
-}
-
-/* band utility */
-.band {
-    padding-block: clamp(3rem, 8vw, 6rem);
-    background: transparent;
-}
-
-.band--tight {
-    padding-block: clamp(2rem, 5vw, 3rem);
-}
-
-.band--loose {
-    padding-block: clamp(4rem, 10vw, 8rem);
-}
-
-.band--muted {
-    background: var(--surface-muted);
-}
-
-.band--accent {
-    background: var(--accent-bg);
-    color: var(--accent-fg);
-}
-
-.band--dark {
-    background: var(--surface-dark);
-    color: var(--surface-dark-fg);
 }

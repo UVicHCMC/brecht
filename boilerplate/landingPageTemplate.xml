@@ -30,7 +30,7 @@
 
                 <div class="nav-wrapper">
                     <!--Insert instruction for mobile header logo-->
-                    <img class="mobile-header" src="{?mobile-header}" />
+                  <?mobile-header?>
 
                     <div class="button-wrapper">
                         <button
@@ -115,7 +115,13 @@
                             <!-- The attributes here will be programmatically replaced by the XSLT based on the values of the languages parameter in properties.xml -->
                             <!-- We've left the empty elements here so that the XSLT knows which ones we want and so that it is clear which attributes to expect in the output HTML -->
                             <!-- Any element with class="lang-chooser" will be transformed in this way. So if you want to change the anchor to a button (or something else), you can do so -->
-                            <a class="lang-chooser" aria-label="" lang="" hreflang="" href=""/>
+                            <a
+                                class="lang-chooser"
+                                aria-label=""
+                                lang=""
+                                hreflang=""
+                                href=""
+                            />
                         </nav>
                     </div>
                 </div>

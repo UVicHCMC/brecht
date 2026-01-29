@@ -67,13 +67,13 @@
             <de>Wählen Sie Ihre Sprache</de>
         </heading>
     </languageSelector>-->
-    
+
     <!-- For nav.aria-label-->
     <nav-aria-label>
         <en>Language Selection</en>
         <de>Sprachauswahl</de>
     </nav-aria-label>
-    
+
     <!--For img.splash-logo-->
     <splash-logo>
         <class>splash-logo</class>
@@ -89,15 +89,21 @@
         <href>https://hcmc.uvic.ca</href>
         <src>images/logo-uvic.svg</src>
         <alt>
-            <en>University of Victoria Humanities Computing and Media Centre</en>
-            <de>Zentrum für Geisteswissenschaften, Informatik und Medien der Universität Victoria</de>
+            <en
+            >University of Victoria Humanities Computing and Media Centre</en>
+            <de
+            >Zentrum für Geisteswissenschaften, Informatik und Medien der Universität Victoria</de>
         </alt>
     </uvic-logo>
 
     <!--For img.mobile-header-->
     <mobile-header>
+    <class>mobile-header</class>
         <src>images/logo-mobile-header.webp</src>
-        <alt />
+        <alt>
+            <en />
+            <de />
+        </alt>
     </mobile-header>
 
     <!--For popover.splash-icon-->
