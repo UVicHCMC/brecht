@@ -1,9 +1,13 @@
 @use "utilities" as *;
 
-header {
+:root {
     //Used by js to remove popover open if viewport changes while popover is open
-    --desktop-break: 768px;
 
+    :root {
+        --desktop-break: 768px;
+    }
+}
+header {
     --nav-bg-color: transparent;
 
     --button-color: #ffffff;
