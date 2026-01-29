@@ -7,7 +7,7 @@
                 xmlns:map="http://www.w3.org/2005/xpath-functions/map"
                 version="3.0">
   
-  <xsl:output method="xml" indent="yes" encoding="UTF-8" omit-xml-declaration="no"/>
+  <xsl:output method="xhtml" indent="yes" encoding="UTF-8" omit-xml-declaration="no"/>
   
   <!-- Parameters passed from build -->
   <xsl:param name="currentLang" select="'en'"/>
