@@ -10,8 +10,7 @@
   <xsl:output method="html" 
               indent="yes" 
               encoding="UTF-8" 
-              omit-xml-declaration="yes"
-              doctype-system="about:legacy-compat"/>
+              omit-xml-declaration="yes"/>
   
   <!-- Parameters -->
   <xsl:param name="isMultilingual" select="'false'"/>
@@ -40,11 +39,16 @@
     </xsl:map>
   </xsl:variable>
   
-  <!-- Identity template -->
-  <xsl:template match="xhtml:* | @*" priority="1">
-    <xsl:copy>
+  <!-- Convert XHTML-namespaced elements to no-namespace HTML5 -->
+  <xsl:template match="xhtml:*" priority="2">
+    <xsl:element name="{local-name()}">
       <xsl:apply-templates select="@* | node()"/>
-    </xsl:copy>
+    </xsl:element>
+  </xsl:template>
+
+  <!-- Identity template for attributes -->
+  <xsl:template match="@*" priority="1">
+    <xsl:copy/>
   </xsl:template>
   
   <!-- Fix resource paths (CSS, JS, images) for multilingual builds -->

@@ -7,7 +7,7 @@
                 xmlns:map="http://www.w3.org/2005/xpath-functions/map"
                 version="3.0">
   
-  <xsl:output method="xhtml" indent="yes" encoding="UTF-8" omit-xml-declaration="no"/>
+  <xsl:output method="html" indent="yes" encoding="UTF-8" omit-xml-declaration="yes"/>
   
   <!-- Parameters passed from build -->
   <xsl:param name="currentLang" select="'en'"/>
@@ -74,11 +74,23 @@
     <xsl:apply-templates select="$template/*"/>
   </xsl:template>
   
-  <!-- Identity template for template elements -->
-  <xsl:template match="xhtml:* | @*" priority="1">
-    <xsl:copy>
+  <!-- Convert XHTML-namespaced template elements to HTML5 (no namespace) -->
+  <xsl:template match="xhtml:*" priority="2">
+    <xsl:element name="{local-name()}">
       <xsl:apply-templates select="@* | node()"/>
-    </xsl:copy>
+    </xsl:element>
+  </xsl:template>
+
+  <!-- Convert XHTML-namespaced content elements to no-namespace HTML in content mode -->
+  <xsl:template match="xhtml:*" mode="content" priority="2">
+    <xsl:element name="{local-name()}">
+      <xsl:apply-templates select="@* | node()" mode="content"/>
+    </xsl:element>
+  </xsl:template>
+
+  <!-- Identity template for attributes -->
+  <xsl:template match="@*" priority="1">
+    <xsl:copy/>
   </xsl:template>
   
   <!-- Fix resource paths (CSS, JS, images) for multilingual builds. We do this because the resources are one level up from the HTML pages in bilingual builds. -->
