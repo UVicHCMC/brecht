@@ -88,6 +88,20 @@
     </xsl:element>
   </xsl:template>
 
+  <!-- Handle SVG elements - preserve SVG namespace -->
+  <xsl:template match="*[namespace-uri() = 'http://www.w3.org/2000/svg']" priority="3">
+    <xsl:element name="{local-name()}" namespace="http://www.w3.org/2000/svg">
+      <xsl:apply-templates select="@* | node()"/>
+    </xsl:element>
+  </xsl:template>
+
+  <!-- Handle SVG elements in content mode - preserve SVG namespace -->
+  <xsl:template match="*[namespace-uri() = 'http://www.w3.org/2000/svg']" mode="content" priority="3">
+    <xsl:element name="{local-name()}" namespace="http://www.w3.org/2000/svg">
+      <xsl:apply-templates select="@* | node()" mode="content"/>
+    </xsl:element>
+  </xsl:template>
+
   <!-- Identity template for attributes -->
   <xsl:template match="@*" priority="1">
     <xsl:copy/>
