@@ -40,6 +40,16 @@
   </xsl:variable>
   
   <!-- Convert XHTML-namespaced elements to no-namespace HTML5 -->
+  <xsl:template match="xhtml:html" priority="3">
+    <xsl:element name="html">
+      <xsl:copy-of select="@*[not(local-name() = 'id')]"/>
+      <xsl:if test="not(@id)">
+        <xsl:attribute name="id" select="'index'"/>
+      </xsl:if>
+      <xsl:apply-templates select="node()"/>
+    </xsl:element>
+  </xsl:template>
+
   <xsl:template match="xhtml:*" priority="2">
     <xsl:element name="{local-name()}">
       <xsl:apply-templates select="@* | node()"/>
@@ -86,7 +96,7 @@
   </xsl:template>
   
   <!-- Replace img tags with dimensioned versions -->
-  <xsl:template match="xhtml:img[starts-with(@src, 'images/') or starts-with(@src, '/images/')]" priority="2">
+  <xsl:template match="xhtml:img[starts-with(@src, 'images/') or starts-with(@src, '/images/')]" priority="4">
     <!-- Normalize the src path (remove leading slash if present) -->
     <xsl:variable name="normalizedSrc" select="replace(@src, '^/', '')"/>
     <xsl:variable name="imgTag" select="map:get($mapImgPathsToElements, $normalizedSrc)" as="element(xhtml:img)*"/>

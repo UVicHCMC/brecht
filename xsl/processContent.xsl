@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-                exclude-result-prefixes="#all" 
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:xhtml="http://www.w3.org/1999/xhtml"
                 xmlns:map="http://www.w3.org/2005/xpath-functions/map"
+                exclude-result-prefixes="#all" 
                 version="3.0">
   
   <xsl:output method="html" indent="yes" encoding="UTF-8" omit-xml-declaration="yes"/>
@@ -74,6 +74,18 @@
     <xsl:apply-templates select="$template/*"/>
   </xsl:template>
   
+  <!-- Add page id based on output filename -->
+  <xsl:template match="xhtml:html" priority="3">
+    <xsl:variable name="pageId" select="replace($currentPage, '\.html$', '')"/>
+    <xsl:element name="html">
+      <xsl:copy-of select="@*[not(local-name() = 'id')]"/>
+      <xsl:if test="not(@id)">
+        <xsl:attribute name="id" select="$pageId"/>
+      </xsl:if>
+      <xsl:apply-templates select="node()"/>
+    </xsl:element>
+  </xsl:template>
+
   <!-- Convert XHTML-namespaced template elements to HTML5 (no namespace) -->
   <xsl:template match="xhtml:*" priority="2">
     <xsl:element name="{local-name()}">
@@ -162,14 +174,14 @@
   </xsl:template>
   
   <!-- Replace img tags with dimensioned versions (for template images) -->
-  <xsl:template match="xhtml:img[starts-with(@src, 'images/') or starts-with(@src, '/images/')]" priority="2">
+  <xsl:template match="xhtml:img[starts-with(@src, 'images/') or starts-with(@src, '/images/')]" priority="4">
     <xsl:call-template name="add-image-dimensions">
       <xsl:with-param name="img" select="."/>
     </xsl:call-template>
   </xsl:template>
   
   <!-- Replace img tags with dimensioned versions (for content images) -->
-  <xsl:template match="xhtml:img[starts-with(@src, 'images/') or starts-with(@src, '/images/')]" mode="content" priority="2">
+  <xsl:template match="xhtml:img[starts-with(@src, 'images/') or starts-with(@src, '/images/')]" mode="content" priority="4">
     <xsl:call-template name="add-image-dimensions">
       <xsl:with-param name="img" select="."/>
     </xsl:call-template>
