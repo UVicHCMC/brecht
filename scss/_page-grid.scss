@@ -114,9 +114,6 @@ $bp-grid-collapse: 52rem; // content geometry: reduce padding / collapse breakou
 
 .page-grid,
 .content--full {
-    /* establish a container for container queries
-     and ensure nested full-width sections share the same grid */
-    container-type: inline-size;
     display: grid;
 
     /* horizontal safe area on both sides of the grid
