@@ -34,8 +34,8 @@
 
     <metadata>
         <siteTitle>
-            <en>Website Title</en>
-            <de>Website-Titel</de>
+            <en>Brecht in the anthropocene</en>
+            <de>Brecht im Anthropozän</de>
         </siteTitle>
         <organizationName>
             <en>Organization Name</en>
@@ -97,14 +97,14 @@
     </uvic-logo>
 
     <!--For img.mobile-header-->
-    <mobile-header>
-    <class>mobile-header</class>
+    <mobile-header-splash>
+    <class>mobile-header-splash</class>
         <src>images/logo-mobile-header.webp</src>
         <alt>
             <en />
             <de />
         </alt>
-    </mobile-header>
+    </mobile-header-splash>
 
     <!--For popover.splash-icon-->
     <popover-splash-icon>

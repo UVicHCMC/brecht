@@ -30,7 +30,7 @@
 
                 <div class="nav-wrapper">
                     <!--Insert instruction for mobile header logo-->
-                  <?mobile-header?>
+                  <?mobile-header-splash?>
 
                     <div class="button-wrapper">
                         <button

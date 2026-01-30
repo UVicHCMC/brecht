@@ -69,7 +69,7 @@ header {
     width: 100%;
 }
 
-.mobile-header {
+.mobile-header-splash {
     width: 300px;
     height: auto;
 
@@ -78,6 +78,11 @@ header {
     }
 }
 
+.mobile-header-internal {
+    display: block;
+    width: 300px;
+    height: auto;
+}
 //blob on brecht splash
 .blob {
     --blob-width: min(75dvh, 900px);
