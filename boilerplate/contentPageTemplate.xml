@@ -56,7 +56,6 @@
                             popovertargetaction="toggle"
                             aria-controls="site-navigation"
                             aria-haspopup="true"
-                            aria-expanded="false"
                         >
                             <span
                                 class="nav-toggle-label"
