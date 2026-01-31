@@ -44,7 +44,7 @@
                 <div class="nav-wrapper">
 
                     <!--Insert instruction for mobile header logo-->
-                   <?mobile-header?>
+                   <?mobile-header-internal?>
 
                     <div class="button-wrapper">
                         <!-- Primary navigation toggle (mobile) -->
