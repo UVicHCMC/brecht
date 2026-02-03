@@ -96,7 +96,7 @@
         </alt>
     </uvic-logo>
 
-    <!--For img.mobile-header-->
+    <!--For img.mobile-header splash page-->
     <mobile-header-splash>
     <class>mobile-header-splash</class>
         <src>images/logo-mobile-header.webp</src>
@@ -105,6 +105,16 @@
             <de />
         </alt>
     </mobile-header-splash>
+
+    <!--For img.mobile-header internal pages-->
+    <mobile-header-internal>
+    <class>mobile-header-internal</class>
+        <src>images/logo-mobile-header.webp</src>
+        <alt>
+            <en />
+            <de />
+        </alt>
+    </mobile-header-internal>
 
     <!--For popover.splash-icon-->
     <popover-splash-icon>
