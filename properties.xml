@@ -6,7 +6,7 @@
     - Simply encode text content within each property element.
 
      FOR BILINGUAL SITES:
-    - For each property, create a separate element for each language specified in the languages section.
+    - For each property, create a separate child element for each language specified in the languages section.
 
      EXAMPLE:
      Monolingual: <siteTitle>My Site Title</siteTitle>
