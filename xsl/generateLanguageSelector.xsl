@@ -39,17 +39,15 @@
               <xsl:otherwise>Select your language</xsl:otherwise>
             </xsl:choose>
           </h1>
-          <ul class="language-list">
+          <select class="language-list" name="language-list">
             <xsl:for-each select="languages/lang">
               <xsl:variable name="langCode" select="@code"/>
               <xsl:variable name="langLabel" select="@label"/>
-              <li>
-                <a href="{$langCode}/index.html" hreflang="{$langCode}">
-                  <xsl:value-of select="$langLabel"/>
-                </a>
-              </li>
+              <option value="{$langCode}">
+                <xsl:value-of select="$langLabel"/>
+              </option>
             </xsl:for-each>
-          </ul>
+          </select>
         </div>
       </body>
     </html>
