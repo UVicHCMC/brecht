@@ -67,6 +67,8 @@
             <de>Wählen Sie Ihre Sprache</de>
         </heading>
     </languageSelector>-->
+    
+    <!--The element labels here follow CSS conventions. If you want to add an attribute to a specific element, add it as a child element. -->
 
     <!-- For nav.aria-label-->
     <nav-aria-label>
