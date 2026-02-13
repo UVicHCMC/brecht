@@ -1,0 +1,23 @@
+{
+  "id": "/",
+  "name": "Brecht in the Anthropocene",
+  "short_name": "Brecht",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#D60000",
+  "theme_color": "#ffffff",
+  "lang": "en-CA",
+  "icons": [
+    {
+      "src": "/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
