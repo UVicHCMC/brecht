@@ -151,11 +151,14 @@
         </div>
       </xsl:when>
       
-      <!-- Single language: just copy element as-is -->
+      <!-- Single language: do not create a lang-chooser -->
       <xsl:otherwise>
-        <xsl:element name="{$elementName}">
+        <!-- Do nothing. No lang-chooser needed -->
+        
+        <!--<xsl:element name="{$elementName}">
           <xsl:apply-templates select="@* | node()" mode="process-template"/>
-        </xsl:element>
+        </xsl:element>-->
+           
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
