@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<div id="root" xmlns="http://www.w3.org/1999/xhtml">
+    <h1>Accommodations</h1>
+
+    <section>
+        <h2>[Info here]</h2>
+        <p> [Info here]</p>
+    </section>
+
+    <section class="content--full">
+        <h2>[Info here]</h2>
+        <p>[Info here]</p>
+    </section>
+
+</div>
