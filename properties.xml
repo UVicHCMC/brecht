@@ -135,6 +135,12 @@
         <en>Primary</en>
         <de>Primär</de>
     </site-navigation-label>
+    
+    <!-- For subnav.aria-label-->
+    <subnav-aria-label>
+        <en>Section navigation</en>
+        <de>Abschnittsnavigation</de>
+    </subnav-aria-label>
 
     <!--For button.aria-label-->
     <popover-close-label>

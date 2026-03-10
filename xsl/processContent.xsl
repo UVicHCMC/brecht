@@ -154,6 +154,54 @@
     <xsl:attribute name="href" select="replace(., '\{\{currentPage\}\}', $currentPage)"/>
   </xsl:template>
   
+  <!-- Mark current navigation item as active -->
+  <xsl:template match="xhtml:a[contains(concat(' ', normalize-space(@class), ' '), ' item ')][@href]" priority="4">
+    <xsl:variable name="targetPage" select="replace(tokenize(string(@href), '[?#]')[1], '^.*/', '')"/>
+    <xsl:variable name="isActive" select="$targetPage = $currentPage"/>
+    <xsl:element name="a">
+      <xsl:copy-of select="@*[not(local-name() = 'class' or local-name() = 'aria-current')]"/>
+      <xsl:attribute name="class" select="normalize-space(string-join((string(@class), if ($isActive) then 'active' else ()), ' '))"/>
+      <xsl:if test="$isActive">
+        <xsl:attribute name="aria-current">page</xsl:attribute>
+      </xsl:if>
+      <xsl:apply-templates select="node()"/>
+    </xsl:element>
+  </xsl:template>
+    
+  <!--If the input document has two or more section elements, create a subnav with links to each section-->
+  <xsl:template match="xhtml:body" priority="3">
+    <xsl:copy>
+      <xsl:apply-templates select="@*"/>
+      <xsl:variable name="sectionNavLabel" select="
+        if ($propertiesDoc/site/subnav-aria-label/*[local-name() = $lang]) then
+          normalize-space(string($propertiesDoc/site/subnav-aria-label/*[local-name() = $lang]))
+        else
+          'Section navigation'
+                      "/>
+      <xsl:variable name="contentNodes" select="$contentRoot/*/*"/>
+      <xsl:variable name="sections" as="element()*" select="$contentNodes/descendant-or-self::*[local-name() = 'section']"/>
+      <xsl:if test="count($sections) &gt;= 2">
+        <xsl:message>Creating section navigation with <xsl:value-of select="count($sections)"/> sections</xsl:message>
+        <nav class="subnav" aria-label="{$sectionNavLabel}">
+          <ul>
+            <xsl:for-each select="$sections">
+              <xsl:variable name="sectionId" select="@id"/>
+              <xsl:variable name="sectionTitle" select="(.//*[matches(local-name(), '^h[1-6]$')])[1]"/>
+              <xsl:if test="$sectionId and $sectionTitle">
+                <li>
+                  <a href="#{$sectionId}">
+                    <xsl:value-of select="$sectionTitle"/>
+                  </a>
+                </li>
+              </xsl:if>
+            </xsl:for-each>
+          </ul>
+        </nav>
+      </xsl:if>
+      <xsl:apply-templates select="node()"/>
+    </xsl:copy>
+  </xsl:template>
+  
   <!-- Process content in content mode (identity transform with image handling) -->
   <xsl:template match="xhtml:* | @*" mode="content" priority="1">
     <xsl:copy>
@@ -201,12 +249,25 @@
           <xsl:copy>
             <xsl:copy-of select="@width"/>
             <xsl:copy-of select="@height"/>
+            <xsl:variable name="aspectClass">
+              <xsl:choose>
+                <xsl:when test="number(@width) = number(@height)">
+                  <xsl:value-of select="'square'"/>
+                </xsl:when>
+                <xsl:when test="number(@width) &gt; number(@height)">
+                  <xsl:value-of select="'landscape'"/>
+                </xsl:when>
+                <xsl:when test="number(@width) &lt; number(@height)">
+                  <xsl:value-of select="'portrait'"/>
+                </xsl:when>
+              </xsl:choose>
+            </xsl:variable>
             <xsl:choose>
               <xsl:when test="$img/@class">
-                <xsl:attribute name="class" select="concat($img/@class, ' ', ./@class)"/>
+                <xsl:attribute name="class" select="normalize-space(string-join(($img/@class, $aspectClass), ' '))"/>
               </xsl:when>
               <xsl:otherwise>
-                <xsl:copy-of select="@class"/>
+                <xsl:attribute name="class" select="$aspectClass"/>
               </xsl:otherwise>
             </xsl:choose>
             <!-- Fix src path for multilingual builds -->
