@@ -129,9 +129,13 @@
             </header>
 
             <main>
+            <div class="blob-container">
+                <div class="blob-3"></div>
+                <div class="blob-2"></div>
                 <div class="blob">
                     <?splash-logo?>
                 </div>
+            </div>
             </main>
             <footer>
 
