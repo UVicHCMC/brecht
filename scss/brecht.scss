@@ -113,14 +113,14 @@ header {
 
     box-shadow:
         inset 0 0 22px rgba(0, 0, 0, 0.25),
-        inset 6px 6px 14px rgba(0, 0, 0, 0.18);
+        inset 6px 6px 14px rgba(0, 0, 0, 0.18); 
 
     will-change: border-radius, transform;
 }
 
 .blob {
-    width: 75%;
-    background: #d60000;
+    width: 100%;
+    background: var(--highlight);
     border-radius: 42% 58% 61% 39% / 46% 41% 59% 54%;
     animation: blob-morph 24s linear infinite;
     z-index: 3;
@@ -128,7 +128,7 @@ header {
 
 .blob-2 {
     width: 88%;
-    background: #e35a5a;
+    background: hsl(from var(--highlight) h s l / .8);
     border-radius: 55% 45% 52% 48% / 41% 59% 43% 57%;
     animation: blob-morph-2 28s linear infinite;
     z-index: 2;
@@ -136,7 +136,7 @@ header {
 
 .blob-3 {
     width: 100%;
-    background: #ef8b8b;
+    background: hsl(from var(--highlight) h s 80% / .7);
     border-radius: 49% 51% 57% 43% / 54% 46% 38% 62%;
     animation: blob-morph-3 32s linear infinite;
     z-index: 1;
